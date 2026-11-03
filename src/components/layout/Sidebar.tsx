@@ -31,6 +31,8 @@ import {
   Check,
   Plus,
   PlaySquare,
+  Split,
+  Award,
 } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import { cn } from '@/lib/utils';
@@ -74,6 +76,7 @@ export const Sidebar: React.FC<{ onCloseMobile?: () => void }> = ({ onCloseMobil
       items: [
         { name: 'Competitor Analysis', href: '/comparison', icon: GitCompare },
         { name: 'SEO & Keywords', href: '/seo', icon: Search },
+        { name: 'A/B Testing Lab', href: '/ab-testing', icon: Split, badge: 'PRO', badgeColor: 'purple' },
         { name: 'Thumbnail Analyzer', href: '/thumbnails', icon: ImageIcon },
         { name: 'Channel Health Audit', href: '/audit', icon: Activity },
         { name: 'Growth Predictions', href: '/predictions', icon: TrendingUp },
@@ -92,6 +95,7 @@ export const Sidebar: React.FC<{ onCloseMobile?: () => void }> = ({ onCloseMobil
       title: 'OPERATIONS & PLANS',
       items: [
         { name: 'Multi-Channel Hub', href: '/channels', icon: Tv2 },
+        { name: 'Sponsor Media Kit', href: '/media-kit', icon: Award, badge: 'NEW', badgeColor: 'cyan' },
         { name: 'Weekly Reports & CSV', href: '/reports', icon: FileSpreadsheet },
         { name: 'Pricing & Plans', href: '/pricing', icon: CreditCard },
         { name: 'Settings & OAuth', href: '/settings', icon: Settings },
