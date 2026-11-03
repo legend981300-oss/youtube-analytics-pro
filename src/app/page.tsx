@@ -82,22 +82,25 @@ export default function DashboardOverviewPage() {
     <AppShell>
       <div className="space-y-6">
         {/* Welcome & Channel Quick Banner */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pb-2">
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
-                Channel Analytics
+            <div className="flex items-center gap-2.5">
+              <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white sm:text-3xl">
+                Creator Command Center
               </h1>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-red-500/30 bg-red-500/10 px-3 py-0.5 text-[10px] font-bold text-red-500 shadow-[0_0_12px_rgba(239,68,68,0.2)]">
+                <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" /> Live Pulse
+              </span>
               <Badge variant="purple" size="sm">
-                Demo Mode (Simulated Data)
+                Demo Simulation
               </Badge>
             </div>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              Overview performance for{' '}
-              <span className="font-semibold text-slate-700 dark:text-slate-300">
+              Algorithmic performance overview for{' '}
+              <strong className="text-slate-800 dark:text-slate-200">
                 {selectedChannel.name}
-              </span>{' '}
-              over the last {dateRange.toUpperCase()}.
+              </strong>{' '}
+              ({selectedChannel.handle}) across the last {dateRange.toUpperCase()}.
             </p>
           </div>
 
@@ -158,8 +161,8 @@ export default function DashboardOverviewPage() {
         </div>
 
         {/* Interactive Main Analytics Chart Card */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-navy-750 dark:bg-navy-850">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-slate-100 dark:border-navy-750">
+        <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm dark:border-white/[0.08] dark:bg-navy-850/80 dark:backdrop-blur-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-slate-100 dark:border-white/[0.08]">
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-base font-bold text-slate-900 dark:text-white">
@@ -173,12 +176,12 @@ export default function DashboardOverviewPage() {
             </div>
 
             {/* Metric Switcher Pills */}
-            <div className="flex flex-wrap items-center gap-1 rounded-xl bg-slate-100 p-1 dark:bg-navy-950">
+            <div className="flex flex-wrap items-center gap-1 rounded-2xl bg-slate-100 p-1 dark:bg-navy-900 border border-slate-200 dark:border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
               <button
                 onClick={() => setSelectedMetric('views')}
-                className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                className={`rounded-xl px-3 py-1.5 text-xs font-bold transition-all ${
                   selectedMetric === 'views'
-                    ? 'bg-white text-blue-600 shadow-sm dark:bg-navy-750 dark:text-blue-400'
+                    ? 'bg-white text-blue-600 shadow-sm dark:bg-blue-600 dark:text-white dark:shadow-[0_0_15px_rgba(59,130,246,0.4)]'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
@@ -186,9 +189,9 @@ export default function DashboardOverviewPage() {
               </button>
               <button
                 onClick={() => setSelectedMetric('netSubscribers')}
-                className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                className={`rounded-xl px-3 py-1.5 text-xs font-bold transition-all ${
                   selectedMetric === 'netSubscribers'
-                    ? 'bg-white text-rose-600 shadow-sm dark:bg-navy-750 dark:text-rose-400'
+                    ? 'bg-white text-rose-600 shadow-sm dark:bg-rose-600 dark:text-white dark:shadow-[0_0_15px_rgba(244,63,94,0.4)]'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
@@ -196,9 +199,9 @@ export default function DashboardOverviewPage() {
               </button>
               <button
                 onClick={() => setSelectedMetric('watchHours')}
-                className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                className={`rounded-xl px-3 py-1.5 text-xs font-bold transition-all ${
                   selectedMetric === 'watchHours'
-                    ? 'bg-white text-emerald-600 shadow-sm dark:bg-navy-750 dark:text-emerald-400'
+                    ? 'bg-white text-emerald-600 shadow-sm dark:bg-emerald-600 dark:text-white dark:shadow-[0_0_15px_rgba(16,185,129,0.4)]'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
@@ -206,9 +209,9 @@ export default function DashboardOverviewPage() {
               </button>
               <button
                 onClick={() => setSelectedMetric('estimatedRevenue')}
-                className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                className={`rounded-xl px-3 py-1.5 text-xs font-bold transition-all ${
                   selectedMetric === 'estimatedRevenue'
-                    ? 'bg-white text-purple-600 shadow-sm dark:bg-navy-750 dark:text-purple-400'
+                    ? 'bg-white text-purple-600 shadow-sm dark:bg-purple-600 dark:text-white dark:shadow-[0_0_15px_rgba(168,85,247,0.4)]'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
@@ -224,22 +227,22 @@ export default function DashboardOverviewPage() {
                 <AreaChart data={currentDailyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id={currentConfig.gradientId} x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={currentConfig.color} stopOpacity={0.35} />
+                      <stop offset="5%" stopColor={currentConfig.color} stopOpacity={0.4} />
                       <stop offset="95%" stopColor={currentConfig.color} stopOpacity={0.0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#222f52" opacity={0.3} vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#222f52" opacity={0.25} vertical={false} />
                   <XAxis
                     dataKey="date"
                     tickFormatter={(val) => val.slice(5)}
-                    tick={{ fill: '#64748b', fontSize: 11 }}
-                    stroke="#334155"
+                    tick={{ fill: '#64748b', fontSize: 11, fontWeight: 600 }}
+                    stroke="#1e293b"
                     tickLine={false}
                   />
                   <YAxis
                     tickFormatter={currentConfig.formatter}
-                    tick={{ fill: '#64748b', fontSize: 11 }}
-                    stroke="#334155"
+                    tick={{ fill: '#64748b', fontSize: 11, fontWeight: 600 }}
+                    stroke="#1e293b"
                     tickLine={false}
                   />
                   <Tooltip
@@ -248,6 +251,7 @@ export default function DashboardOverviewPage() {
                   />
                   <Area
                     type="monotone"
+                    isAnimationActive={false}
                     dataKey={selectedMetric}
                     stroke={currentConfig.color}
                     strokeWidth={2.5}

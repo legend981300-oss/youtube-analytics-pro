@@ -160,7 +160,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileMenu }) => {
   ];
 
   return (
-    <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-slate-200/80 bg-white/95 px-4 backdrop-blur-md dark:border-navy-800 dark:bg-navy-900/95 sm:px-6">
+    <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-slate-200/80 bg-white/85 px-4 backdrop-blur-2xl dark:border-white/[0.08] dark:bg-navy-950/80 sm:px-6 transition-all">
       {/* Left: Mobile hamburger & Global Search */}
       <div className="flex items-center gap-3 lg:gap-4 flex-1 max-w-lg">
         <button
@@ -310,16 +310,17 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileMenu }) => {
       {/* Right Controls */}
       <div className="flex items-center gap-2 sm:gap-3">
         {/* Date Range Selector */}
-        <div className="hidden sm:flex items-center gap-1 rounded-xl bg-slate-100 p-1 dark:bg-navy-950 border border-slate-200/70 dark:border-navy-800">
+        <div className="hidden sm:flex items-center gap-1 rounded-2xl bg-slate-100 p-1 dark:bg-navy-900/90 border border-slate-200/80 dark:border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]">
           <Calendar className="h-3.5 w-3.5 ml-2 mr-1 text-slate-400" />
           {dateRangeOptions.map((opt) => (
             <button
               key={opt.id}
               onClick={() => setDateRange(opt.id)}
-              className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${dateRange === opt.id
-                  ? 'bg-white text-slate-900 shadow-sm dark:bg-navy-750 dark:text-white'
+              className={`rounded-xl px-2.5 py-1 text-xs font-bold transition-all ${
+                dateRange === opt.id
+                  ? 'bg-white text-slate-900 shadow-sm dark:bg-gradient-to-r dark:from-red-600 dark:to-rose-600 dark:text-white dark:shadow-[0_0_15px_rgba(225,29,72,0.4)]'
                   : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-                }`}
+              }`}
             >
               {opt.label}
             </button>
@@ -330,9 +331,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileMenu }) => {
         <button
           onClick={handleExportData}
           title="Export current data to CSV"
-          className="hidden md:inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50 dark:border-navy-750 dark:bg-navy-850 dark:text-slate-300 dark:hover:bg-navy-800 transition-colors"
+          className="hidden md:inline-flex items-center gap-1.5 rounded-2xl border border-slate-200/80 bg-white px-3.5 py-1.5 text-xs font-bold text-slate-700 shadow-sm hover:bg-slate-50 dark:border-white/[0.08] dark:bg-navy-850 dark:text-slate-200 dark:hover:border-white/20 dark:hover:bg-white/[0.06] transition-all shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]"
         >
-          <Download className="h-3.5 w-3.5 text-slate-400" />
+          <Download className="h-3.5 w-3.5 text-brand-500" />
           <span>Export CSV</span>
         </button>
 
@@ -340,12 +341,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileMenu }) => {
         <div className="relative" ref={notifRef}>
           <button
             onClick={() => setNotificationsOpen(!notificationsOpen)}
-            className="relative rounded-xl border border-slate-200 bg-white p-2 text-slate-600 shadow-sm hover:bg-slate-50 dark:border-navy-750 dark:bg-navy-850 dark:text-slate-300 dark:hover:bg-navy-800 transition-colors"
+            className="relative rounded-2xl border border-slate-200/80 bg-white p-2 text-slate-600 shadow-sm hover:bg-slate-50 dark:border-white/[0.08] dark:bg-navy-850 dark:text-slate-300 dark:hover:border-white/20 dark:hover:bg-white/[0.06] transition-all shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]"
             aria-label="View notifications"
           >
             <Bell className="h-4 w-4" />
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-brand-600 text-[10px] font-bold text-white ring-2 ring-white dark:ring-navy-900">
+              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-tr from-red-600 to-rose-500 text-[10px] font-bold text-white ring-2 ring-white dark:ring-navy-950 shadow-sm">
                 {unreadCount}
               </span>
             )}
