@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 222.2 84% 4.9%;
+  }
+
+  .dark {
+    --background: 225 40% 4.5%;
+    --foreground: 210 40% 98%;
+  }
+}
+
+body {
+  color: rgb(var(--foreground));
+  background: rgb(var(--background));
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
+
+/* Custom modern scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.45);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(51, 65, 85, 0.4);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(71, 85, 105, 0.7);
+}
+
+/* Recharts tooltip overrides */
+.recharts-default-tooltip {
+  background-color: #0c101c !important;
+  border: 1px solid #1e2640 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
+  padding: 8px 12px !important;
+}
+
+.recharts-tooltip-label {
+  color: #94a3b8 !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  margin-bottom: 4px !important;
+}
+
+.recharts-tooltip-item {
+  color: #f8fafc !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  padding: 2px 0 !important;
+}
+
