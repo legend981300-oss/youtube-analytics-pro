@@ -33,13 +33,10 @@ export const StatCard: React.FC<StatCardProps> = ({
   return (
     <div
       className={cn(
-        'group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm transition-all duration-300 hover:shadow-xl dark:border-white/[0.08] dark:bg-navy-850/80 dark:backdrop-blur-xl dark:hover:border-white/[0.18] dark:hover:shadow-glow-brand/20 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] shimmer-sheen',
+        'group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm transition-all duration-200 hover:shadow-lg dark:border-white/[0.08] dark:bg-navy-900/95 dark:hover:border-white/[0.18] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]',
         className
       )}
     >
-      {/* Top Ambient Glow on Hover */}
-      <div className="absolute -top-16 -right-16 h-32 w-32 rounded-full bg-gradient-to-br from-brand-500/15 via-rose-500/5 to-transparent blur-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100 pointer-events-none" />
-
       <div className="relative flex items-start justify-between">
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">

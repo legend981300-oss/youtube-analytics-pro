@@ -171,7 +171,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   ];
 
   return (
-    <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-slate-200/80 bg-white/85 px-4 backdrop-blur-2xl dark:border-white/[0.08] dark:bg-navy-950/80 sm:px-6 transition-all">
+    <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-slate-200/80 bg-white/95 px-4 dark:border-white/[0.08] dark:bg-navy-950/95 sm:px-6 transition-colors">
       {/* Left: Mobile hamburger & Global Search */}
       <div className="flex items-center gap-3 lg:gap-4 flex-1 max-w-lg">
         <button

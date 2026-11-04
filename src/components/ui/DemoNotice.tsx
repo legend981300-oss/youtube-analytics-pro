@@ -11,7 +11,7 @@ export const DemoNotice: React.FC = () => {
   if (demoNoticeDismissed) return null;
 
   return (
-    <div className="relative isolate flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-brand-500/20 bg-gradient-to-r from-brand-600/10 via-navy-800 to-brand-600/10 px-4 py-2.5 sm:px-6 text-xs backdrop-blur-md">
+    <div className="relative isolate flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-brand-500/20 bg-gradient-to-r from-brand-600/10 via-navy-900 to-brand-600/10 px-4 py-2.5 sm:px-6 text-xs">
       <div className="flex items-center gap-2 text-slate-800 dark:text-slate-200">
         <span className="flex h-5 items-center gap-1 rounded-full bg-brand-500/20 px-2 text-[10px] font-bold text-brand-600 dark:text-brand-400">
           <Sparkles className="h-3 w-3" /> DEMO MODE

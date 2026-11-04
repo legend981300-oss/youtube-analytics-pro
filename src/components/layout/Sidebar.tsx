@@ -105,7 +105,7 @@ export const Sidebar: React.FC<{ onCloseMobile?: () => void }> = ({ onCloseMobil
   ];
 
   return (
-    <aside className="flex h-full w-72 flex-col border-r border-slate-200/80 bg-white dark:border-white/[0.08] dark:bg-navy-950/95 dark:backdrop-blur-2xl transition-colors">
+    <aside className="flex h-full w-72 flex-col border-r border-slate-200/80 bg-white dark:border-white/[0.08] dark:bg-navy-950 transition-colors">
       {/* Brand Header */}
       <div className="flex h-16 shrink-0 items-center justify-between px-5 border-b border-slate-200/80 dark:border-white/[0.08]">
         <Link

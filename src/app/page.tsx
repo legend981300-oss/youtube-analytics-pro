@@ -82,7 +82,7 @@ export default function DashboardOverviewPage() {
     <AppShell>
       <div className="space-y-6">
         {/* Welcome & Channel Quick Banner */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pb-2 stagger-1">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pb-2">
           <div>
             <div className="flex items-center gap-2.5">
               <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white sm:text-3xl">
@@ -124,7 +124,7 @@ export default function DashboardOverviewPage() {
         </div>
 
         {/* 4 Core KPI Stat Cards */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 stagger-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
             title="Subscribers"
             value={formatNumber(selectedChannel.subscribers)}
@@ -161,7 +161,7 @@ export default function DashboardOverviewPage() {
         </div>
 
         {/* Interactive Main Analytics Chart Card */}
-        <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm dark:border-white/[0.08] dark:bg-navy-850/80 dark:backdrop-blur-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] stagger-3">
+        <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm dark:border-white/[0.08] dark:bg-navy-900/95 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-slate-100 dark:border-white/[0.08]">
             <div>
               <div className="flex items-center gap-2">
@@ -265,7 +265,7 @@ export default function DashboardOverviewPage() {
         </div>
 
         {/* 2-Column Split: Top Performing Videos + Health & Goals */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 stagger-4">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Top Performing Videos (2 Cols) */}
           <div className="lg:col-span-2 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-navy-750 dark:bg-navy-850">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-navy-750">

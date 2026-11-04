@@ -78,8 +78,8 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
           />
         </div>
 
-        {/* Main Content Viewport: Scrolls independently */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto animate-fade-in scrollbar-thin">
+        {/* Main Content Viewport: Scrolls independently with GPU acceleration */}
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto animate-fade-in scrollbar-thin gpu-scroll">
           {children}
         </main>
       </div>

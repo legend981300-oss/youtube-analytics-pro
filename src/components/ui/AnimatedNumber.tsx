@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 interface AnimatedNumberProps {
   value: string | number;
@@ -10,10 +10,10 @@ interface AnimatedNumberProps {
 
 export const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
   value,
-  duration = 800,
+  duration = 600,
   className = '',
 }) => {
-  const [displayValue, setDisplayValue] = useState<string>(String(value));
+  const spanRef = useRef<HTMLSpanElement>(null);
   const prevValueRef = useRef<number>(0);
   const animationFrameRef = useRef<number | null>(null);
 
@@ -38,6 +38,7 @@ export const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
       suffix: hasPercent ? '%' : hasHours ? 'h' : '',
       decimalPlaces,
       hasCommas: str.includes(','),
+      original: str,
     };
   };
 
@@ -50,8 +51,10 @@ export const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
 
   useEffect(() => {
     const target = parseValue(value);
+    if (!spanRef.current) return;
+
     if (!target.isValid) {
-      setDisplayValue(String(value));
+      spanRef.current.textContent = target.original;
       return;
     }
 
@@ -59,19 +62,22 @@ export const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
     const targetValue = target.numeric;
     const startTime = performance.now();
 
+    // Direct DOM mutation bypassing React re-renders for 120fps performance
     const animate = (currentTime: number) => {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / duration, 1);
 
-      // Quartic ease out curve for snappy, luxurious feel
-      const easeOut = 1 - Math.pow(1 - progress, 4);
+      // Snappy cubic ease-out
+      const easeOut = 1 - Math.pow(1 - progress, 3);
       const current = startValue + (targetValue - startValue) * easeOut;
 
       const formattedNum = target.hasCommas
         ? formatNumberWithCommas(current, target.decimalPlaces)
         : current.toFixed(target.decimalPlaces);
 
-      setDisplayValue(`${target.prefix}${formattedNum}${target.suffix}`);
+      if (spanRef.current) {
+        spanRef.current.textContent = `${target.prefix}${formattedNum}${target.suffix}`;
+      }
 
       if (progress < 1) {
         animationFrameRef.current = requestAnimationFrame(animate);
@@ -89,5 +95,5 @@ export const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
     };
   }, [value, duration]);
 
-  return <span className={className}>{displayValue}</span>;
+  return <span ref={spanRef} className={className}>{String(value)}</span>;
 };
