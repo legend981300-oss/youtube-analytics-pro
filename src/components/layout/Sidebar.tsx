@@ -107,7 +107,7 @@ export const Sidebar: React.FC<{ onCloseMobile?: () => void }> = ({ onCloseMobil
   return (
     <aside className="flex h-full w-72 flex-col border-r border-slate-200/80 bg-white dark:border-white/[0.08] dark:bg-navy-950/95 dark:backdrop-blur-2xl transition-colors">
       {/* Brand Header */}
-      <div className="flex h-16 items-center justify-between px-5 border-b border-slate-200/80 dark:border-white/[0.08]">
+      <div className="flex h-16 shrink-0 items-center justify-between px-5 border-b border-slate-200/80 dark:border-white/[0.08]">
         <Link
           href="/"
           onClick={onCloseMobile}
@@ -129,7 +129,7 @@ export const Sidebar: React.FC<{ onCloseMobile?: () => void }> = ({ onCloseMobil
       </div>
 
       {/* Channel Switcher */}
-      <div className="relative p-3 border-b border-slate-200/60 dark:border-white/[0.06]">
+      <div className="relative p-3 shrink-0 border-b border-slate-200/60 dark:border-white/[0.06]">
         <button
           onClick={() => setChannelDropdownOpen(!channelDropdownOpen)}
           className="flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-slate-50/80 p-2.5 text-left shadow-sm hover:border-slate-300 dark:border-white/[0.08] dark:bg-navy-850/80 dark:hover:border-white/[0.18] transition-all shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]"
@@ -244,7 +244,7 @@ export const Sidebar: React.FC<{ onCloseMobile?: () => void }> = ({ onCloseMobil
       </nav>
 
       {/* Plan & User Footer */}
-      <div className="p-3 border-t border-slate-200/80 dark:border-white/[0.08] bg-slate-50/50 dark:bg-navy-950/70">
+      <div className="p-3 shrink-0 border-t border-slate-200/80 dark:border-white/[0.08] bg-slate-50/50 dark:bg-navy-950/70">
         <div className="relative overflow-hidden rounded-2xl border border-brand-500/30 bg-gradient-to-br from-brand-500/15 via-rose-500/10 to-transparent p-3.5 shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-xs font-extrabold text-slate-900 dark:text-white">
