@@ -11,10 +11,7 @@ import {
   Copy,
   Check,
   Plus,
-  ArrowRight,
   Info,
-  HelpCircle,
-  FileText,
   Bookmark,
 } from 'lucide-react';
 import { DEMO_KEYWORDS } from '@/lib/demo-data';
@@ -120,22 +117,19 @@ export default function SeoPage() {
       list.push('Add a specific number (e.g., "$10k", "14 Days", "5 Tips") to trigger curiosity.');
     }
     if (!hasParenthesesOrBrackets) {
-      list.push('Add brackets or parentheses like [Step-by-Step] or (2026 Edition) to frame viewer value.');
+      list.push('Add brackets (e.g., "[Full Architecture]" or "(2026)") to create contrast.');
     }
     if (!hasPowerWord) {
-      list.push('Include a high-intent keyword hook (e.g., "Full Architecture", "How To", "Ultimate Guide").');
+      list.push('Include a high-intent power word (e.g., "Tested", "Step by Step", "How To", "Ultimate").');
     }
     if (!hasTimestamps) {
-      list.push('Add structured timestamps starting with 0:00 to unlock YouTube search chapters.');
+      list.push('Add chapter timestamps (starting with 0:00) to rank in Google Key Moments.');
     }
     if (!hasGoodDescLength) {
-      list.push('Write at least 150 characters in description to give the algorithm context for recommendations.');
+      list.push('Expand description above 150 characters to provide context for semantic search.');
     }
-    if (!hasLinkInDesc) {
-      list.push('Add a resource link or call-to-action URL to drive viewers to external assets.');
-    }
-    if (tagsList.length < 5) {
-      list.push(`You currently have ${tagsList.length} tag(s). Add at least 5 targeted tags separated by commas.`);
+    if (!hasGoodTags) {
+      list.push('Add at least 5 targeted comma-separated tags.');
     }
     return list;
   }, [
@@ -145,39 +139,40 @@ export default function SeoPage() {
     hasPowerWord,
     hasTimestamps,
     hasGoodDescLength,
-    hasLinkInDesc,
-    tagsList.length,
+    hasGoodTags,
   ]);
 
-  const handleCopyTags = (tagItems: string[]) => {
-    navigator.clipboard.writeText(tagItems.join(', '));
-    setCopiedKey('tags');
-    showToast('Tags Copied', `${tagItems.length} tags copied to clipboard`, 'info');
-    setTimeout(() => setCopiedKey(null), 2000);
-  };
-
   const handleCopyFullMetadata = () => {
-    const fullText = `TITLE:\n${title}\n\nDESCRIPTION:\n${description}\n\nTAGS:\n${tagsList.join(', ')}`;
+    const fullText = `Title:\n${title}\n\nDescription:\n${description}\n\nTags:\n${tags}`;
     navigator.clipboard.writeText(fullText);
     setCopiedKey('full-meta');
-    showToast('Metadata Copied', 'Full title, description, and tags copied to clipboard', 'success');
+    showToast('Metadata Copied', 'Title, description, and tags copied to clipboard', 'info');
     setTimeout(() => setCopiedKey(null), 2000);
   };
 
   const handleSaveToVault = () => {
     addIdea({
-      title: title || 'Untitled SEO Concept',
-      category: 'SEO Optimized',
-      targetKeywords: tagsList.length ? tagsList : ['seo'],
+      title,
+      category: 'Optimized Concept',
+      targetKeywords: tagsList,
       predictedPotential: seoScore >= 80 ? 'Very High' : 'High',
-      status: 'scripting',
-      notes: `SEO Score: ${seoScore}/100.\n\nDescription summary:\n${description.slice(0, 160)}...`,
+      status: 'idea',
+      notes: `SEO Score: ${seoScore}/100\n\n${description.slice(0, 200)}...`,
       tags: tagsList,
     });
-    showToast('Saved to Idea Vault', `"${title.slice(0, 30)}..." saved with SEO metadata`, 'success');
+    showToast('Saved to Idea Vault', `"${title.slice(0, 30)}..." added to production pipeline`, 'success');
   };
 
-  // Deterministic Keyword Generation for demo searches
+  const handleAddKeywordToTags = (kw: string) => {
+    if (tagsList.includes(kw)) {
+      showToast('Already Added', `"${kw}" is already in your tags list`, 'warning');
+      return;
+    }
+    const newTags = tags ? `${tags}, ${kw}` : kw;
+    setTags(newTags);
+    showToast('Tag Added', `Added "${kw}" to metadata editor`, 'success');
+  };
+
   const handleSearchKeywords = () => {
     const q = keywordQuery.trim().toLowerCase();
     if (!q) {
@@ -185,18 +180,23 @@ export default function SeoPage() {
       return;
     }
 
-    const matches = DEMO_KEYWORDS.filter((k) =>
-      k.keyword.toLowerCase().includes(q)
+    const matches = DEMO_KEYWORDS.filter(
+      (k) =>
+        k.keyword.toLowerCase().includes(q) ||
+        k.topRelatedTags.some((t) => t.toLowerCase().includes(q))
     );
 
     if (matches.length > 0) {
       setKeywordsList(matches);
     } else {
-      // Deterministic synthetic calculation based on string character codes
-      const hash = q.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-      const searchVolume = 15000 + (hash % 85) * 1000;
-      const overallScore = 65 + (hash % 30);
-      const cpcValue = (1.5 + (hash % 45) / 10).toFixed(2);
+      // Generate synthetic related entry
+      let hash = 0;
+      for (let i = 0; i < q.length; i++) hash = (hash << 5) - hash + q.charCodeAt(i);
+      hash = Math.abs(hash);
+
+      const searchVolume = (hash % 120 + 15) * 1000;
+      const overallScore = (hash % 45) + 52;
+      const cpcValue = ((hash % 400 + 100) / 100).toFixed(2);
       const competition = hash % 3 === 0 ? 'Low' : hash % 3 === 1 ? 'Medium' : 'High';
 
       setKeywordsList([
@@ -224,18 +224,18 @@ export default function SeoPage() {
     <AppShell>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between pb-1 border-b border-slate-200/80 dark:border-white/[0.06]">
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
-                YouTube SEO & Keyword Explorer
+            <div className="flex items-center gap-2.5">
+              <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">
+                SEO & Keyword Explorer
               </h1>
-              <Badge variant="cyan" size="sm">
-                Algorithm Heuristics
-              </Badge>
+              <span className="font-mono text-[10px] uppercase font-semibold text-slate-500 bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] px-2 py-0.5 rounded">
+                Live Heuristics
+              </span>
             </div>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              Audit metadata for YouTube Search & Suggested rankings with live character counts and actionable recommendations.
+              Audit metadata for YouTube Search & Suggested reach with real-time character constraints and scorecards.
             </p>
           </div>
 
@@ -243,16 +243,16 @@ export default function SeoPage() {
             <Button variant="outline" size="sm" onClick={handleCopyFullMetadata}>
               {copiedKey === 'full-meta' ? (
                 <>
-                  <Check className="h-3.5 w-3.5 mr-1 text-emerald-500" /> Copied
+                  <Check className="h-3 w-3 mr-1 text-emerald-500" /> Copied
                 </>
               ) : (
                 <>
-                  <Copy className="h-3.5 w-3.5 mr-1" /> Copy Full Metadata
+                  <Copy className="h-3 w-3 mr-1" /> Copy Metadata
                 </>
               )}
             </Button>
             <Button size="sm" onClick={handleSaveToVault}>
-              <Bookmark className="h-3.5 w-3.5 mr-1" /> Save to Vault
+              <Bookmark className="h-3 w-3 mr-1" /> Save to Vault
             </Button>
           </div>
         </div>
@@ -260,30 +260,30 @@ export default function SeoPage() {
         {/* 2-Column Grid: SEO Analyzer + Live Scorecard */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Inputs Column (2 Cols) */}
-          <div className="lg:col-span-2 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-navy-750 dark:bg-navy-850 space-y-4">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-navy-750">
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                Live Video Metadata Editor
+          <div className="lg:col-span-2 pro-card p-5 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-white/[0.06]">
+              <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
+                Metadata Editor & Rules Engine
               </h3>
-              <span className="text-xs text-slate-400">Updates live score in real-time</span>
+              <span className="font-mono text-[11px] text-slate-400">Real-time dynamic validation</span>
             </div>
 
             {/* Title Input */}
             <div className="space-y-1.5">
               <div className="flex justify-between items-center text-xs">
-                <label className="font-semibold text-slate-800 dark:text-slate-200">
+                <label className="font-medium text-slate-800 dark:text-slate-200">
                   Video Title
                 </label>
                 <span
-                  className={`font-semibold ${
+                  className={`font-mono text-[11px] font-semibold ${
                     hasGoodTitleLength
                       ? 'text-emerald-500'
                       : titleLen > 70
-                      ? 'text-rose-500 font-bold'
+                      ? 'text-rose-500'
                       : 'text-amber-500'
                   }`}
                 >
-                  {titleLen} / 70 chars {hasGoodTitleLength && '✓ Ideal'}
+                  {titleLen} / 70 chars {hasGoodTitleLength && '✓'}
                 </span>
               </div>
               <input
@@ -291,7 +291,7 @@ export default function SeoPage() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Enter compelling video title..."
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-xs text-slate-900 focus:border-brand-500 focus:bg-white focus:outline-none dark:border-navy-750 dark:bg-navy-950 dark:text-white transition-colors"
+                className="w-full rounded-md border border-slate-200 bg-slate-50 p-2 text-xs text-slate-900 focus:border-slate-400 focus:bg-white focus:outline-none dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-white transition-colors"
               />
               <p className="text-[10px] text-slate-400">
                 Recommended: 40-70 characters. Include numbers, clear benefit hooks, and primary keywords at the front.
@@ -301,23 +301,23 @@ export default function SeoPage() {
             {/* Description Input */}
             <div className="space-y-1.5">
               <div className="flex justify-between items-center text-xs">
-                <label className="font-semibold text-slate-800 dark:text-slate-200">
+                <label className="font-medium text-slate-800 dark:text-slate-200">
                   Description & Chapters
                 </label>
                 <span
-                  className={`font-semibold ${
+                  className={`font-mono text-[11px] font-semibold ${
                     hasGoodDescLength ? 'text-emerald-500' : 'text-amber-500'
                   }`}
                 >
-                  {descLen} chars {hasGoodDescLength && '(Good Length)'}
+                  {descLen} chars {hasGoodDescLength && '✓'}
                 </span>
               </div>
               <textarea
-                rows={7}
+                rows={6}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Write video overview, key timestamps (e.g. 0:00 Intro), resource links, and call to action..."
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-xs text-slate-900 focus:border-brand-500 focus:bg-white focus:outline-none dark:border-navy-750 dark:bg-navy-950 dark:text-white font-sans leading-relaxed transition-colors"
+                className="w-full rounded-md border border-slate-200 bg-slate-50 p-2 text-xs text-slate-900 focus:border-slate-400 focus:bg-white focus:outline-none dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-white font-sans leading-relaxed transition-colors"
               />
               <p className="text-[10px] text-slate-400">
                 YouTube parses timestamps in the description to create Search Chapters and Google Key Moments.
@@ -327,11 +327,11 @@ export default function SeoPage() {
             {/* Tags Input */}
             <div className="space-y-1.5">
               <div className="flex justify-between items-center text-xs">
-                <label className="font-semibold text-slate-800 dark:text-slate-200">
+                <label className="font-medium text-slate-800 dark:text-slate-200">
                   Comma-Separated Tags
                 </label>
                 <span
-                  className={`font-semibold ${
+                  className={`font-mono text-[11px] font-semibold ${
                     hasGoodTags ? 'text-emerald-500' : 'text-amber-500'
                   }`}
                 >
@@ -343,13 +343,13 @@ export default function SeoPage() {
                 value={tags}
                 onChange={(e) => setTags(e.target.value)}
                 placeholder="e.g. nextjs, saas, typescript, react, tutorial"
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-xs text-slate-900 focus:border-brand-500 focus:bg-white focus:outline-none dark:border-navy-750 dark:bg-navy-950 dark:text-white transition-colors"
+                className="w-full rounded-md border border-slate-200 bg-slate-50 p-2 text-xs text-slate-900 focus:border-slate-400 focus:bg-white focus:outline-none dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-white transition-colors"
               />
               <div className="flex flex-wrap gap-1 mt-1.5">
                 {tagsList.map((tag) => (
                   <span
                     key={tag}
-                    className="rounded-lg bg-slate-200/70 dark:bg-navy-750 px-2 py-0.5 text-[10px] font-medium text-slate-700 dark:text-slate-300"
+                    className="rounded border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-white/[0.04] px-2 py-0.5 font-mono text-[10px] text-slate-700 dark:text-slate-300"
                   >
                     #{tag}
                   </span>
@@ -359,34 +359,34 @@ export default function SeoPage() {
           </div>
 
           {/* Realtime Score Gauge & Live Checklist */}
-          <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-navy-750 dark:bg-navy-850 flex flex-col justify-between space-y-4">
+          <div className="pro-card p-5 flex flex-col justify-between space-y-4">
             <div>
-              <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-navy-750">
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-white/[0.06]">
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
                   Optimization Score
                 </h3>
                 <Badge
                   variant={seoScore >= 80 ? 'success' : seoScore >= 60 ? 'warning' : 'danger'}
                   size="sm"
                 >
-                  {seoScore >= 80 ? 'Optimized' : seoScore >= 60 ? 'Moderate' : 'Needs Work'}
+                  {seoScore >= 80 ? 'Optimal' : seoScore >= 60 ? 'Moderate' : 'Needs Work'}
                 </Badge>
               </div>
 
               {/* Dynamic Score Ring */}
-              <div className="my-4 flex items-center justify-center">
+              <div className="my-5 flex items-center justify-center">
                 <div
-                  className={`flex h-28 w-28 items-center justify-center rounded-full border-4 ${
+                  className={`flex h-24 w-24 items-center justify-center rounded-xl border ${
                     seoScore >= 80
-                      ? 'border-emerald-500 bg-emerald-500/10'
+                      ? 'border-emerald-500/30 bg-emerald-500/10'
                       : seoScore >= 60
-                      ? 'border-amber-500 bg-amber-500/10'
-                      : 'border-rose-500 bg-rose-500/10'
+                      ? 'border-amber-500/30 bg-amber-500/10'
+                      : 'border-rose-500/30 bg-rose-500/10'
                   }`}
                 >
-                  <div className="text-center">
+                  <div className="text-center font-mono">
                     <span
-                      className={`text-3xl font-black ${
+                      className={`text-2xl font-bold ${
                         seoScore >= 80
                           ? 'text-emerald-500'
                           : seoScore >= 60
@@ -396,7 +396,7 @@ export default function SeoPage() {
                     >
                       <AnimatedNumber value={seoScore} />
                     </span>
-                    <span className="block text-[10px] font-semibold text-slate-400">/ 100</span>
+                    <span className="block text-[9px] text-slate-400">/ 100</span>
                   </div>
                 </div>
               </div>
@@ -405,42 +405,42 @@ export default function SeoPage() {
               <div className="space-y-2 text-xs">
                 <div className="flex items-center gap-2">
                   {hasGoodTitleLength ? (
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
                   ) : (
-                    <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0" />
+                    <AlertTriangle className="h-3.5 w-3.5 text-amber-500 shrink-0" />
                   )}
                   <span className={hasGoodTitleLength ? 'text-slate-800 dark:text-slate-200 font-medium' : 'text-slate-500'}>
-                    Ideal Title Length (40-70 chars)
+                    Title Length (40-70 chars)
                   </span>
                 </div>
 
                 <div className="flex items-center gap-2">
                   {hasNumbers ? (
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
                   ) : (
-                    <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0" />
+                    <AlertTriangle className="h-3.5 w-3.5 text-amber-500 shrink-0" />
                   )}
                   <span className={hasNumbers ? 'text-slate-800 dark:text-slate-200 font-medium' : 'text-slate-500'}>
-                    Numbers in Title (Boosts CTR)
+                    Numbers in Title
                   </span>
                 </div>
 
                 <div className="flex items-center gap-2">
                   {hasParenthesesOrBrackets ? (
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
                   ) : (
-                    <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0" />
+                    <AlertTriangle className="h-3.5 w-3.5 text-amber-500 shrink-0" />
                   )}
                   <span className={hasParenthesesOrBrackets ? 'text-slate-800 dark:text-slate-200 font-medium' : 'text-slate-500'}>
-                    Brackets / Framing Hooks
+                    Bracket Framing
                   </span>
                 </div>
 
                 <div className="flex items-center gap-2">
                   {hasPowerWord ? (
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
                   ) : (
-                    <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0" />
+                    <AlertTriangle className="h-3.5 w-3.5 text-amber-500 shrink-0" />
                   )}
                   <span className={hasPowerWord ? 'text-slate-800 dark:text-slate-200 font-medium' : 'text-slate-500'}>
                     High-Intent Power Words
@@ -449,20 +449,20 @@ export default function SeoPage() {
 
                 <div className="flex items-center gap-2">
                   {hasTimestamps ? (
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
                   ) : (
-                    <XCircle className="h-4 w-4 text-rose-500 shrink-0" />
+                    <XCircle className="h-3.5 w-3.5 text-rose-500 shrink-0" />
                   )}
                   <span className={hasTimestamps ? 'text-slate-800 dark:text-slate-200 font-medium' : 'text-slate-500'}>
-                    Chapter Timestamps (0:00 included)
+                    Chapter Timestamps (0:00)
                   </span>
                 </div>
 
                 <div className="flex items-center gap-2">
                   {hasGoodTags ? (
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
                   ) : (
-                    <XCircle className="h-4 w-4 text-rose-500 shrink-0" />
+                    <XCircle className="h-3.5 w-3.5 text-rose-500 shrink-0" />
                   )}
                   <span className={hasGoodTags ? 'text-slate-800 dark:text-slate-200 font-medium' : 'text-slate-500'}>
                     At least 5 targeted tags
@@ -473,9 +473,9 @@ export default function SeoPage() {
 
             {/* Live Actionable Recommendations */}
             {recommendations.length > 0 && (
-              <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 space-y-1.5 text-[11px]">
-                <span className="font-bold text-amber-700 dark:text-amber-400 block">
-                  Actionable Recommendations:
+              <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-3 space-y-1 text-[11px]">
+                <span className="font-semibold text-amber-600 dark:text-amber-400 block">
+                  Actionable Steps:
                 </span>
                 <ul className="space-y-1 text-slate-600 dark:text-slate-300">
                   {recommendations.slice(0, 3).map((rec, i) => (
@@ -488,28 +488,28 @@ export default function SeoPage() {
               </div>
             )}
 
-            <div className="pt-3 border-t border-slate-100 dark:border-navy-750 space-y-2">
+            <div className="pt-2 border-t border-slate-100 dark:border-white/[0.06]">
               <Button size="sm" className="w-full" onClick={handleSaveToVault}>
-                <Bookmark className="h-3.5 w-3.5 mr-1" /> Save Concept to Video Vault
+                <Bookmark className="h-3 w-3 mr-1" /> Save to Vault
               </Button>
             </div>
           </div>
         </div>
 
         {/* Keyword Suggestions Section */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-navy-750 dark:bg-navy-850 space-y-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-slate-100 dark:border-navy-750">
+        <div className="pro-card p-5 space-y-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between pb-3.5 border-b border-slate-100 dark:border-white/[0.06]">
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
                   High-Volume Keyword Explorer
                 </h3>
-                <Badge variant="purple" size="sm">
-                  Simulated Data
+                <Badge variant="outline" size="sm">
+                  Simulated Volume
                 </Badge>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Discover trending search terms, competition ratings, and simulated CPC benchmarks.
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                Discover search terms, competition ratings, and CPC benchmarks.
               </p>
             </div>
 
@@ -520,7 +520,7 @@ export default function SeoPage() {
                 onChange={(e) => setKeywordQuery(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearchKeywords()}
                 placeholder="Enter topic e.g. nextjs, python, ai..."
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 p-2 text-xs text-slate-900 focus:border-brand-500 focus:bg-white focus:outline-none dark:border-navy-750 dark:bg-navy-950 dark:text-white transition-colors"
+                className="w-full rounded-md border border-slate-200 bg-slate-50 p-1.5 text-xs text-slate-900 focus:border-slate-400 focus:bg-white focus:outline-none dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-white transition-colors"
               />
               <Button size="sm" onClick={handleSearchKeywords}>
                 Search
@@ -528,93 +528,57 @@ export default function SeoPage() {
             </div>
           </div>
 
-          {/* Transparency Disclaimer Notice */}
-          <div className="flex items-start gap-2.5 rounded-xl border border-brand-500/20 bg-brand-500/5 p-3 text-[11px] text-slate-600 dark:text-slate-300">
-            <Info className="h-4 w-4 shrink-0 text-brand-500 mt-0.5" />
-            <p className="leading-relaxed">
-              <strong>Simulated Keyword Metrics:</strong> Monthly search volume, competition tiers, and CPC estimates shown below are modelled approximations for product demonstration. When launched with Google Keyword Planner API or YouTube Data API OAuth, live historical search metrics will be populated.
-            </p>
-          </div>
-
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-slate-200 dark:border-navy-750 text-slate-400 font-semibold uppercase">
-                  <th className="pb-3">Keyword</th>
-                  <th className="pb-3">Monthly Vol. (Simulated)</th>
-                  <th className="pb-3">Competition</th>
-                  <th className="pb-3">Score</th>
-                  <th className="pb-3">Est. CPC</th>
-                  <th className="pb-3 text-right">Actions</th>
+                <tr className="border-b border-slate-100 dark:border-white/[0.06] text-slate-400 font-mono text-[10px] uppercase tracking-wider select-none">
+                  <th className="pb-2.5">Keyword</th>
+                  <th className="pb-2.5">Monthly Volume</th>
+                  <th className="pb-2.5">Competition</th>
+                  <th className="pb-2.5">Overall Score</th>
+                  <th className="pb-2.5">Est. CPC</th>
+                  <th className="pb-2.5 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-navy-750">
+              <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
                 {keywordsList.map((kw) => (
-                  <tr key={kw.keyword} className="hover:bg-slate-50 dark:hover:bg-navy-800/50 transition-colors">
-                    <td className="py-3 font-bold text-slate-900 dark:text-white">
+                  <tr
+                    key={kw.keyword}
+                    className="hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors group"
+                  >
+                    <td className="py-2.5 font-medium text-slate-900 dark:text-slate-100">
                       {kw.keyword}
                     </td>
-                    <td className="py-3 text-slate-700 dark:text-slate-300">
-                      {kw.searchVolume.toLocaleString()} / mo*
+                    <td className="py-2.5 font-mono text-slate-600 dark:text-slate-300">
+                      {kw.searchVolume.toLocaleString()}
                     </td>
-                    <td className="py-3">
-                      <Badge
-                        variant={
+                    <td className="py-2.5">
+                      <span
+                        className={`inline-block px-1.5 py-0.5 rounded font-mono text-[10px] font-medium border ${
                           kw.competition === 'Low'
-                            ? 'success'
+                            ? 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20'
                             : kw.competition === 'Medium'
-                            ? 'warning'
-                            : 'danger'
-                        }
-                        size="sm"
+                            ? 'text-amber-500 bg-amber-500/10 border-amber-500/20'
+                            : 'text-rose-500 bg-rose-500/10 border-rose-500/20'
+                        }`}
                       >
                         {kw.competition}
-                      </Badge>
-                    </td>
-                    <td className="py-3">
-                      <span className="font-extrabold text-brand-600 dark:text-brand-400">
-                        {kw.overallScore} / 100
                       </span>
                     </td>
-                    <td className="py-3 text-emerald-500 font-semibold">
-                      {kw.cpc}*
+                    <td className="py-2.5 font-mono font-semibold text-slate-800 dark:text-slate-200">
+                      {kw.overallScore} / 100
                     </td>
-                    <td className="py-3 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleCopyTags(kw.topRelatedTags)}
-                          title="Copy tags to clipboard"
-                        >
-                          {copiedKey === 'tags' ? (
-                            <Check className="h-3 w-3 text-emerald-500" />
-                          ) : (
-                            <Copy className="h-3 w-3" />
-                          )}
-                        </Button>
-                        <Button
-                          size="sm"
-                          onClick={() => {
-                            addIdea({
-                              title: `Mastering ${kw.keyword} in 2026`,
-                              category: 'SEO Opportunity',
-                              targetKeywords: [kw.keyword],
-                              predictedPotential: 'High',
-                              status: 'idea',
-                              notes: `Search volume: ${kw.searchVolume}/mo. Competition: ${kw.competition}`,
-                              tags: kw.topRelatedTags,
-                            });
-                            showToast(
-                              'Added to Vault',
-                              `"${kw.keyword}" added to your Video Idea Vault`,
-                              'success'
-                            );
-                          }}
-                        >
-                          <Plus className="h-3 w-3 mr-1" /> Vault
-                        </Button>
-                      </div>
+                    <td className="py-2.5 font-mono text-slate-500 dark:text-slate-400">
+                      {kw.cpc}
+                    </td>
+                    <td className="py-2.5 text-right">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleAddKeywordToTags(kw.keyword)}
+                      >
+                        <Plus className="h-3 w-3 mr-1" /> Add to Tags
+                      </Button>
                     </td>
                   </tr>
                 ))}

@@ -34,18 +34,18 @@ export default function SubscribersPage() {
     <AppShell>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between pb-1 border-b border-slate-200/80 dark:border-white/[0.06]">
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
-                Subscriber Growth Analytics
+            <div className="flex items-center gap-2.5">
+              <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">
+                Subscriber Growth
               </h1>
-              <Badge variant="purple" size="sm">
-                Simulated Data
-              </Badge>
+              <span className="font-mono text-[10px] uppercase font-semibold text-slate-500 bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] px-2 py-0.5 rounded">
+                Last {dateRange.toUpperCase()}
+              </span>
             </div>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              Detailed acquisition and churn breakdown across the last {dateRange.toUpperCase()}.
+              Acquisition telemetry and churn rate breakdown for <strong className="font-medium text-slate-900 dark:text-slate-200">{selectedChannel.name}</strong>.
             </p>
           </div>
           <Button
@@ -61,21 +61,19 @@ export default function SubscribersPage() {
         </div>
 
         {/* KPI Cards */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
             title="Total Subscribers"
             value={formatNumber(selectedChannel.subscribers)}
             change={14.2}
             icon={Users}
-            iconColor="text-rose-500"
-            subtitle="Current count (Demo)"
+            subtitle="Current active total"
           />
           <StatCard
             title="Subscribers Gained"
             value={`+${formatNumber(totalGained)}`}
             change={18.4}
             icon={UserPlus}
-            iconColor="text-emerald-500"
             subtitle={`Across last ${dateRange.toUpperCase()}`}
           />
           <StatCard
@@ -83,63 +81,61 @@ export default function SubscribersPage() {
             value={`-${formatNumber(totalLost)}`}
             change={-4.1}
             icon={UserMinus}
-            iconColor="text-amber-500"
-            subtitle="Low churn rate (1.2%)"
+            subtitle="Low churn (1.2%)"
           />
           <StatCard
             title="Net Growth"
             value={`+${formatNumber(totalNet)}`}
             change={22.6}
             icon={TrendingUp}
-            iconColor="text-brand-500"
             subtitle={`Avg +${avgNetDaily} subs / day`}
           />
         </div>
 
         {/* Milestone Banner */}
-        <div className="rounded-2xl border border-brand-500/30 bg-gradient-to-r from-brand-600/10 via-navy-850 to-purple-600/10 p-5 dark:border-navy-700">
+        <div className="pro-card p-5">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3.5">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-500/20 text-brand-500">
-                <Award className="h-6 w-6" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#ff0033]/10 text-[#ff0033] border border-[#ff0033]/20">
+                <Award className="h-5 w-5" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                    Next Major Milestone: 250,000 Subscribers
+                  <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
+                    Next Target: 250,000 Subscribers
                   </h3>
-                  <Badge variant="purple" size="sm">
-                    Silver Play Button +
+                  <Badge variant="outline" size="sm">
+                    Silver Creator Tier
                   </Badge>
                 </div>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                  Only <span className="font-bold text-slate-800 dark:text-slate-200">1,500</span> more subscribers to reach 250k.
+                  Remaining: <span className="font-mono font-semibold text-slate-800 dark:text-slate-200">1,500</span> subscribers.
                   At current pace (+{avgNetDaily}/day), estimated achievement date is in{' '}
-                  <strong className="text-brand-500 font-bold">12 days</strong>.
+                  <strong className="text-slate-900 dark:text-white font-medium">12 days</strong>.
                 </p>
               </div>
             </div>
 
             <div className="w-full sm:w-48 space-y-1.5">
-              <div className="flex justify-between text-xs font-semibold">
-                <span>Progress</span>
-                <span className="text-brand-500">99.4%</span>
+              <div className="flex justify-between text-xs">
+                <span className="text-slate-400 text-[11px]">Progress</span>
+                <span className="font-mono font-semibold text-slate-900 dark:text-white">99.4%</span>
               </div>
-              <div className="h-2.5 w-full rounded-full bg-slate-200 dark:bg-navy-950 overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-brand-500 to-rose-500 rounded-full w-[99.4%]" />
+              <div className="h-1.5 w-full rounded-full bg-slate-100 dark:bg-white/[0.06] overflow-hidden">
+                <div className="h-full bg-white dark:bg-slate-200 rounded-full w-[99.4%]" />
               </div>
             </div>
           </div>
         </div>
 
         {/* Chart: Gained vs Lost Daily */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-navy-750 dark:bg-navy-850">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-navy-750">
+        <div className="pro-card p-5">
+          <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-white/[0.06]">
             <div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">
+              <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
                 Daily Acquisition vs Churn
               </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 Comparison of daily subscribers gained vs lost.
               </p>
             </div>
@@ -149,26 +145,42 @@ export default function SubscribersPage() {
             <ChartWrapper heightClass="h-72 sm:h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={currentDailyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#222f52" opacity={0.3} vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" opacity={0.05} vertical={false} />
                   <XAxis
                     dataKey="date"
                     tickFormatter={(val) => val.slice(5)}
-                    tick={{ fill: '#64748b', fontSize: 11 }}
-                    stroke="#334155"
+                    tick={{ fill: '#64748b', fontSize: 11, fontFamily: 'monospace' }}
+                    stroke="#222"
+                    tickLine={false}
                   />
-                  <YAxis tick={{ fill: '#64748b', fontSize: 11 }} stroke="#334155" />
+                  <YAxis tick={{ fill: '#64748b', fontSize: 11, fontFamily: 'monospace' }} stroke="#222" tickLine={false} />
                   <Tooltip
-                    formatter={(value: any, name: any) => [
-                      formatNumber(Number(value)),
-                      name === 'subscribersGained' ? 'Gained' : 'Lost',
-                    ]}
-                    labelFormatter={(l) => `Date: ${formatDate(String(l))}`}
+                    content={({ active, payload, label }) => {
+                      if (!active || !payload?.length) return null;
+                      return (
+                        <div className="rounded-lg border border-slate-200 dark:border-white/[0.1] bg-white dark:bg-[#11131a] p-2.5 shadow-xl font-mono text-xs">
+                          <p className="text-[10px] text-slate-400">{formatDate(String(label))}</p>
+                          <div className="mt-1 space-y-0.5">
+                            <p className="text-emerald-500 font-semibold">
+                              +{payload[0]?.value} gained
+                            </p>
+                            <p className="text-rose-500 font-semibold">
+                              -{payload[1]?.value} lost
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    }}
                   />
                   <Legend
-                    formatter={(val) => (val === 'subscribersGained' ? 'Subscribers Gained' : 'Subscribers Lost')}
+                    formatter={(val) => (
+                      <span className="text-xs text-slate-400 font-medium font-sans">
+                        {val === 'subscribersGained' ? 'Gained' : 'Lost'}
+                      </span>
+                    )}
                   />
-                  <Bar dataKey="subscribersGained" fill="#10b981" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="subscribersLost" fill="#f43f5e" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="subscribersGained" fill="#10b981" radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="subscribersLost" fill="#f43f5e" radius={[3, 3, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </ChartWrapper>
@@ -176,38 +188,38 @@ export default function SubscribersPage() {
         </div>
 
         {/* Daily Breakdown Table */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-navy-750 dark:bg-navy-850">
-          <h3 className="text-base font-bold text-slate-900 dark:text-white mb-3">
-            Recent Daily Log
+        <div className="pro-card p-5">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-3">
+            Recent Telemetry Log
           </h3>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-slate-200 dark:border-navy-750 text-slate-400 font-semibold uppercase">
-                  <th className="pb-3">Date</th>
-                  <th className="pb-3">Gained</th>
-                  <th className="pb-3">Lost</th>
-                  <th className="pb-3">Net Growth</th>
-                  <th className="pb-3">Conversion Rate</th>
+                <tr className="border-b border-slate-100 dark:border-white/[0.06] text-slate-400 font-mono text-[10px] uppercase tracking-wider select-none">
+                  <th className="pb-2.5">Date</th>
+                  <th className="pb-2.5">Gained</th>
+                  <th className="pb-2.5">Lost</th>
+                  <th className="pb-2.5">Net Growth</th>
+                  <th className="pb-2.5">Conversion</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-navy-750">
+              <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
                 {DEMO_DAILY_DATA.slice(-8).reverse().map((row) => (
-                  <tr key={row.date} className="hover:bg-slate-50 dark:hover:bg-navy-800/50">
-                    <td className="py-2.5 font-medium text-slate-900 dark:text-white">
+                  <tr key={row.date} className="hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors">
+                    <td className="py-2.5 font-mono text-slate-500">
                       {formatDate(row.date)}
                     </td>
-                    <td className="py-2.5 text-emerald-500 font-semibold">
+                    <td className="py-2.5 font-mono font-semibold text-emerald-500">
                       +{row.subscribersGained}
                     </td>
-                    <td className="py-2.5 text-rose-500 font-semibold">
+                    <td className="py-2.5 font-mono font-semibold text-rose-500">
                       -{row.subscribersLost}
                     </td>
-                    <td className="py-2.5 font-bold text-slate-900 dark:text-white">
+                    <td className="py-2.5 font-mono font-bold text-slate-900 dark:text-white">
                       +{row.netSubscribers}
                     </td>
-                    <td className="py-2.5 text-slate-500">
-                      1 per {Math.round(row.views / row.netSubscribers)} views
+                    <td className="py-2.5 font-mono text-[11px] text-slate-500">
+                      1 / {Math.round(row.views / row.netSubscribers)} views
                     </td>
                   </tr>
                 ))}

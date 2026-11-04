@@ -2,20 +2,10 @@
 
 import React, { useState } from 'react';
 import {
-  GitCompare,
-  TrendingUp,
   Trophy,
-  ArrowUpRight,
-  ArrowDownRight,
   Sparkles,
   Play,
-  Clock,
-  Eye,
-  DollarSign,
-  ThumbsUp,
-  MessageSquare,
   CheckCircle2,
-  AlertTriangle,
 } from 'lucide-react';
 import { DEMO_VIDEOS } from '@/lib/demo-data';
 import { formatNumber, formatCurrency } from '@/lib/utils';
@@ -30,7 +20,6 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
-  Legend,
 } from 'recharts';
 import { useApp } from '@/context/AppContext';
 
@@ -57,7 +46,6 @@ export const VideoComparisonMatrix: React.FC = () => {
   const scoreB = videoB.views * 0.4 + videoB.ctr * 10000 + videoB.avgViewPercentage * 5000;
   const winner = scoreA >= scoreB ? 'A' : 'B';
   const winningVideo = winner === 'A' ? videoA : videoB;
-  const runnerUpVideo = winner === 'A' ? videoB : videoA;
 
   // Compute delta percentages
   const getDelta = (valA: number, valB: number) => {
@@ -67,7 +55,7 @@ export const VideoComparisonMatrix: React.FC = () => {
 
   const handleSaveTakeaways = () => {
     addIdea({
-      title: `Formula based on "${winningVideo.title.slice(0, 40)}..."`,
+      title: `Formula: "${winningVideo.title.slice(0, 40)}..."`,
       category: 'Winning Formula',
       targetKeywords: winningVideo.tags,
       predictedPotential: 'Very High',
@@ -75,39 +63,39 @@ export const VideoComparisonMatrix: React.FC = () => {
       notes: `Replicate ${winningVideo.ctr}% CTR hook structure and pacing from top performing video "${winningVideo.title}".`,
       tags: winningVideo.tags,
     });
-    showToast('Saved to Idea Vault', 'Winning video formula blueprint added to your pipeline', 'success');
+    showToast('Saved to Idea Vault', 'Winning video blueprint added to your pipeline', 'success');
   };
 
   return (
     <div className="space-y-6">
       {/* Selector Card */}
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-navy-900 p-5 shadow-xl">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
+      <div className="pro-card p-5">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-3.5 border-b border-slate-100 dark:border-white/[0.06]">
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
-                Head-to-Head Video Performance Matrix
+              <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
+                Video Autopsy Matrix
               </h3>
-              <Badge variant="cyan" size="sm">
-                Deep Autopsy
+              <Badge variant="outline" size="sm">
+                Head-to-Head
               </Badge>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Select any two videos to analyze retention drop-offs, click-through variance, and revenue differentials
+              Select two videos to compare retention curves, CTR drop-offs, and earnings differentials.
             </p>
           </div>
-          <Button variant="glow" size="sm" onClick={handleSaveTakeaways} className="flex items-center gap-1.5">
-            <Sparkles className="h-3.5 w-3.5" /> Replicate Winning Formula
+          <Button size="sm" onClick={handleSaveTakeaways}>
+            <Sparkles className="h-3 w-3 mr-1" /> Replicate Winning Formula
           </Button>
         </div>
 
         {/* Video Selectors */}
         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Selector A */}
-          <div className="rounded-xl border border-brand-500/30 bg-brand-500/5 p-4">
+          <div className="rounded-lg border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-white/[0.02] p-3.5">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400 flex items-center gap-1">
-                <Play className="h-3 w-3" /> Video Variant A
+              <span className="font-mono text-[10px] uppercase font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                <Play className="h-2.5 w-2.5 text-[#ff0033]" /> Video Variant A
               </span>
               {winner === 'A' && (
                 <Badge variant="success" size="sm" className="flex items-center gap-1">
@@ -118,7 +106,7 @@ export const VideoComparisonMatrix: React.FC = () => {
             <select
               value={videoAId}
               onChange={(e) => setVideoAId(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-navy-800 px-3 py-2 text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
+              className="w-full rounded-md border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#11131a] px-2.5 py-1.5 text-xs font-medium text-slate-900 dark:text-white focus:outline-none"
             >
               {DEMO_VIDEOS.map((v) => (
                 <option key={v.id} value={v.id}>
@@ -126,11 +114,11 @@ export const VideoComparisonMatrix: React.FC = () => {
                 </option>
               ))}
             </select>
-            <div className="mt-3 flex items-center gap-3">
-              <img src={videoA.thumbnail} alt="" className="h-14 w-24 rounded-lg object-cover shadow-sm" />
+            <div className="mt-2.5 flex items-center gap-3">
+              <img src={videoA.thumbnail} alt="" className="h-12 w-20 rounded-md object-cover border border-slate-200 dark:border-white/[0.08]" />
               <div className="min-w-0 text-xs">
-                <div className="font-bold text-slate-900 dark:text-white truncate">{videoA.title}</div>
-                <div className="text-slate-400 mt-0.5">
+                <div className="font-medium text-slate-900 dark:text-slate-100 truncate">{videoA.title}</div>
+                <div className="font-mono text-[10px] text-slate-400 mt-0.5">
                   Published {videoA.publishedAt} • {videoA.duration}
                 </div>
               </div>
@@ -138,13 +126,13 @@ export const VideoComparisonMatrix: React.FC = () => {
           </div>
 
           {/* Selector B */}
-          <div className="rounded-xl border border-purple-500/30 bg-purple-500/5 p-4">
+          <div className="rounded-lg border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-white/[0.02] p-3.5">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 flex items-center gap-1">
-                <Play className="h-3 w-3" /> Video Variant B
+              <span className="font-mono text-[10px] uppercase font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                <Play className="h-2.5 w-2.5 text-purple-400" /> Video Variant B
               </span>
               {winner === 'B' && (
-                <Badge variant="purple" size="sm" className="flex items-center gap-1">
+                <Badge variant="success" size="sm" className="flex items-center gap-1">
                   <Trophy className="h-3 w-3" /> Winner
                 </Badge>
               )}
@@ -152,7 +140,7 @@ export const VideoComparisonMatrix: React.FC = () => {
             <select
               value={videoBId}
               onChange={(e) => setVideoBId(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-navy-800 px-3 py-2 text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-purple-500"
+              className="w-full rounded-md border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#11131a] px-2.5 py-1.5 text-xs font-medium text-slate-900 dark:text-white focus:outline-none"
             >
               {DEMO_VIDEOS.map((v) => (
                 <option key={v.id} value={v.id}>
@@ -160,11 +148,11 @@ export const VideoComparisonMatrix: React.FC = () => {
                 </option>
               ))}
             </select>
-            <div className="mt-3 flex items-center gap-3">
-              <img src={videoB.thumbnail} alt="" className="h-14 w-24 rounded-lg object-cover shadow-sm" />
+            <div className="mt-2.5 flex items-center gap-3">
+              <img src={videoB.thumbnail} alt="" className="h-12 w-20 rounded-md object-cover border border-slate-200 dark:border-white/[0.08]" />
               <div className="min-w-0 text-xs">
-                <div className="font-bold text-slate-900 dark:text-white truncate">{videoB.title}</div>
-                <div className="text-slate-400 mt-0.5">
+                <div className="font-medium text-slate-900 dark:text-slate-100 truncate">{videoB.title}</div>
+                <div className="font-mono text-[10px] text-slate-400 mt-0.5">
                   Published {videoB.publishedAt} • {videoB.duration}
                 </div>
               </div>
@@ -176,101 +164,101 @@ export const VideoComparisonMatrix: React.FC = () => {
       {/* Side-by-Side Metric Comparison Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {/* Metric: Views */}
-        <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-navy-900 p-3.5 shadow-sm text-center">
-          <div className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Total Views</div>
-          <div className="mt-2 flex items-baseline justify-center gap-2">
-            <span className="text-sm font-bold text-brand-500">{formatNumber(videoA.views)}</span>
-            <span className="text-xs text-slate-400">vs</span>
-            <span className="text-sm font-bold text-purple-500">{formatNumber(videoB.views)}</span>
+        <div className="pro-card p-3 text-center font-mono">
+          <div className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider">Views</div>
+          <div className="mt-1.5 flex items-baseline justify-center gap-1.5 text-xs font-semibold">
+            <span className="text-[#ff0033]">{formatNumber(videoA.views)}</span>
+            <span className="text-slate-500 font-sans text-[10px]">vs</span>
+            <span className="text-purple-400">{formatNumber(videoB.views)}</span>
           </div>
-          <div className="mt-2 inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10">
+          <div className="mt-1.5 inline-flex items-center gap-0.5 rounded px-1.5 py-0.2 text-[9px] font-semibold text-emerald-500 bg-emerald-500/10">
             Δ {Math.abs(Number(getDelta(videoA.views, videoB.views)))}%
           </div>
         </div>
 
         {/* Metric: CTR */}
-        <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-navy-900 p-3.5 shadow-sm text-center">
-          <div className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Click-Through (CTR)</div>
-          <div className="mt-2 flex items-baseline justify-center gap-2">
-            <span className="text-sm font-bold text-brand-500">{videoA.ctr}%</span>
-            <span className="text-xs text-slate-400">vs</span>
-            <span className="text-sm font-bold text-purple-500">{videoB.ctr}%</span>
+        <div className="pro-card p-3 text-center font-mono">
+          <div className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider">CTR</div>
+          <div className="mt-1.5 flex items-baseline justify-center gap-1.5 text-xs font-semibold">
+            <span className="text-[#ff0033]">{videoA.ctr}%</span>
+            <span className="text-slate-500 font-sans text-[10px]">vs</span>
+            <span className="text-purple-400">{videoB.ctr}%</span>
           </div>
-          <div className="mt-2 inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10">
+          <div className="mt-1.5 inline-flex items-center gap-0.5 rounded px-1.5 py-0.2 text-[9px] font-semibold text-emerald-500 bg-emerald-500/10">
             Δ {(Math.abs(videoA.ctr - videoB.ctr)).toFixed(1)}% pt
           </div>
         </div>
 
         {/* Metric: Retention */}
-        <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-navy-900 p-3.5 shadow-sm text-center">
-          <div className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Avg Retention</div>
-          <div className="mt-2 flex items-baseline justify-center gap-2">
-            <span className="text-sm font-bold text-brand-500">{videoA.avgViewPercentage}%</span>
-            <span className="text-xs text-slate-400">vs</span>
-            <span className="text-sm font-bold text-purple-500">{videoB.avgViewPercentage}%</span>
+        <div className="pro-card p-3 text-center font-mono">
+          <div className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider">Retention</div>
+          <div className="mt-1.5 flex items-baseline justify-center gap-1.5 text-xs font-semibold">
+            <span className="text-[#ff0033]">{videoA.avgViewPercentage}%</span>
+            <span className="text-slate-500 font-sans text-[10px]">vs</span>
+            <span className="text-purple-400">{videoB.avgViewPercentage}%</span>
           </div>
-          <div className="mt-2 inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10">
+          <div className="mt-1.5 inline-flex items-center gap-0.5 rounded px-1.5 py-0.2 text-[9px] font-semibold text-emerald-500 bg-emerald-500/10">
             Δ {Math.abs(Number((videoA.avgViewPercentage - videoB.avgViewPercentage).toFixed(1)))}% pt
           </div>
         </div>
 
         {/* Metric: Watch Hours */}
-        <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-navy-900 p-3.5 shadow-sm text-center">
-          <div className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Watch Hours</div>
-          <div className="mt-2 flex items-baseline justify-center gap-2">
-            <span className="text-sm font-bold text-brand-500">{formatNumber(videoA.watchTimeHours)}h</span>
-            <span className="text-xs text-slate-400">vs</span>
-            <span className="text-sm font-bold text-purple-500">{formatNumber(videoB.watchTimeHours)}h</span>
+        <div className="pro-card p-3 text-center font-mono">
+          <div className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider">Watch Time</div>
+          <div className="mt-1.5 flex items-baseline justify-center gap-1.5 text-xs font-semibold">
+            <span className="text-[#ff0033]">{formatNumber(videoA.watchTimeHours)}h</span>
+            <span className="text-slate-500 font-sans text-[10px]">vs</span>
+            <span className="text-purple-400">{formatNumber(videoB.watchTimeHours)}h</span>
           </div>
-          <div className="mt-2 inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10">
+          <div className="mt-1.5 inline-flex items-center gap-0.5 rounded px-1.5 py-0.2 text-[9px] font-semibold text-emerald-500 bg-emerald-500/10">
             Δ {Math.abs(Number(getDelta(videoA.watchTimeHours, videoB.watchTimeHours)))}%
           </div>
         </div>
 
         {/* Metric: Revenue */}
-        <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-navy-900 p-3.5 shadow-sm text-center">
-          <div className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Est. Revenue</div>
-          <div className="mt-2 flex items-baseline justify-center gap-2">
-            <span className="text-sm font-bold text-brand-500">{formatCurrency(videoA.estimatedRevenue)}</span>
-            <span className="text-xs text-slate-400">vs</span>
-            <span className="text-sm font-bold text-purple-500">{formatCurrency(videoB.estimatedRevenue)}</span>
+        <div className="pro-card p-3 text-center font-mono">
+          <div className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider">Revenue</div>
+          <div className="mt-1.5 flex items-baseline justify-center gap-1.5 text-xs font-semibold">
+            <span className="text-[#ff0033]">{formatCurrency(videoA.estimatedRevenue)}</span>
+            <span className="text-slate-500 font-sans text-[10px]">vs</span>
+            <span className="text-purple-400">{formatCurrency(videoB.estimatedRevenue)}</span>
           </div>
-          <div className="mt-2 inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10">
+          <div className="mt-1.5 inline-flex items-center gap-0.5 rounded px-1.5 py-0.2 text-[9px] font-semibold text-emerald-500 bg-emerald-500/10">
             Δ ${Math.abs(videoA.estimatedRevenue - videoB.estimatedRevenue)}
           </div>
         </div>
 
         {/* Metric: Likes */}
-        <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-navy-900 p-3.5 shadow-sm text-center">
-          <div className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Likes & Likes/View</div>
-          <div className="mt-2 flex items-baseline justify-center gap-2">
-            <span className="text-sm font-bold text-brand-500">{formatNumber(videoA.likes)}</span>
-            <span className="text-xs text-slate-400">vs</span>
-            <span className="text-sm font-bold text-purple-500">{formatNumber(videoB.likes)}</span>
+        <div className="pro-card p-3 text-center font-mono">
+          <div className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider">Likes</div>
+          <div className="mt-1.5 flex items-baseline justify-center gap-1.5 text-xs font-semibold">
+            <span className="text-[#ff0033]">{formatNumber(videoA.likes)}</span>
+            <span className="text-slate-500 font-sans text-[10px]">vs</span>
+            <span className="text-purple-400">{formatNumber(videoB.likes)}</span>
           </div>
-          <div className="mt-2 inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10">
+          <div className="mt-1.5 inline-flex items-center gap-0.5 rounded px-1.5 py-0.2 text-[9px] font-semibold text-emerald-500 bg-emerald-500/10">
             Δ {Math.abs(Number(getDelta(videoA.likes, videoB.likes)))}%
           </div>
         </div>
       </div>
 
       {/* Synchronized Retention Curve */}
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-navy-900 p-5 shadow-xl">
-        <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
+      <div className="pro-card p-5">
+        <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-white/[0.06]">
           <div>
-            <h4 className="text-base font-bold text-slate-900 dark:text-white">
-              Synchronized Viewer Retention Curves
+            <h4 className="text-sm font-semibold text-slate-900 dark:text-white">
+              Synchronized Audience Retention Curves
             </h4>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Comparing audience drop-off percentages from introductory hook through to the final seconds
+              Audience drop-off percentages from introductory hook through to the final seconds.
             </p>
           </div>
-          <div className="flex items-center gap-3 text-xs font-semibold">
-            <span className="flex items-center gap-1.5 text-brand-500">
-              <span className="h-2.5 w-2.5 rounded-full bg-brand-500"></span> Video A
+          <div className="flex items-center gap-3 font-mono text-xs">
+            <span className="flex items-center gap-1.5 text-[#ff0033]">
+              <span className="h-2 w-2 rounded-full bg-[#ff0033]" /> Video A
             </span>
-            <span className="flex items-center gap-1.5 text-purple-500">
-              <span className="h-2.5 w-2.5 rounded-full bg-purple-500"></span> Video B
+            <span className="flex items-center gap-1.5 text-purple-400">
+              <span className="h-2 w-2 rounded-full bg-purple-400" /> Video B
             </span>
           </div>
         </div>
@@ -279,31 +267,32 @@ export const VideoComparisonMatrix: React.FC = () => {
           <ChartWrapper heightClass="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={retentionCurveData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#222f52" opacity={0.3} vertical={false} />
-                <XAxis dataKey="time" tick={{ fill: '#64748b', fontSize: 11 }} stroke="#334155" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" opacity={0.05} vertical={false} />
+                <XAxis dataKey="time" tick={{ fill: '#64748b', fontSize: 11, fontFamily: 'monospace' }} stroke="#222" tickLine={false} />
                 <YAxis
                   unit="%"
                   domain={[0, 100]}
-                  tick={{ fill: '#64748b', fontSize: 11 }}
-                  stroke="#334155"
+                  tick={{ fill: '#64748b', fontSize: 11, fontFamily: 'monospace' }}
+                  stroke="#222"
+                  tickLine={false}
                 />
-                <Tooltip formatter={(value: any, name: any) => [`${value}% Audience Retained`, name === 'videoA' ? 'Video A' : 'Video B']} />
+                <Tooltip formatter={(value: any, name: any) => [`${value}% Retained`, name === 'videoA' ? 'Video A' : 'Video B']} />
                 <Line
                   type="monotone"
                   dataKey="videoA"
                   name="videoA"
-                  stroke="#f43f5e"
-                  strokeWidth={3}
-                  dot={{ r: 4, fill: '#f43f5e' }}
+                  stroke="#ff0033"
+                  strokeWidth={2}
+                  dot={{ r: 3, fill: '#ff0033' }}
                   isAnimationActive={false}
                 />
                 <Line
                   type="monotone"
                   dataKey="videoB"
                   name="videoB"
-                  stroke="#8b5cf6"
-                  strokeWidth={3}
-                  dot={{ r: 4, fill: '#8b5cf6' }}
+                  stroke="#a855f7"
+                  strokeWidth={2}
+                  dot={{ r: 3, fill: '#a855f7' }}
                   isAnimationActive={false}
                 />
               </LineChart>
@@ -313,40 +302,40 @@ export const VideoComparisonMatrix: React.FC = () => {
       </div>
 
       {/* Algorithmic Autopsy Analysis */}
-      <div className="rounded-2xl border border-brand-500/30 bg-gradient-to-br from-brand-500/5 via-navy-900/60 to-purple-500/5 p-5 shadow-xl">
-        <div className="flex items-center gap-2 mb-3">
-          <Sparkles className="h-4 w-4 text-brand-500" />
-          <h4 className="text-base font-bold text-slate-900 dark:text-white">
-            Algorithmic Post-Mortem: Why {winner === 'A' ? 'Video A' : 'Video B'} Won
+      <div className="pro-card p-5">
+        <div className="flex items-center gap-2 mb-3 pb-3 border-b border-slate-100 dark:border-white/[0.06]">
+          <Sparkles className="h-4 w-4 text-[#ff0033]" />
+          <h4 className="text-sm font-semibold text-slate-900 dark:text-white">
+            Algorithmic Autopsy: Why {winner === 'A' ? 'Video A' : 'Video B'} Won
           </h4>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-navy-800/60 p-3.5 space-y-1.5">
-            <div className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-xs">
+          <div className="rounded-lg border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-white/[0.02] p-3 space-y-1">
+            <div className="font-semibold text-slate-900 dark:text-white flex items-center gap-1.5">
               <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> Hook Velocity
             </div>
-            <p className="text-slate-600 dark:text-slate-300">
-              The winning video maintained {Math.max(videoA.avgViewPercentage, videoB.avgViewPercentage)}% retention at
-              the 0:30 mark by fulfilling its thumbnail premise within the first 6 seconds without a rambling intro.
+            <p className="text-slate-500 dark:text-slate-400 text-[11px] leading-relaxed">
+              Maintained {Math.max(videoA.avgViewPercentage, videoB.avgViewPercentage)}% retention at
+              the 0:30 mark by fulfilling its thumbnail premise within the first 6 seconds.
             </p>
           </div>
 
-          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-navy-800/60 p-3.5 space-y-1.5">
-            <div className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+          <div className="rounded-lg border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-white/[0.02] p-3 space-y-1">
+            <div className="font-semibold text-slate-900 dark:text-white flex items-center gap-1.5">
               <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> Click-Through Compounding
             </div>
-            <p className="text-slate-600 dark:text-slate-300">
+            <p className="text-slate-500 dark:text-slate-400 text-[11px] leading-relaxed">
               Its {Math.max(videoA.ctr, videoB.ctr)}% CTR generated a higher initial velocity score on the YouTube
               recommendation engine, triggering wider browse feed distribution.
             </p>
           </div>
 
-          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-navy-800/60 p-3.5 space-y-1.5">
-            <div className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> Viewer Replay Loop
+          <div className="rounded-lg border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-white/[0.02] p-3 space-y-1">
+            <div className="font-semibold text-slate-900 dark:text-white flex items-center gap-1.5">
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> Rewatch Cycles
             </div>
-            <p className="text-slate-600 dark:text-slate-300">
+            <p className="text-slate-500 dark:text-slate-400 text-[11px] leading-relaxed">
               Key code walkthrough and architecture diagram segments drove repeated scrub-backs, multiplying effective
               watch time per impression by 1.34x.
             </p>

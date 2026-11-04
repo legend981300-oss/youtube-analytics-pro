@@ -68,17 +68,85 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [demoNoticeDismissed, setDemoNoticeDismissed] = useState<boolean>(false);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
-  // Initialize theme from system or storage
+  // Initialize theme and hydrate local state from storage
   useEffect(() => {
-    const saved = localStorage.getItem('yt_pro_theme') as 'dark' | 'light' | null;
-    const initialTheme = saved || 'dark';
-    setTheme(initialTheme);
-    if (initialTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
+    try {
+      const savedTheme = localStorage.getItem('yt_pro_theme') as 'dark' | 'light' | null;
+      const initialTheme = savedTheme || 'dark';
+      setTheme(initialTheme);
+      if (initialTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+
+      // Hydrate channels
+      const savedChannels = localStorage.getItem('yt_pro_channels');
+      if (savedChannels) {
+        const parsed = JSON.parse(savedChannels);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setChannels(parsed);
+          const savedChId = localStorage.getItem('yt_pro_selected_channel_id');
+          const matched = parsed.find((c: Channel) => c.id === savedChId);
+          if (matched) setSelectedChannel(matched);
+        }
+      }
+
+      // Hydrate ideas
+      const savedIdeas = localStorage.getItem('yt_pro_ideas');
+      if (savedIdeas) {
+        const parsed = JSON.parse(savedIdeas);
+        if (Array.isArray(parsed)) setIdeas(parsed);
+      }
+
+      // Hydrate goals
+      const savedGoals = localStorage.getItem('yt_pro_goals');
+      if (savedGoals) {
+        const parsed = JSON.parse(savedGoals);
+        if (Array.isArray(parsed)) setGoals(parsed);
+      }
+
+      // Hydrate calendar
+      const savedCalendar = localStorage.getItem('yt_pro_calendar');
+      if (savedCalendar) {
+        const parsed = JSON.parse(savedCalendar);
+        if (Array.isArray(parsed)) setCalendarEvents(parsed);
+      }
+    } catch (e) {
+      console.warn('LocalStorage hydration error:', e);
     }
   }, []);
+
+  // Sync state changes to storage
+  useEffect(() => {
+    try {
+      localStorage.setItem('yt_pro_channels', JSON.stringify(channels));
+    } catch {}
+  }, [channels]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('yt_pro_selected_channel_id', selectedChannel.id);
+    } catch {}
+  }, [selectedChannel]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('yt_pro_ideas', JSON.stringify(ideas));
+    } catch {}
+  }, [ideas]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('yt_pro_goals', JSON.stringify(goals));
+    } catch {}
+  }, [goals]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('yt_pro_calendar', JSON.stringify(calendarEvents));
+    } catch {}
+  }, [calendarEvents]);
 
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';

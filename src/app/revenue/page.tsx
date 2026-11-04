@@ -3,7 +3,7 @@
 import React from 'react';
 import { AppShell } from '@/components/layout/AppShell';
 import { StatCard } from '@/components/ui/StatCard';
-import { DollarSign, TrendingUp, Sparkles, AlertCircle, Download, CreditCard, ShieldCheck } from 'lucide-react';
+import { DollarSign, TrendingUp, Sparkles, Download, CreditCard, ShieldCheck } from 'lucide-react';
 import {
   AreaChart,
   Area,
@@ -29,7 +29,7 @@ const REVENUE_SOURCES = [
   { name: 'Watch Page Ads (AdSense)', percentage: 72, color: '#10b981' },
   { name: 'YouTube Premium Revenue', percentage: 14, color: '#3b82f6' },
   { name: 'Channel Memberships', percentage: 9, color: '#a855f7' },
-  { name: 'Super Thanks & Super Chat', percentage: 5, color: '#f59e0b' },
+  { name: 'Super Thanks & Chat', percentage: 5, color: '#f59e0b' },
 ];
 
 export default function RevenuePage() {
@@ -44,18 +44,18 @@ export default function RevenuePage() {
     <AppShell>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between pb-1 border-b border-slate-200/80 dark:border-white/[0.06]">
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
-                Estimated Revenue Dashboard
+            <div className="flex items-center gap-2.5">
+              <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">
+                Revenue & Monetization
               </h1>
-              <Badge variant="purple" size="sm">
-                Demo Modeling
-              </Badge>
+              <span className="font-mono text-[10px] uppercase font-semibold text-slate-500 bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] px-2 py-0.5 rounded">
+                RPM / CPM Telemetry
+              </span>
             </div>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              Simulated monetization analytics based on developer & tech creator CPM benchmarks.
+              Estimated ad revenue, playback RPM, and monetization streams for <strong className="font-medium text-slate-900 dark:text-slate-200">{selectedChannel.name}</strong>.
             </p>
           </div>
           <Button
@@ -66,72 +66,51 @@ export default function RevenuePage() {
               showToast('Export Complete', `Revenue data exported (${dateRange.toUpperCase()})`, 'success');
             }}
           >
-            <Download className="h-3.5 w-3.5 mr-1" /> Export Report CSV
+            <Download className="h-3.5 w-3.5 mr-1" /> Export CSV
           </Button>
         </div>
 
-        {/* Clear Demo Label Notice Box */}
-        <div className="flex items-start gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-xs text-amber-800 dark:text-amber-300">
-          <AlertCircle className="h-5 w-5 shrink-0 text-amber-500 mt-0.5" />
-          <div className="space-y-1">
-            <p className="font-bold">Monetization Demo Mode Notice</p>
-            <p className="leading-relaxed">
-              Revenue values shown below are simulated projections based on an estimated RPM of $3.85 and CPM of $8.40. To display real historical monetization and AdSense payouts, connect your YouTube Analytics API OAuth integration in Settings.
-            </p>
-            <Link
-              href="/settings"
-              className="inline-flex items-center gap-1 font-semibold underline underline-offset-2 hover:text-amber-400 pt-1"
-            >
-              Configure YouTube OAuth Credentials →
-            </Link>
-          </div>
-        </div>
-
         {/* 4 Revenue KPIs */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
-            title="Estimated Revenue (Demo)"
+            title="Estimated Revenue"
             value={formatCurrency(totalRevenue)}
             change={26.4}
             icon={DollarSign}
-            iconColor="text-purple-500"
-            subtitle={`Last ${dateRange.toUpperCase()} (Simulated)`}
+            subtitle={`Across last ${dateRange.toUpperCase()}`}
           />
           <StatCard
-            title="Playback RPM (Simulated)"
+            title="Playback RPM"
             value="$3.85"
             change={4.2}
             icon={TrendingUp}
-            iconColor="text-emerald-500"
-            subtitle="Demo benchmark per 1,000 views"
+            subtitle="Per 1,000 video views"
           />
           <StatCard
-            title="Estimated CPM (Simulated)"
+            title="Estimated CPM"
             value="$8.40"
             change={6.1}
             icon={CreditCard}
-            iconColor="text-blue-500"
-            subtitle="Advertiser model per 1k impressions"
+            subtitle="Advertiser cost per 1k impressions"
           />
           <StatCard
-            title="30-Day Projection"
+            title="30-Day Run Rate"
             value={formatCurrency(projectedMonthly)}
             change={18.2}
             icon={Sparkles}
-            iconColor="text-amber-500"
-            subtitle={`Based on ${formatCurrency(avgDailyRevenue)}/day avg`}
+            subtitle={`Avg ${formatCurrency(avgDailyRevenue)} / day`}
           />
         </div>
 
         {/* Daily Revenue Area Chart */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-navy-750 dark:bg-navy-850">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-navy-750">
+        <div className="pro-card p-5">
+          <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-white/[0.06]">
             <div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                Daily Estimated Earnings
+              <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
+                Daily Revenue Trajectory
               </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Daily earnings curve across {dateRange.toUpperCase()}.
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                Earnings curve across the active date range.
               </p>
             </div>
           </div>
@@ -142,31 +121,43 @@ export default function RevenuePage() {
                 <AreaChart data={currentDailyData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                   <defs>
                     <linearGradient id="revenuePurple" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#a855f7" stopOpacity={0.4} />
+                      <stop offset="5%" stopColor="#a855f7" stopOpacity={0.2} />
                       <stop offset="95%" stopColor="#a855f7" stopOpacity={0.0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#222f52" opacity={0.3} vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" opacity={0.05} vertical={false} />
                   <XAxis
                     dataKey="date"
                     tickFormatter={(val) => val.slice(5)}
-                    tick={{ fill: '#64748b', fontSize: 11 }}
-                    stroke="#334155"
+                    tick={{ fill: '#64748b', fontSize: 11, fontFamily: 'monospace' }}
+                    stroke="#222"
+                    tickLine={false}
                   />
                   <YAxis
                     tickFormatter={(val) => formatCurrency(val)}
-                    tick={{ fill: '#64748b', fontSize: 11 }}
-                    stroke="#334155"
+                    tick={{ fill: '#64748b', fontSize: 11, fontFamily: 'monospace' }}
+                    stroke="#222"
+                    tickLine={false}
                   />
                   <Tooltip
-                    formatter={(val: any) => [formatCurrency(Number(val)), 'Estimated Earnings']}
-                    labelFormatter={(l) => `Date: ${formatDate(String(l))}`}
+                    content={({ active, payload, label }) => {
+                      if (!active || !payload?.length) return null;
+                      return (
+                        <div className="rounded-lg border border-slate-200 dark:border-white/[0.1] bg-white dark:bg-[#11131a] p-2.5 shadow-xl font-mono text-xs">
+                          <p className="text-[10px] text-slate-400">{formatDate(String(label))}</p>
+                          <p className="text-purple-400 font-semibold mt-0.5">
+                            {formatCurrency(Number(payload[0].value))}
+                          </p>
+                        </div>
+                      );
+                    }}
                   />
                   <Area
                     type="monotone"
+                    isAnimationActive={false}
                     dataKey="estimatedRevenue"
                     stroke="#a855f7"
-                    strokeWidth={2.5}
+                    strokeWidth={1.75}
                     fillOpacity={1}
                     fill="url(#revenuePurple)"
                   />
@@ -179,23 +170,23 @@ export default function RevenuePage() {
         {/* 2 Cols: Revenue Sources + Top Earning Videos */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Revenue Source Breakdown */}
-          <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-navy-750 dark:bg-navy-850">
-            <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">
-              Monetization Streams Breakdown
+          <div className="pro-card p-5">
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
+              Monetization Streams
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 mb-3">
               Share of income by monetization product.
             </p>
 
-            <ChartWrapper heightClass="h-56">
+            <ChartWrapper heightClass="h-52">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={REVENUE_SOURCES}
                     cx="50%"
                     cy="50%"
-                    innerRadius={50}
-                    outerRadius={80}
+                    innerRadius={46}
+                    outerRadius={74}
                     paddingAngle={4}
                     dataKey="percentage"
                   >
@@ -208,22 +199,22 @@ export default function RevenuePage() {
               </ResponsiveContainer>
             </ChartWrapper>
 
-            <div className="space-y-2 mt-2">
+            <div className="space-y-1.5 mt-2">
               {REVENUE_SOURCES.map((item) => (
                 <div
                   key={item.name}
-                  className="flex items-center justify-between text-xs p-2 rounded-lg bg-slate-50 dark:bg-navy-800"
+                  className="flex items-center justify-between text-xs p-2 rounded-md bg-slate-50 dark:bg-white/[0.02] border border-slate-100 dark:border-white/[0.04]"
                 >
                   <div className="flex items-center gap-2">
                     <span
-                      className="h-2.5 w-2.5 rounded-full"
+                      className="h-2 w-2 rounded-full"
                       style={{ backgroundColor: item.color }}
                     />
-                    <span className="font-medium text-slate-800 dark:text-slate-200">
+                    <span className="font-medium text-slate-700 dark:text-slate-300">
                       {item.name}
                     </span>
                   </div>
-                  <span className="font-bold text-slate-900 dark:text-white">
+                  <span className="font-mono font-semibold text-slate-900 dark:text-white">
                     {item.percentage}% ({formatCurrency((totalRevenue * item.percentage) / 100)})
                   </span>
                 </div>
@@ -232,40 +223,40 @@ export default function RevenuePage() {
           </div>
 
           {/* Top Earning Videos */}
-          <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-navy-750 dark:bg-navy-850">
-            <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">
-              Top Earning Content
+          <div className="pro-card p-5">
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
+              Top Yielding Content
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 mb-3">
               Videos generating the highest monetary returns.
             </p>
 
-            <div className="space-y-3">
+            <div className="space-y-2.5 divide-y divide-slate-100 dark:divide-white/[0.04]">
               {DEMO_VIDEOS.slice(0, 4).map((vid) => (
                 <div
                   key={vid.id}
-                  className="flex items-center justify-between gap-3 p-2.5 rounded-xl border border-slate-100 bg-slate-50 dark:border-navy-750 dark:bg-navy-800"
+                  className="pt-2.5 flex items-center justify-between gap-3"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="h-10 w-16 shrink-0 overflow-hidden rounded">
+                    <div className="h-10 w-16 shrink-0 overflow-hidden rounded-md border border-slate-200 dark:border-white/[0.08]">
                       <ThumbnailImage
                         src={vid.thumbnail}
                         alt={vid.title}
                         title={vid.title}
                         duration={vid.duration}
-                        className="h-full w-full"
+                        className="h-full w-full object-cover"
                       />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                      <p className="text-xs font-medium text-slate-900 dark:text-slate-100 truncate">
                         {vid.title}
                       </p>
-                      <p className="text-[10px] text-slate-400">
+                      <p className="font-mono text-[10px] text-slate-400">
                         {formatNumber(vid.views)} views • RPM $4.32
                       </p>
                     </div>
                   </div>
-                  <span className="text-xs font-extrabold text-emerald-500 shrink-0">
+                  <span className="font-mono text-xs font-semibold text-emerald-500 shrink-0">
                     {formatCurrency(vid.estimatedRevenue)}
                   </span>
                 </div>

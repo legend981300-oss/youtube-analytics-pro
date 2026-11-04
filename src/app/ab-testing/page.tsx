@@ -5,18 +5,10 @@ import { AppShell } from '@/components/layout/AppShell';
 import {
   Layers,
   Sparkles,
-  ArrowRight,
-  TrendingUp,
-  AlertCircle,
-  CheckCircle2,
   Trophy,
   Copy,
   Smartphone,
   Monitor,
-  Flame,
-  Eye,
-  BarChart3,
-  HelpCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -103,64 +95,64 @@ export default function AbTestingPage() {
     <AppShell>
       <div className="space-y-6 max-w-6xl mx-auto">
         {/* Header */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between pb-1 border-b border-slate-200/80 dark:border-white/[0.06]">
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
+            <div className="flex items-center gap-2.5">
+              <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">
                 A/B Testing Simulator Lab
               </h1>
-              <Badge variant="purple" size="sm">
-                Pro Lab
-              </Badge>
+              <span className="font-mono text-[10px] uppercase font-semibold text-slate-500 bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] px-2 py-0.5 rounded">
+                Pre-Flight CTR Lab
+              </span>
             </div>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              Simulate and compare two title and thumbnail combinations to predict click-through rates before publishing.
+              Predict audience click-through rate and glance capture before publishing to YouTube.
             </p>
           </div>
 
-          <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-1 dark:border-navy-750 dark:bg-navy-850">
+          <div className="inline-flex rounded-lg bg-slate-100 dark:bg-[#090a0f] p-0.5 border border-slate-200 dark:border-white/[0.06]">
             <button
               onClick={() => setPreviewDevice('mobile')}
-              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+              className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
                 previewDevice === 'mobile'
-                  ? 'bg-brand-600 text-white shadow-sm'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-white dark:bg-white/[0.1] text-slate-900 dark:text-white shadow-sm font-semibold'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              <Smartphone className="h-3.5 w-3.5" /> Mobile Feed
+              <Smartphone className="h-3 w-3" /> Mobile
             </button>
             <button
               onClick={() => setPreviewDevice('desktop')}
-              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+              className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
                 previewDevice === 'desktop'
-                  ? 'bg-brand-600 text-white shadow-sm'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-white dark:bg-white/[0.1] text-slate-900 dark:text-white shadow-sm font-semibold'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              <Monitor className="h-3.5 w-3.5" /> Desktop Feed
+              <Monitor className="h-3 w-3" /> Desktop
             </button>
           </div>
         </div>
 
         {/* Winner Announcement Banner */}
-        <div className="relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-500/10 via-cyan-500/10 to-transparent p-5 text-xs shadow-sm">
+        <div className="pro-card p-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-start gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
                 <Trophy className="h-5 w-5" />
               </div>
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="font-extrabold text-slate-900 dark:text-white text-sm">
-                    Recommended Winner: Variant {winner}
+                  <span className="font-semibold text-slate-900 dark:text-white text-sm">
+                    Recommended: Variant {winner}
                   </span>
                   <Badge variant="success" size="sm">
-                    +{scoreDiff} pts higher potential
+                    +{scoreDiff} pts higher
                   </Badge>
                 </div>
-                <p className="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">
-                  Variant {winner} scores higher in curiosity-gap triggers and optimal character density. It is projected to yield an estimated click-through rate of{' '}
-                  <strong className="text-emerald-600 dark:text-emerald-400">
+                <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed">
+                  Variant {winner} scores higher in curiosity triggers and optimal packaging density. Projected CTR:{' '}
+                  <strong className="text-emerald-500 font-mono font-semibold">
                     {winner === 'A' ? statsA.predictedCtr : statsB.predictedCtr}
                   </strong>.
                 </p>
@@ -171,7 +163,7 @@ export default function AbTestingPage() {
               size="sm"
               onClick={() => handleSaveToVault(winner === 'A' ? variantA.title : variantB.title)}
             >
-              Use Winner in Vault
+              Use Variant {winner} in Vault
             </Button>
           </div>
         </div>
@@ -180,18 +172,16 @@ export default function AbTestingPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Variant A Card */}
           <div
-            className={`rounded-2xl border bg-white p-5 shadow-sm dark:bg-navy-850 transition-all ${
-              winner === 'A'
-                ? 'border-emerald-500/50 shadow-emerald-500/5 ring-1 ring-emerald-500/20'
-                : 'border-slate-200/80 dark:border-navy-750'
+            className={`pro-card p-5 ${
+              winner === 'A' ? 'ring-1 ring-emerald-500/30' : ''
             }`}
           >
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-navy-750">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-white/[0.06]">
               <div className="flex items-center gap-2">
-                <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-brand-500/10 text-xs font-bold text-brand-600 dark:text-brand-400">
+                <span className="flex h-5 w-5 items-center justify-center rounded font-mono text-[10px] font-bold bg-slate-100 dark:bg-white/[0.08] text-slate-800 dark:text-white">
                   A
                 </span>
-                <h3 className="font-bold text-slate-900 dark:text-white text-sm">Variant A (Baseline)</h3>
+                <h3 className="font-medium text-slate-900 dark:text-white text-xs">Variant A (Baseline)</h3>
               </div>
               {winner === 'A' && (
                 <Badge variant="success" size="sm">
@@ -201,25 +191,23 @@ export default function AbTestingPage() {
             </div>
 
             <div className="mt-4 space-y-4">
-              {/* Inputs */}
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+                <label className="text-[11px] font-medium text-slate-600 dark:text-slate-400">
                   Video Title
                 </label>
                 <textarea
                   rows={2}
                   value={variantA.title}
                   onChange={(e) => setVariantA({ ...variantA, title: e.target.value })}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-xs text-slate-900 focus:border-brand-500 focus:bg-white focus:outline-none dark:border-navy-750 dark:bg-navy-900 dark:text-white"
+                  className="w-full rounded-md border border-slate-200 bg-slate-50 p-2 text-xs text-slate-900 focus:border-slate-400 focus:bg-white focus:outline-none dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-white"
                 />
               </div>
 
-              {/* Thumbnail Preview */}
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+                <label className="text-[11px] font-medium text-slate-600 dark:text-slate-400">
                   Thumbnail Preview
                 </label>
-                <div className="aspect-video overflow-hidden rounded-xl border border-slate-200 dark:border-navy-750 bg-slate-100 dark:bg-navy-950">
+                <div className="aspect-video overflow-hidden rounded-md border border-slate-200 dark:border-white/[0.08] bg-slate-100 dark:bg-[#0c0e14]">
                   <ThumbnailImage
                     src={variantA.thumbnailUrl}
                     alt="Variant A Thumbnail"
@@ -229,48 +217,40 @@ export default function AbTestingPage() {
                 </div>
               </div>
 
-              {/* Heuristic Scores */}
-              <div className="grid grid-cols-2 gap-3 pt-2">
-                <div className="rounded-xl border border-slate-100 bg-slate-50 p-3 dark:border-navy-750 dark:bg-navy-900">
-                  <span className="text-[10px] text-slate-400">Optimization Score</span>
-                  <p className="text-lg font-black text-slate-900 dark:text-white mt-0.5">
+              <div className="grid grid-cols-2 gap-3 pt-1 font-mono">
+                <div className="rounded-md border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-white/[0.02] p-2.5">
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wider">Score</span>
+                  <p className="text-base font-semibold text-slate-900 dark:text-white mt-0.5">
                     {statsA.score}
-                    <span className="text-xs font-normal text-slate-400">/100</span>
+                    <span className="text-xs font-normal text-slate-400 ml-1">/ 100</span>
                   </p>
                 </div>
-                <div className="rounded-xl border border-slate-100 bg-slate-50 p-3 dark:border-navy-750 dark:bg-navy-900">
-                  <span className="text-[10px] text-slate-400">Predicted CTR</span>
-                  <p className="text-lg font-black text-emerald-600 dark:text-emerald-400 mt-0.5">
+                <div className="rounded-md border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-white/[0.02] p-2.5">
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wider">Predicted CTR</span>
+                  <p className="text-base font-semibold text-emerald-500 mt-0.5">
                     {statsA.predictedCtr}
                   </p>
                 </div>
               </div>
 
-              {/* Checklist */}
-              <div className="space-y-1.5 text-[11px] text-slate-600 dark:text-slate-400">
+              <div className="space-y-1 text-[11px] text-slate-500">
                 <div className="flex items-center justify-between">
                   <span>Length ({statsA.length} chars)</span>
-                  <span className={statsA.length >= 40 && statsA.length <= 65 ? 'text-emerald-500 font-semibold' : 'text-amber-500'}>
+                  <span className={statsA.length >= 40 && statsA.length <= 65 ? 'text-emerald-500 font-mono font-medium' : 'text-amber-500 font-mono font-medium'}>
                     {statsA.length >= 40 && statsA.length <= 65 ? 'Optimal (40–65)' : 'Sub-optimal'}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span>Curiosity / Power Words</span>
-                  <span className={statsA.hasPowerWord ? 'text-emerald-500 font-semibold' : 'text-slate-400'}>
+                  <span>Curiosity Triggers</span>
+                  <span className={statsA.hasPowerWord ? 'text-emerald-500 font-mono font-medium' : 'text-slate-400 font-mono'}>
                     {statsA.hasPowerWord ? 'Present (+15)' : 'None'}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Specific Numbers</span>
-                  <span className={statsA.hasNumber ? 'text-emerald-500 font-semibold' : 'text-slate-400'}>
-                    {statsA.hasNumber ? 'Detected (+10)' : 'Missing'}
                   </span>
                 </div>
               </div>
 
-              <div className="flex gap-2 pt-2 border-t border-slate-100 dark:border-navy-750">
-                <Button size="sm" variant="outline" className="flex-1" onClick={() => handleCopy(variantA.title)}>
-                  <Copy className="h-3.5 w-3.5 mr-1" /> Copy Title
+              <div className="pt-2 border-t border-slate-100 dark:border-white/[0.06]">
+                <Button size="sm" variant="outline" className="w-full" onClick={() => handleCopy(variantA.title)}>
+                  <Copy className="h-3 w-3 mr-1" /> Copy Title
                 </Button>
               </div>
             </div>
@@ -278,18 +258,16 @@ export default function AbTestingPage() {
 
           {/* Variant B Card */}
           <div
-            className={`rounded-2xl border bg-white p-5 shadow-sm dark:bg-navy-850 transition-all ${
-              winner === 'B'
-                ? 'border-emerald-500/50 shadow-emerald-500/5 ring-1 ring-emerald-500/20'
-                : 'border-slate-200/80 dark:border-navy-750'
+            className={`pro-card p-5 ${
+              winner === 'B' ? 'ring-1 ring-emerald-500/30' : ''
             }`}
           >
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-navy-750">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-white/[0.06]">
               <div className="flex items-center gap-2">
-                <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-purple-500/10 text-xs font-bold text-purple-600 dark:text-purple-400">
+                <span className="flex h-5 w-5 items-center justify-center rounded font-mono text-[10px] font-bold bg-slate-100 dark:bg-white/[0.08] text-slate-800 dark:text-white">
                   B
                 </span>
-                <h3 className="font-bold text-slate-900 dark:text-white text-sm">Variant B (Challenger)</h3>
+                <h3 className="font-medium text-slate-900 dark:text-white text-xs">Variant B (Challenger)</h3>
               </div>
               {winner === 'B' && (
                 <Badge variant="success" size="sm">
@@ -299,25 +277,23 @@ export default function AbTestingPage() {
             </div>
 
             <div className="mt-4 space-y-4">
-              {/* Inputs */}
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+                <label className="text-[11px] font-medium text-slate-600 dark:text-slate-400">
                   Video Title
                 </label>
                 <textarea
                   rows={2}
                   value={variantB.title}
                   onChange={(e) => setVariantB({ ...variantB, title: e.target.value })}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-xs text-slate-900 focus:border-brand-500 focus:bg-white focus:outline-none dark:border-navy-750 dark:bg-navy-900 dark:text-white"
+                  className="w-full rounded-md border border-slate-200 bg-slate-50 p-2 text-xs text-slate-900 focus:border-slate-400 focus:bg-white focus:outline-none dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-white"
                 />
               </div>
 
-              {/* Thumbnail Preview */}
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+                <label className="text-[11px] font-medium text-slate-600 dark:text-slate-400">
                   Thumbnail Preview
                 </label>
-                <div className="aspect-video overflow-hidden rounded-xl border border-slate-200 dark:border-navy-750 bg-slate-100 dark:bg-navy-950">
+                <div className="aspect-video overflow-hidden rounded-md border border-slate-200 dark:border-white/[0.08] bg-slate-100 dark:bg-[#0c0e14]">
                   <ThumbnailImage
                     src={variantB.thumbnailUrl}
                     alt="Variant B Thumbnail"
@@ -327,48 +303,40 @@ export default function AbTestingPage() {
                 </div>
               </div>
 
-              {/* Heuristic Scores */}
-              <div className="grid grid-cols-2 gap-3 pt-2">
-                <div className="rounded-xl border border-slate-100 bg-slate-50 p-3 dark:border-navy-750 dark:bg-navy-900">
-                  <span className="text-[10px] text-slate-400">Optimization Score</span>
-                  <p className="text-lg font-black text-slate-900 dark:text-white mt-0.5">
+              <div className="grid grid-cols-2 gap-3 pt-1 font-mono">
+                <div className="rounded-md border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-white/[0.02] p-2.5">
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wider">Score</span>
+                  <p className="text-base font-semibold text-slate-900 dark:text-white mt-0.5">
                     {statsB.score}
-                    <span className="text-xs font-normal text-slate-400">/100</span>
+                    <span className="text-xs font-normal text-slate-400 ml-1">/ 100</span>
                   </p>
                 </div>
-                <div className="rounded-xl border border-slate-100 bg-slate-50 p-3 dark:border-navy-750 dark:bg-navy-900">
-                  <span className="text-[10px] text-slate-400">Predicted CTR</span>
-                  <p className="text-lg font-black text-emerald-600 dark:text-emerald-400 mt-0.5">
+                <div className="rounded-md border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-white/[0.02] p-2.5">
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wider">Predicted CTR</span>
+                  <p className="text-base font-semibold text-emerald-500 mt-0.5">
                     {statsB.predictedCtr}
                   </p>
                 </div>
               </div>
 
-              {/* Checklist */}
-              <div className="space-y-1.5 text-[11px] text-slate-600 dark:text-slate-400">
+              <div className="space-y-1 text-[11px] text-slate-500">
                 <div className="flex items-center justify-between">
                   <span>Length ({statsB.length} chars)</span>
-                  <span className={statsB.length >= 40 && statsB.length <= 65 ? 'text-emerald-500 font-semibold' : 'text-amber-500'}>
+                  <span className={statsB.length >= 40 && statsB.length <= 65 ? 'text-emerald-500 font-mono font-medium' : 'text-amber-500 font-mono font-medium'}>
                     {statsB.length >= 40 && statsB.length <= 65 ? 'Optimal (40–65)' : 'Sub-optimal'}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span>Curiosity / Power Words</span>
-                  <span className={statsB.hasPowerWord ? 'text-emerald-500 font-semibold' : 'text-slate-400'}>
+                  <span>Curiosity Triggers</span>
+                  <span className={statsB.hasPowerWord ? 'text-emerald-500 font-mono font-medium' : 'text-slate-400 font-mono'}>
                     {statsB.hasPowerWord ? 'Present (+15)' : 'None'}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Specific Numbers</span>
-                  <span className={statsB.hasNumber ? 'text-emerald-500 font-semibold' : 'text-slate-400'}>
-                    {statsB.hasNumber ? 'Detected (+10)' : 'Missing'}
                   </span>
                 </div>
               </div>
 
-              <div className="flex gap-2 pt-2 border-t border-slate-100 dark:border-navy-750">
-                <Button size="sm" variant="outline" className="flex-1" onClick={() => handleCopy(variantB.title)}>
-                  <Copy className="h-3.5 w-3.5 mr-1" /> Copy Title
+              <div className="pt-2 border-t border-slate-100 dark:border-white/[0.06]">
+                <Button size="sm" variant="outline" className="w-full" onClick={() => handleCopy(variantB.title)}>
+                  <Copy className="h-3 w-3 mr-1" /> Copy Title
                 </Button>
               </div>
             </div>
@@ -376,72 +344,72 @@ export default function AbTestingPage() {
         </div>
 
         {/* Live Feed Simulator Preview */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm dark:border-navy-750 dark:bg-navy-850 space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-navy-750">
+        <div className="pro-card p-5 space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-white/[0.06]">
             <div>
-              <h3 className="font-bold text-slate-900 dark:text-white text-sm">
-                YouTube Feed Mock Simulator ({previewDevice === 'mobile' ? 'Mobile App View' : 'Desktop Grid View'})
+              <h3 className="font-semibold text-slate-900 dark:text-white text-xs">
+                YouTube Feed Appearance ({previewDevice === 'mobile' ? 'Mobile App Feed' : 'Desktop Feed Grid'})
               </h3>
               <p className="text-[11px] text-slate-500">
-                Inspect how viewers will see your video as they scroll through their YouTube recommendation feed.
+                Inspect how viewers perceive your video thumbnail and title in the recommendation feed.
               </p>
             </div>
-            <Badge variant="cyan" size="sm">
-              Live Mockup
-            </Badge>
+            <span className="font-mono text-[10px] uppercase font-semibold text-slate-400 bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.08] px-2 py-0.5 rounded">
+              Mockup
+            </span>
           </div>
 
           <div
-            className={`grid gap-6 ${
+            className={`grid gap-4 ${
               previewDevice === 'mobile'
                 ? 'grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto'
                 : 'grid-cols-1 md:grid-cols-2'
             }`}
           >
             {/* Feed Card A */}
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-navy-750 dark:bg-navy-900 space-y-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400">
-                Feed Variant A
+            <div className="rounded-lg border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-white/[0.02] p-2.5 space-y-2">
+              <span className="font-mono text-[9px] uppercase font-semibold text-slate-500">
+                Feed Preview A
               </span>
-              <div className="aspect-video overflow-hidden rounded-lg bg-slate-200 dark:bg-navy-950 relative">
+              <div className="aspect-video overflow-hidden rounded-md border border-slate-200 dark:border-white/[0.08] bg-slate-200 dark:bg-[#0c0e14] relative">
                 <ThumbnailImage
                   src={variantA.thumbnailUrl}
                   alt="Feed Card A"
                   title={variantA.title}
                   className="h-full w-full object-cover"
                 />
-                <span className="absolute bottom-1.5 right-1.5 rounded bg-black/80 px-1 py-0.5 text-[9px] font-mono text-white">
+                <span className="absolute bottom-1 right-1 rounded bg-black/80 px-1 py-0.2 font-mono text-[9px] text-white">
                   12:45
                 </span>
               </div>
-              <p className="line-clamp-2 text-xs font-bold text-slate-900 dark:text-white">
+              <p className="line-clamp-2 text-xs font-medium text-slate-900 dark:text-white">
                 {variantA.title}
               </p>
-              <p className="text-[10px] text-slate-400">
+              <p className="font-mono text-[10px] text-slate-400">
                 Alex Rivera • 42K views • 2 days ago
               </p>
             </div>
 
             {/* Feed Card B */}
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-navy-750 dark:bg-navy-900 space-y-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400">
-                Feed Variant B
+            <div className="rounded-lg border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-white/[0.02] p-2.5 space-y-2">
+              <span className="font-mono text-[9px] uppercase font-semibold text-[#ff0033]">
+                Feed Preview B
               </span>
-              <div className="aspect-video overflow-hidden rounded-lg bg-slate-200 dark:bg-navy-950 relative">
+              <div className="aspect-video overflow-hidden rounded-md border border-slate-200 dark:border-white/[0.08] bg-slate-200 dark:bg-[#0c0e14] relative">
                 <ThumbnailImage
                   src={variantB.thumbnailUrl}
                   alt="Feed Card B"
                   title={variantB.title}
                   className="h-full w-full object-cover"
                 />
-                <span className="absolute bottom-1.5 right-1.5 rounded bg-black/80 px-1 py-0.5 text-[9px] font-mono text-white">
+                <span className="absolute bottom-1 right-1 rounded bg-black/80 px-1 py-0.2 font-mono text-[9px] text-white">
                   12:45
                 </span>
               </div>
-              <p className="line-clamp-2 text-xs font-bold text-slate-900 dark:text-white">
+              <p className="line-clamp-2 text-xs font-medium text-slate-900 dark:text-white">
                 {variantB.title}
               </p>
-              <p className="text-[10px] text-slate-400">
+              <p className="font-mono text-[10px] text-slate-400">
                 Alex Rivera • 42K views • 2 days ago
               </p>
             </div>
