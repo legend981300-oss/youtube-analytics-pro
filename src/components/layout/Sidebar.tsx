@@ -74,7 +74,7 @@ export const Sidebar: React.FC<{ onCloseMobile?: () => void }> = ({ onCloseMobil
     {
       title: 'GROWTH & SEO',
       items: [
-        { name: 'Competitor Analysis', href: '/comparison', icon: GitCompare },
+        { name: 'Head-to-Head Comparison', href: '/comparison', icon: GitCompare, badge: 'PRO', badgeColor: 'purple' },
         { name: 'SEO & Keywords', href: '/seo', icon: Search },
         { name: 'A/B Testing Lab', href: '/ab-testing', icon: Split, badge: 'PRO', badgeColor: 'purple' },
         { name: 'Thumbnail Analyzer', href: '/thumbnails', icon: ImageIcon },

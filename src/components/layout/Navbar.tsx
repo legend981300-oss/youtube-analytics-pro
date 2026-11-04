@@ -22,6 +22,9 @@ import {
   KeyRound,
   ArrowRight,
   Compass,
+  SearchCode,
+  Trophy,
+  Share2,
 } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import { DateRange } from '@/types';
@@ -30,9 +33,17 @@ import { DEMO_DAILY_DATA, DEMO_VIDEOS, DEMO_KEYWORDS, getDataForRange } from '@/
 
 interface NavbarProps {
   onToggleMobileMenu: () => void;
+  onOpenCommandPalette?: () => void;
+  onOpenChannelExplorer?: () => void;
+  onOpenMilestoneCard?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileMenu }) => {
+export const Navbar: React.FC<NavbarProps> = ({
+  onToggleMobileMenu,
+  onOpenCommandPalette,
+  onOpenChannelExplorer,
+  onOpenMilestoneCard,
+}) => {
   const {
     theme,
     toggleTheme,
@@ -183,10 +194,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileMenu }) => {
               setSearchFocused(true);
             }}
             onKeyDown={handleSearchKeyDown}
-            placeholder="Search metrics, videos, keywords, or ideas..."
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 py-1.5 pl-9 pr-8 text-xs text-slate-900 placeholder:text-slate-400 focus:border-brand-500 focus:bg-white focus:outline-none dark:border-navy-750 dark:bg-navy-950 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-brand-500 transition-colors"
+            placeholder="Search metrics, videos, keywords, or ideas... (Ctrl+K)"
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 py-1.5 pl-9 pr-14 text-xs text-slate-900 placeholder:text-slate-400 focus:border-brand-500 focus:bg-white focus:outline-none dark:border-navy-750 dark:bg-navy-950 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-brand-500 transition-colors"
           />
-          {searchQuery && (
+          {searchQuery ? (
             <button
               onClick={() => {
                 setSearchQuery('');
@@ -196,6 +207,15 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileMenu }) => {
               title="Clear search"
             >
               <X className="h-3.5 w-3.5" />
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={onOpenCommandPalette}
+              className="hidden sm:inline-flex absolute right-2.5 top-1/2 -translate-y-1/2 items-center gap-0.5 rounded bg-slate-200/60 dark:bg-navy-800 px-1.5 py-0.5 text-[10px] font-mono font-bold text-slate-500 dark:text-slate-400 border border-slate-300/50 dark:border-slate-700 hover:border-brand-500 hover:text-brand-500 transition-colors"
+              title="Open Command Palette (Ctrl+K)"
+            >
+              Ctrl K
             </button>
           )}
 
@@ -331,11 +351,35 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileMenu }) => {
         <button
           onClick={handleExportData}
           title="Export current data to CSV"
-          className="hidden md:inline-flex items-center gap-1.5 rounded-2xl border border-slate-200/80 bg-white px-3.5 py-1.5 text-xs font-bold text-slate-700 shadow-sm hover:bg-slate-50 dark:border-white/[0.08] dark:bg-navy-850 dark:text-slate-200 dark:hover:border-white/20 dark:hover:bg-white/[0.06] transition-all shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]"
+          className="hidden xl:inline-flex items-center gap-1.5 rounded-2xl border border-slate-200/80 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-sm hover:bg-slate-50 dark:border-white/[0.08] dark:bg-navy-850 dark:text-slate-200 dark:hover:border-white/20 dark:hover:bg-white/[0.06] transition-all shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]"
         >
           <Download className="h-3.5 w-3.5 text-brand-500" />
           <span>Export CSV</span>
         </button>
+
+        {/* Public Channel Explorer Button */}
+        {onOpenChannelExplorer && (
+          <button
+            onClick={onOpenChannelExplorer}
+            title="Explore and audit any public YouTube channel"
+            className="hidden lg:inline-flex items-center gap-1.5 rounded-2xl border border-brand-500/30 bg-brand-500/10 px-3 py-1.5 text-xs font-bold text-brand-600 dark:text-brand-400 shadow-sm hover:bg-brand-500/20 transition-all"
+          >
+            <SearchCode className="h-3.5 w-3.5 text-brand-500" />
+            <span>Explore Channel</span>
+          </button>
+        )}
+
+        {/* Milestone Card Button */}
+        {onOpenMilestoneCard && (
+          <button
+            onClick={onOpenMilestoneCard}
+            title="Generate milestone graphic for social media"
+            className="hidden sm:inline-flex items-center gap-1.5 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs font-bold text-amber-600 dark:text-amber-400 shadow-sm hover:bg-amber-500/20 transition-all"
+          >
+            <Trophy className="h-3.5 w-3.5 text-amber-500" />
+            <span className="hidden md:inline">Milestone Card</span>
+          </button>
+        )}
 
         {/* Notification Bell Dropdown */}
         <div className="relative" ref={notifRef}>

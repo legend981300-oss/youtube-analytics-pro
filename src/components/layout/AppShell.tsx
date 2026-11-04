@@ -1,13 +1,33 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sidebar } from './Sidebar';
 import { Navbar } from './Navbar';
 import { DemoNotice } from '@/components/ui/DemoNotice';
+import { CommandPalette } from './CommandPalette';
+import { ChannelExplorerModal } from '@/components/channels/ChannelExplorerModal';
+import { MilestoneCardModal } from '@/components/social/MilestoneCardModal';
+import { FloatingAiCopilot } from '@/components/ai/FloatingAiCopilot';
 import { X } from 'lucide-react';
 
 export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  const [channelExplorerOpen, setChannelExplorerOpen] = useState(false);
+  const [milestoneModalOpen, setMilestoneModalOpen] = useState(false);
+
+  // Global Ctrl+K / Cmd+K keyboard shortcut listener
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setCommandPaletteOpen((prev) => !prev);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-navy-950 dark:text-slate-100 flex flex-col font-sans transition-colors duration-200">
@@ -43,13 +63,40 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
         {/* Main Content Viewport */}
         <div className="flex flex-1 flex-col overflow-y-auto">
-          <Navbar onToggleMobileMenu={() => setMobileMenuOpen(true)} />
+          <Navbar
+            onToggleMobileMenu={() => setMobileMenuOpen(true)}
+            onOpenCommandPalette={() => setCommandPaletteOpen(true)}
+            onOpenChannelExplorer={() => setChannelExplorerOpen(true)}
+            onOpenMilestoneCard={() => setMilestoneModalOpen(true)}
+          />
           <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto animate-fade-in">
             {children}
           </main>
         </div>
       </div>
+
+      {/* Global Interactive Command Palette (Ctrl+K) */}
+      <CommandPalette
+        isOpen={commandPaletteOpen}
+        onClose={() => setCommandPaletteOpen(false)}
+        onOpenChannelExplorer={() => setChannelExplorerOpen(true)}
+        onOpenMilestoneCard={() => setMilestoneModalOpen(true)}
+      />
+
+      {/* Public YouTube Channel Explorer Modal */}
+      <ChannelExplorerModal
+        isOpen={channelExplorerOpen}
+        onClose={() => setChannelExplorerOpen(false)}
+      />
+
+      {/* Social Milestone Celebration Card Generator Modal */}
+      <MilestoneCardModal
+        isOpen={milestoneModalOpen}
+        onClose={() => setMilestoneModalOpen(false)}
+      />
+
+      {/* Floating Ask Channel AI Copilot Assistant */}
+      <FloatingAiCopilot />
     </div>
   );
 };
-

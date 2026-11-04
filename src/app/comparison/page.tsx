@@ -9,6 +9,7 @@ import { formatNumber } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { ChartWrapper } from '@/components/ui/ChartWrapper';
+import { VideoComparisonMatrix } from '@/components/comparison/VideoComparisonMatrix';
 import {
   BarChart,
   Bar,
@@ -23,6 +24,7 @@ import {
 export default function ChannelComparisonPage() {
   const { selectedChannel, addIdea, showToast } = useApp();
   const [addedGaps, setAddedGaps] = useState<Record<string, boolean>>({});
+  const [activeTab, setActiveTab] = useState<'video-vs-video' | 'channel-benchmark'>('video-vs-video');
 
   const comparisonData = [
     {
@@ -92,20 +94,48 @@ export default function ChannelComparisonPage() {
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
-                Competitor & Channel Benchmark
+                Comparison & Benchmarks
               </h1>
               <Badge variant="purple" size="sm">
-                Demo Benchmarks
+                Pro Matrix
               </Badge>
             </div>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              Benchmark your growth velocity and identify untapped content opportunities against peers.
+              Analyze head-to-head retention drop-offs between your videos or benchmark velocity against competitors.
             </p>
+          </div>
+
+          {/* Segmented Tab Switcher */}
+          <div className="flex rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-navy-900 p-1 shadow-sm">
+            <button
+              onClick={() => setActiveTab('video-vs-video')}
+              className={`flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all ${
+                activeTab === 'video-vs-video'
+                  ? 'bg-brand-500 text-white shadow-glow-brand'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              <GitCompare className="h-3.5 w-3.5" /> Video vs Video Matrix
+            </button>
+            <button
+              onClick={() => setActiveTab('channel-benchmark')}
+              className={`flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all ${
+                activeTab === 'channel-benchmark'
+                  ? 'bg-brand-500 text-white shadow-glow-brand'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              <TrendingUp className="h-3.5 w-3.5" /> Channel vs Competitors
+            </button>
           </div>
         </div>
 
-        {/* Competitor Cards Row */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+        {activeTab === 'video-vs-video' ? (
+          <VideoComparisonMatrix />
+        ) : (
+          <div className="space-y-6">
+            {/* Competitor Cards Row */}
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
           {/* Your Channel Card */}
           <div className="rounded-2xl border-2 border-brand-500/40 bg-white p-4 shadow-sm dark:bg-navy-850 relative">
             <span className="absolute -top-2.5 right-4 rounded-full bg-brand-600 px-2 py-0.5 text-[9px] font-extrabold text-white">
@@ -247,6 +277,8 @@ export default function ChannelComparisonPage() {
           </div>
         </div>
       </div>
-    </AppShell>
-  );
+    )}
+  </div>
+</AppShell>
+);
 }

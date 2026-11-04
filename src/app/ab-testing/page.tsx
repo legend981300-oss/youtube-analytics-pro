@@ -22,6 +22,7 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { useApp } from '@/context/AppContext';
 import { ThumbnailImage } from '@/components/ui/ThumbnailImage';
+import { SearchFeedSimulator } from '@/components/ab-testing/SearchFeedSimulator';
 
 interface VariantData {
   title: string;
@@ -446,6 +447,9 @@ export default function AbTestingPage() {
             </div>
           </div>
         </div>
+
+        {/* Live YouTube Search Feed Simulator & Eye-Tracking Standout Lab */}
+        <SearchFeedSimulator variantA={variantA} variantB={variantB} />
       </div>
     </AppShell>
   );
