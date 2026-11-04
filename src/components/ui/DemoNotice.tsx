@@ -11,7 +11,7 @@ export const DemoNotice: React.FC = () => {
   if (demoNoticeDismissed) return null;
 
   return (
-    <div className="relative isolate flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-slate-200 dark:border-white/[0.06] bg-slate-50/80 dark:bg-[#0d0f15] px-4 py-2 sm:px-6 text-xs transition-colors">
+    <div className="relative isolate flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-[#090a0f] px-4 py-2 sm:px-6 text-xs transition-colors">
       <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
         <span className="flex h-5 items-center gap-1.5 rounded border border-slate-300 dark:border-white/[0.1] bg-white dark:bg-white/[0.04] px-1.5 font-mono text-[10px] font-medium uppercase tracking-wider text-slate-600 dark:text-slate-300">
           Demo

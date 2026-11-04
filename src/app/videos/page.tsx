@@ -31,7 +31,7 @@ type SortField = 'publishedAt' | 'views' | 'ctr' | 'avgViewPercentage' | 'watchT
 type FilterType = 'all' | 'outliers' | 'high_ctr' | 'high_retention' | 'top_earners';
 
 export default function VideosPage() {
-  const { addIdea, showToast, searchQuery } = useApp();
+  const { addIdea, showToast, searchQuery, channelVideos, selectedChannel } = useApp();
   const [search, setSearch] = useState(searchQuery || '');
   const [filterType, setFilterType] = useState<FilterType>('all');
   const [sortField, setSortField] = useState<SortField>('views');
@@ -45,9 +45,9 @@ export default function VideosPage() {
     }
   }, [searchQuery]);
 
-  // Outlier & 1 of 10 Computations
-  const outlierMap = useMemo(() => calculateOutlierMetrics(DEMO_VIDEOS), []);
-  const oneOfTenAudit = useMemo(() => calculateOneOfTenRank(DEMO_VIDEOS), []);
+  // Outlier & 1 of 10 Computations (Dynamically adapts per selected channel)
+  const outlierMap = useMemo(() => calculateOutlierMetrics(channelVideos), [channelVideos]);
+  const oneOfTenAudit = useMemo(() => calculateOneOfTenRank(channelVideos), [channelVideos]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -60,7 +60,7 @@ export default function VideosPage() {
 
   // Filter & Sort Pipeline
   const filteredAndSortedVideos = useMemo(() => {
-    let result = DEMO_VIDEOS.filter((v) => {
+    let result = channelVideos.filter((v) => {
       const q = search.toLowerCase().trim();
       const matchesSearch =
         !q ||
@@ -81,27 +81,27 @@ export default function VideosPage() {
       if (sortField === 'publishedAt') {
         comparison = new Date(a.publishedAt).getTime() - new Date(b.publishedAt).getTime();
       } else {
-        comparison = a[sortField] - b[sortField];
+        comparison = (a[sortField] as number) - (b[sortField] as number);
       }
       return sortOrder === 'desc' ? -comparison : comparison;
     });
 
     return result;
-  }, [search, filterType, sortField, sortOrder, outlierMap]);
+  }, [channelVideos, search, filterType, sortField, sortOrder, outlierMap]);
 
   // Filter counts
   const counts = useMemo(() => {
     return {
-      all: DEMO_VIDEOS.length,
-      outliers: DEMO_VIDEOS.filter((v) => {
+      all: channelVideos.length,
+      outliers: channelVideos.filter((v) => {
         const o = outlierMap.get(v.id);
         return o && o.tier !== 'normal';
       }).length,
-      high_ctr: DEMO_VIDEOS.filter((v) => v.ctr >= 9.0).length,
-      high_retention: DEMO_VIDEOS.filter((v) => v.avgViewPercentage >= 50.0).length,
-      top_earners: DEMO_VIDEOS.filter((v) => v.estimatedRevenue >= 400).length,
+      high_ctr: channelVideos.filter((v) => v.ctr >= 9.0).length,
+      high_retention: channelVideos.filter((v) => v.avgViewPercentage >= 50.0).length,
+      top_earners: channelVideos.filter((v) => v.estimatedRevenue >= 400).length,
     };
-  }, [outlierMap]);
+  }, [channelVideos, outlierMap]);
 
   const handleSaveToVault = (video: VideoItem) => {
     addIdea({
@@ -143,7 +143,7 @@ export default function VideosPage() {
                 Video Performance & Velocity
               </h1>
               <span className="font-mono text-[10px] font-semibold text-slate-500 bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] px-2 py-0.5 rounded uppercase">
-                {DEMO_VIDEOS.length} Assets
+                {channelVideos.length} Assets • {selectedChannel.name}
               </span>
             </div>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">

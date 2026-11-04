@@ -136,7 +136,8 @@ export default function WatchHoursPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" strokeOpacity={0.05} vertical={false} />
                   <XAxis
                     dataKey="date"
-                    interval={calculateXAxisInterval(currentDailyData.length, 7)}
+                    minTickGap={36}
+                    interval="preserveStartEnd"
                     tickFormatter={(val) => {
                       if (!val) return '';
                       const parts = val.split('-');

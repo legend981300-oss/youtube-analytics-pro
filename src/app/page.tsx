@@ -37,7 +37,7 @@ import { ThumbnailImage } from '@/components/ui/ThumbnailImage';
 import { VideoItem } from '@/types';
 
 export default function DashboardOverviewPage() {
-  const { selectedChannel, dateRange, goals, showToast } = useApp();
+  const { selectedChannel, dateRange, goals, showToast, channelVideos } = useApp();
   const [selectedMetric, setSelectedMetric] = useState<'views' | 'netSubscribers' | 'watchHours' | 'estimatedRevenue'>('views');
   const [activeVideoModal, setActiveVideoModal] = useState<VideoItem | null>(null);
 
@@ -199,7 +199,8 @@ export default function DashboardOverviewPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" strokeOpacity={0.03} vertical={false} />
                   <XAxis
                     dataKey="date"
-                    interval={calculateXAxisInterval(currentDailyData.length, 7)}
+                    minTickGap={36}
+                    interval="preserveStartEnd"
                     tickFormatter={(val) => {
                       if (!val) return '';
                       const parts = val.split('-');
@@ -276,7 +277,7 @@ export default function DashboardOverviewPage() {
             </div>
 
             <div className="mt-3 divide-y divide-slate-100 dark:divide-white/[0.04]">
-              {DEMO_VIDEOS.slice(0, 4).map((video, idx) => (
+              {channelVideos.slice(0, 4).map((video, idx) => (
                 <div
                   key={video.id}
                   onClick={() => setActiveVideoModal(video)}

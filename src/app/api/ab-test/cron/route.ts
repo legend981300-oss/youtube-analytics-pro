@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { calculateStatisticalSignificance } from '@/lib/ab-test-engine';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,51 +42,7 @@ interface RotationResult {
   message: string;
 }
 
-/**
- * Calculates statistical significance between two conversion rates (CTR) using a two-proportion Z-test.
- * Returns Z-score and estimated confidence percentage (e.g. 95.4%).
- */
-function calculateStatisticalSignificance(
-  viewsA: number,
-  impressionsA: number,
-  viewsB: number,
-  impressionsB: number
-): { zScore: number; confidenceScore: number; pValue: number } {
-  if (impressionsA < 50 || impressionsB < 50) {
-    return { zScore: 0, confidenceScore: 0, pValue: 1 };
-  }
 
-  const pA = viewsA / impressionsA;
-  const pB = viewsB / impressionsB;
-
-  // Pooled proportion
-  const pPooled = (viewsA + viewsB) / (impressionsA + impressionsB);
-
-  // Standard error
-  const standardError = Math.sqrt(
-    pPooled * (1 - pPooled) * (1 / impressionsA + 1 / impressionsB)
-  );
-
-  if (standardError === 0) {
-    return { zScore: 0, confidenceScore: 0, pValue: 1 };
-  }
-
-  const zScore = Math.abs(pB - pA) / standardError;
-
-  // Approximate normal cumulative distribution function (CDF)
-  // Φ(x) using Taylor series / rational approximation
-  const t = 1.0 / (1.0 + 0.2316419 * zScore);
-  const d = 0.3989423 * Math.exp((-zScore * zScore) / 2);
-  const pOneTailed =
-    d *
-    t *
-    (0.3193815 +
-      t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
-  const pValue = Math.min(1, Math.max(0, 2 * pOneTailed));
-  const confidenceScore = parseFloat(Math.max(0, (1 - pValue) * 100).toFixed(1));
-
-  return { zScore, confidenceScore, pValue };
-}
 
 /**
  * Refreshes an expired Google OAuth access token using the stored refresh token.

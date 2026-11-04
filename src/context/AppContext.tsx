@@ -9,6 +9,7 @@ import {
   CalendarEvent,
   NotificationItem,
   UserProfile,
+  VideoItem,
 } from '@/types';
 import {
   DEMO_CHANNELS,
@@ -17,6 +18,7 @@ import {
   DEMO_GOALS,
   DEMO_CALENDAR_EVENTS,
   DEMO_NOTIFICATIONS,
+  getVideosForChannel,
 } from '@/lib/demo-data';
 import { ToastContainer, ToastMessage } from '@/components/ui/Toast';
 
@@ -27,6 +29,7 @@ interface AppContextType {
   setSelectedChannel: (channel: Channel) => void;
   channels: Channel[];
   addNewChannel: (name: string, handle: string, category: string) => void;
+  channelVideos: VideoItem[];
   dateRange: DateRange;
   setDateRange: (range: DateRange) => void;
   notifications: NotificationItem[];
@@ -67,6 +70,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [demoNoticeDismissed, setDemoNoticeDismissed] = useState<boolean>(false);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
+
+  // Dynamically resolve videos specific to selected multi-niche channel
+  const channelVideos = React.useMemo(
+    () => getVideosForChannel(selectedChannel.id),
+    [selectedChannel.id]
+  );
 
   // Initialize theme and hydrate local state from storage
   useEffect(() => {
@@ -282,6 +291,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setSelectedChannel,
         channels,
         addNewChannel,
+        channelVideos,
         dateRange,
         setDateRange,
         notifications,
