@@ -365,7 +365,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <Bell className="h-3.5 w-3.5" />
             {unreadCount > 0 && (
-              <span className="absolute top-1.5 right-1.5 flex h-1.5 w-1.5 rounded-full bg-[#ff0033]" />
+              <span className="absolute top-1.5 right-1.5 flex h-1.5 w-1.5 rounded-full bg-indigo-500" />
             )}
           </button>
 
@@ -377,7 +377,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     Notifications
                   </span>
                   {unreadCount > 0 && (
-                    <span className="rounded bg-[#ff0033]/10 px-1.5 py-0.2 font-mono text-[9px] font-semibold text-[#ff0033]">
+                    <span className="rounded bg-indigo-500/10 px-1.5 py-0.2 font-mono text-[9px] font-semibold text-indigo-400 border border-indigo-500/20">
                       {unreadCount} new
                     </span>
                   )}

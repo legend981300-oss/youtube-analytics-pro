@@ -152,7 +152,7 @@ export const Sidebar: React.FC<{ onCloseMobile?: () => void }> = ({ onCloseMobil
                   <img src={ch.avatar} alt="" className="h-4 w-4 rounded object-cover" />
                   <span className="truncate">{ch.name}</span>
                 </div>
-                {selectedChannel.id === ch.id && <Check className="h-3 w-3 shrink-0 text-[#ff0033]" />}
+                {selectedChannel.id === ch.id && <Check className="h-3 w-3 shrink-0 text-indigo-400" />}
               </button>
             ))}
             <div className="mt-1 pt-1 border-t border-slate-100 dark:border-white/[0.06]">
@@ -198,7 +198,7 @@ export const Sidebar: React.FC<{ onCloseMobile?: () => void }> = ({ onCloseMobil
                       className={cn(
                         'h-4 w-4 shrink-0 stroke-[1.5]',
                         isActive
-                          ? 'text-[#ff0033]'
+                          ? 'text-indigo-400'
                           : 'text-slate-400 group-hover:text-slate-600 dark:text-zinc-500 dark:group-hover:text-zinc-300'
                       )}
                     />
