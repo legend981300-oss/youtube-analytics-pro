@@ -57,29 +57,40 @@ export const Sidebar: React.FC<{ onCloseMobile?: () => void }> = ({ onCloseMobil
 
   const sections: NavSection[] = [
     {
-      title: 'Core Telemetry',
+      title: 'CORE TELEMETRY',
       items: [
         { name: 'Dashboard', href: '/', icon: LayoutDashboard },
         { name: 'Video Hub & Radar', href: '/videos', icon: Film },
-        { name: 'Audience & Growth', href: '/subscribers', icon: Users },
+        { name: 'Views Telemetry', href: '/views', icon: Eye },
+        { name: 'Watch Time', href: '/watch-hours', icon: Clock },
+        { name: 'Subscribers & Reach', href: '/subscribers', icon: Users },
         { name: 'Revenue & RPM', href: '/revenue', icon: DollarSign },
+        { name: 'Shorts Velocity', href: '/shorts', icon: Zap },
       ],
     },
     {
-      title: 'Growth & Intelligence',
+      title: 'GROWTH & INTELLIGENCE',
       items: [
         { name: 'AI Creative Studio', href: '/ai-studio', icon: Sparkles, badge: 'AI' },
         { name: 'A/B Testing Lab', href: '/ab-testing', icon: Split, badge: 'PRO' },
         { name: 'SEO & Metadata', href: '/seo', icon: Search },
+        { name: 'Thumbnail Scorecard', href: '/thumbnails', icon: ImageIcon },
+        { name: 'Competitor Matrix', href: '/comparison', icon: GitCompare },
+        { name: 'Growth Predictions', href: '/predictions', icon: TrendingUp },
+        { name: 'Milestone Goals', href: '/goals', icon: Target },
         { name: 'Idea Vault Kanban', href: '/vault', icon: FolderKanban },
       ],
     },
     {
-      title: 'Creator Operations',
+      title: 'CREATOR OPERATIONS',
       items: [
         { name: 'Sponsor Media Kit', href: '/media-kit', icon: Award },
         { name: 'Content Calendar', href: '/calendar', icon: Calendar },
+        { name: 'Comments & Sentiment', href: '/comments', icon: MessageSquare },
         { name: 'Channel Health Audit', href: '/audit', icon: Activity },
+        { name: 'Channels Hub', href: '/channels', icon: Tv2 },
+        { name: 'Reports & Export', href: '/reports', icon: FileSpreadsheet },
+        { name: 'Pricing Plans', href: '/pricing', icon: CreditCard },
         { name: 'Settings & Cloud DB', href: '/settings', icon: Settings },
       ],
     },
@@ -162,7 +173,7 @@ export const Sidebar: React.FC<{ onCloseMobile?: () => void }> = ({ onCloseMobil
       <nav className="flex-1 overflow-y-auto px-2.5 py-3 space-y-4 scrollbar-thin">
         {sections.map((sec, idx) => (
           <div key={idx} className="space-y-0.5">
-            <div className="px-2.5 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-neutral-500">
+            <div className="px-2.5 pb-1.5 pt-1 text-[9.5px] font-medium uppercase tracking-widest text-slate-400/50 dark:text-zinc-500/50 select-none">
               {sec.title}
             </div>
             {sec.items.map((item) => {
@@ -174,19 +185,19 @@ export const Sidebar: React.FC<{ onCloseMobile?: () => void }> = ({ onCloseMobil
                   href={item.href}
                   onClick={onCloseMobile}
                   className={cn(
-                    'group flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors',
+                    'group flex w-full items-center justify-between rounded-md px-2.5 py-1.5 text-xs text-left transition-colors duration-150',
                     isActive
-                      ? 'bg-slate-100 text-slate-900 dark:bg-white/[0.08] dark:text-white font-semibold'
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-neutral-400 dark:hover:bg-white/[0.04] dark:hover:text-neutral-200'
+                      ? 'bg-slate-100 font-medium text-slate-900 dark:bg-white/[0.08] dark:text-white'
+                      : 'font-normal text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.04] dark:hover:text-zinc-100'
                   )}
                 >
-                  <div className="flex items-center gap-2.5 truncate">
+                  <div className="flex items-center gap-2.5 min-w-0 truncate text-left">
                     <Icon
                       className={cn(
-                        'h-4 w-4 shrink-0 stroke-[1.75]',
+                        'h-4 w-4 shrink-0 stroke-[1.5]',
                         isActive
                           ? 'text-[#ff0033]'
-                          : 'text-slate-400 group-hover:text-slate-600 dark:text-neutral-500 dark:group-hover:text-neutral-300'
+                          : 'text-slate-400 group-hover:text-slate-600 dark:text-zinc-500 dark:group-hover:text-zinc-300'
                       )}
                     />
                     <span className="truncate">{item.name}</span>
@@ -194,10 +205,10 @@ export const Sidebar: React.FC<{ onCloseMobile?: () => void }> = ({ onCloseMobil
                   {item.badge && (
                     <span
                       className={cn(
-                        'rounded px-1.5 py-0.2 text-[9px] font-bold tracking-wider',
+                        'shrink-0 rounded px-1.5 py-0.5 text-[9px] font-semibold tracking-wider',
                         isActive
                           ? 'bg-[#ff0033]/20 text-[#ff0033]'
-                          : 'bg-slate-100 text-slate-500 dark:bg-white/[0.06] dark:text-neutral-400'
+                          : 'bg-slate-100 text-slate-500 dark:bg-white/[0.06] dark:text-zinc-400'
                       )}
                     >
                       {item.badge}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { LucideIcon, TrendingUp, TrendingDown, Minus } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, formatNumber } from '@/lib/utils';
 import { AnimatedNumber } from './AnimatedNumber';
 
 interface StatCardProps {
@@ -29,6 +29,9 @@ export const StatCard: React.FC<StatCardProps> = ({
   const isNegative = change !== undefined && change < 0;
   const isNeutral = change !== undefined && change === 0;
 
+  // Format large raw integers dynamically to standard short-scale units (K, M, B)
+  const formattedValue = typeof value === 'number' ? formatNumber(value) : value;
+
   return (
     <div
       className={cn(
@@ -50,7 +53,7 @@ export const StatCard: React.FC<StatCardProps> = ({
           </div>
           <div className="pt-1">
             <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white tabular-nums font-mono">
-              <AnimatedNumber value={value} />
+              <AnimatedNumber value={formattedValue} />
             </h3>
           </div>
         </div>
@@ -65,10 +68,10 @@ export const StatCard: React.FC<StatCardProps> = ({
           <div className="flex items-center gap-2">
             <span
               className={cn(
-                'inline-flex items-center gap-1 font-semibold text-xs',
-                isPositive && 'text-emerald-600 dark:text-emerald-400',
-                isNegative && 'text-rose-600 dark:text-rose-400',
-                isNeutral && 'text-slate-500 dark:text-neutral-400'
+                'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium border transition-colors',
+                isPositive && 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
+                isNegative && 'bg-rose-500/10 border-rose-500/20 text-rose-400',
+                isNeutral && 'bg-zinc-500/10 border-zinc-500/20 text-zinc-400'
               )}
             >
               {isPositive && <TrendingUp className="h-3 w-3 stroke-[2]" />}

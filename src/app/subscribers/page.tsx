@@ -15,7 +15,7 @@ import {
   Legend,
 } from 'recharts';
 import { useApp } from '@/context/AppContext';
-import { formatNumber, formatDate, exportToCSV } from '@/lib/utils';
+import { formatNumber, formatDate, exportToCSV, calculateXAxisInterval } from '@/lib/utils';
 import { DEMO_DAILY_DATA, getDataForRange } from '@/lib/demo-data';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -142,18 +142,35 @@ export default function SubscribersPage() {
           </div>
 
           <div className="mt-4">
-            <ChartWrapper heightClass="h-72 sm:h-80">
-              <ResponsiveContainer width="100%" height="100%">
+            <ChartWrapper heightClass="h-72 sm:h-80" minHeight={320}>
+              <ResponsiveContainer width="100%" height={320}>
                 <BarChart data={currentDailyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" opacity={0.05} vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" strokeOpacity={0.05} vertical={false} />
                   <XAxis
                     dataKey="date"
-                    tickFormatter={(val) => val.slice(5)}
-                    tick={{ fill: '#64748b', fontSize: 11, fontFamily: 'monospace' }}
-                    stroke="#222"
+                    interval={calculateXAxisInterval(currentDailyData.length, 7)}
+                    tickFormatter={(val) => {
+                      if (!val) return '';
+                      const parts = val.split('-');
+                      if (parts.length === 3) {
+                        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                        const m = months[parseInt(parts[1], 10) - 1] || parts[1];
+                        return `${m} ${parseInt(parts[2], 10)}`;
+                      }
+                      return val.slice(5);
+                    }}
+                    tick={{ fill: '#71717a', fontSize: 11, fontFamily: 'monospace' }}
+                    stroke="#27272a"
                     tickLine={false}
+                    dy={4}
                   />
-                  <YAxis tick={{ fill: '#64748b', fontSize: 11, fontFamily: 'monospace' }} stroke="#222" tickLine={false} />
+                  <YAxis
+                    tickFormatter={(val) => formatNumber(val)}
+                    tick={{ fill: '#71717a', fontSize: 11, fontFamily: 'monospace' }}
+                    stroke="#27272a"
+                    tickLine={false}
+                    dx={-4}
+                  />
                   <Tooltip
                     content={({ active, payload, label }) => {
                       if (!active || !payload?.length) return null;

@@ -17,25 +17,33 @@ export const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
   const prevValueRef = useRef<number>(0);
   const animationFrameRef = useRef<number | null>(null);
 
-  // Parse raw value string into components
+  // Parse raw value string into components preserving standard short-scale units (K, M, B)
   const parseValue = (raw: string | number) => {
     const str = String(raw).trim();
-    const hasDollar = str.startsWith('$');
-    const hasPercent = str.endsWith('%');
-    const hasHours = str.endsWith('h');
+    
+    // Extract prefix like '$' or '+'
+    const prefixMatch = str.match(/^([+$]+)/);
+    const prefix = prefixMatch ? prefixMatch[1] : '';
+
+    // Extract suffix like 'K', 'M', 'B', '%', 'h', 'x'
+    const suffixMatch = str.match(/([a-zA-Z%]+)$/);
+    const suffix = suffixMatch ? suffixMatch[1] : '';
 
     // Extract numeric core
-    const numericClean = str.replace(/[^0-9.-]+/g, '');
+    const numericClean = str
+      .slice(prefix.length, suffix ? str.length - suffix.length : undefined)
+      .replace(/,/g, '')
+      .trim();
     const num = parseFloat(numericClean);
 
     const hasDecimals = numericClean.includes('.');
-    const decimalPlaces = hasDecimals ? numericClean.split('.')[1].length : 0;
+    const decimalPlaces = hasDecimals ? (numericClean.split('.')[1] || '').length : 0;
 
     return {
       isValid: !isNaN(num),
       numeric: isNaN(num) ? 0 : num,
-      prefix: hasDollar ? '$' : '',
-      suffix: hasPercent ? '%' : hasHours ? 'h' : '',
+      prefix,
+      suffix,
       decimalPlaces,
       hasCommas: str.includes(','),
       original: str,

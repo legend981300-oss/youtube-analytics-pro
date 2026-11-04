@@ -114,3 +114,13 @@ export function exportToCSV<T extends Record<string, any>>(filename: string, row
 }
 
 export const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * Calculates optimal step interval for Recharts XAxis ticks.
+ * Ensures date labels never collide or crowd the horizontal axis regardless of range (7d, 28d, 90d, 365d).
+ */
+export function calculateXAxisInterval(dataLength: number, maxTicks = 7): number {
+  if (!dataLength || dataLength <= maxTicks) return 0;
+  return Math.max(1, Math.floor(dataLength / maxTicks));
+}
+

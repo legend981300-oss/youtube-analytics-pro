@@ -16,7 +16,7 @@ import {
   CartesianGrid,
 } from 'recharts';
 import { useApp } from '@/context/AppContext';
-import { formatNumber, formatDate, exportToCSV } from '@/lib/utils';
+import { formatNumber, formatDate, exportToCSV, calculateXAxisInterval } from '@/lib/utils';
 import { DEMO_DAILY_DATA, AUDIENCE_DEMOGRAPHICS, getDataForRange } from '@/lib/demo-data';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -123,26 +123,41 @@ export default function WatchHoursPage() {
           </div>
 
           <div className="mt-4">
-            <ChartWrapper heightClass="h-72 sm:h-80">
-              <ResponsiveContainer width="100%" height="100%">
+            <ChartWrapper heightClass="h-72 sm:h-80" minHeight={320}>
+              <ResponsiveContainer width="100%" height={320}>
                 <AreaChart data={currentDailyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="hoursEmerald" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.4} />
-                      <stop offset="95%" stopColor="#10b981" stopOpacity={0.0} />
+                      <stop offset="0%" stopColor="#10b981" stopOpacity={0.35} />
+                      <stop offset="50%" stopColor="#10b981" stopOpacity={0.10} />
+                      <stop offset="100%" stopColor="#10b981" stopOpacity={0.0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#222f52" opacity={0.3} vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" strokeOpacity={0.05} vertical={false} />
                   <XAxis
                     dataKey="date"
-                    tickFormatter={(val) => val.slice(5)}
-                    tick={{ fill: '#64748b', fontSize: 11 }}
-                    stroke="#334155"
+                    interval={calculateXAxisInterval(currentDailyData.length, 7)}
+                    tickFormatter={(val) => {
+                      if (!val) return '';
+                      const parts = val.split('-');
+                      if (parts.length === 3) {
+                        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                        const m = months[parseInt(parts[1], 10) - 1] || parts[1];
+                        return `${m} ${parseInt(parts[2], 10)}`;
+                      }
+                      return val.slice(5);
+                    }}
+                    tick={{ fill: '#71717a', fontSize: 11, fontFamily: 'monospace' }}
+                    stroke="#27272a"
+                    tickLine={false}
+                    dy={4}
                   />
                   <YAxis
                     tickFormatter={(val) => `${formatNumber(val)}h`}
-                    tick={{ fill: '#64748b', fontSize: 11 }}
-                    stroke="#334155"
+                    tick={{ fill: '#71717a', fontSize: 11, fontFamily: 'monospace' }}
+                    stroke="#27272a"
+                    tickLine={false}
+                    dx={-4}
                   />
                   <Tooltip
                     formatter={(val: any) => [`${formatNumber(Number(val))} Hours`, 'Watch Time']}
@@ -152,7 +167,7 @@ export default function WatchHoursPage() {
                     type="monotone"
                     dataKey="watchHours"
                     stroke="#10b981"
-                    strokeWidth={2.5}
+                    strokeWidth={2}
                     fillOpacity={1}
                     fill="url(#hoursEmerald)"
                   />

@@ -17,7 +17,7 @@ import {
   Cell,
 } from 'recharts';
 import { useApp } from '@/context/AppContext';
-import { formatNumber, formatCurrency, formatDate, exportToCSV } from '@/lib/utils';
+import { formatNumber, formatCurrency, formatDate, exportToCSV, calculateXAxisInterval } from '@/lib/utils';
 import { DEMO_DAILY_DATA, DEMO_VIDEOS, getDataForRange } from '@/lib/demo-data';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -116,28 +116,41 @@ export default function RevenuePage() {
           </div>
 
           <div className="mt-4">
-            <ChartWrapper heightClass="h-72 sm:h-80">
-              <ResponsiveContainer width="100%" height="100%">
+            <ChartWrapper heightClass="h-72 sm:h-80" minHeight={320}>
+              <ResponsiveContainer width="100%" height={320}>
                 <AreaChart data={currentDailyData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                   <defs>
                     <linearGradient id="revenuePurple" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#a855f7" stopOpacity={0.2} />
-                      <stop offset="95%" stopColor="#a855f7" stopOpacity={0.0} />
+                      <stop offset="0%" stopColor="#a855f7" stopOpacity={0.35} />
+                      <stop offset="50%" stopColor="#a855f7" stopOpacity={0.10} />
+                      <stop offset="100%" stopColor="#a855f7" stopOpacity={0.0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" opacity={0.05} vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" strokeOpacity={0.05} vertical={false} />
                   <XAxis
                     dataKey="date"
-                    tickFormatter={(val) => val.slice(5)}
-                    tick={{ fill: '#64748b', fontSize: 11, fontFamily: 'monospace' }}
-                    stroke="#222"
+                    interval={calculateXAxisInterval(currentDailyData.length, 7)}
+                    tickFormatter={(val) => {
+                      if (!val) return '';
+                      const parts = val.split('-');
+                      if (parts.length === 3) {
+                        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                        const m = months[parseInt(parts[1], 10) - 1] || parts[1];
+                        return `${m} ${parseInt(parts[2], 10)}`;
+                      }
+                      return val.slice(5);
+                    }}
+                    tick={{ fill: '#71717a', fontSize: 11, fontFamily: 'monospace' }}
+                    stroke="#27272a"
                     tickLine={false}
+                    dy={4}
                   />
                   <YAxis
                     tickFormatter={(val) => formatCurrency(val)}
-                    tick={{ fill: '#64748b', fontSize: 11, fontFamily: 'monospace' }}
-                    stroke="#222"
+                    tick={{ fill: '#71717a', fontSize: 11, fontFamily: 'monospace' }}
+                    stroke="#27272a"
                     tickLine={false}
+                    dx={-4}
                   />
                   <Tooltip
                     content={({ active, payload, label }) => {
@@ -157,7 +170,7 @@ export default function RevenuePage() {
                     isAnimationActive={false}
                     dataKey="estimatedRevenue"
                     stroke="#a855f7"
-                    strokeWidth={1.75}
+                    strokeWidth={2}
                     fillOpacity={1}
                     fill="url(#revenuePurple)"
                   />

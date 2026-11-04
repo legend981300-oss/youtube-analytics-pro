@@ -116,8 +116,8 @@ export default function ShortsPage() {
           </div>
 
           <div className="mt-4">
-            <ChartWrapper heightClass="h-64 sm:h-72">
-              <ResponsiveContainer width="100%" height="100%">
+            <ChartWrapper heightClass="h-64 sm:h-72" minHeight={280}>
+              <ResponsiveContainer width="100%" height={280}>
                 <BarChart data={shortsChartData} layout="vertical" margin={{ top: 10, right: 30, left: 40, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#222f52" opacity={0.3} horizontal={false} />
                   <XAxis type="number" domain={[0, 100]} tick={{ fill: '#64748b', fontSize: 11 }} stroke="#334155" />

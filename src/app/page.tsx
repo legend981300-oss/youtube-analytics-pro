@@ -26,7 +26,7 @@ import {
   CartesianGrid,
 } from 'recharts';
 import { useApp } from '@/context/AppContext';
-import { formatNumber, formatCurrency, formatDate, exportToCSV } from '@/lib/utils';
+import { formatNumber, formatCurrency, formatDate, exportToCSV, calculateXAxisInterval } from '@/lib/utils';
 import { DEMO_DAILY_DATA, DEMO_VIDEOS, getDataForRange } from '@/lib/demo-data';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/Badge';
@@ -119,14 +119,14 @@ export default function DashboardOverviewPage() {
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
             title="Subscribers"
-            value={formatNumber(selectedChannel.subscribers)}
+            value={selectedChannel.subscribers}
             change={14.2}
             icon={Users}
             subtitle={`+${formatNumber(totalNetSubs)} this period`}
           />
           <StatCard
             title="Total Views"
-            value={formatNumber(totalViews)}
+            value={totalViews}
             change={22.8}
             icon={Eye}
             subtitle="Avg 19.4k views / day"
@@ -190,23 +190,36 @@ export default function DashboardOverviewPage() {
                 <AreaChart data={currentDailyData} margin={{ top: 15, right: 15, left: -10, bottom: 5 }}>
                   <defs>
                     <linearGradient id={currentConfig.gradientId} x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={currentConfig.color} stopOpacity={0.25} />
-                      <stop offset="95%" stopColor={currentConfig.color} stopOpacity={0.0} />
+                      <stop offset="0%" stopColor={currentConfig.color} stopOpacity={0.35} />
+                      <stop offset="50%" stopColor={currentConfig.color} stopOpacity={0.10} />
+                      <stop offset="100%" stopColor={currentConfig.color} stopOpacity={0.0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" opacity={0.06} vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" strokeOpacity={0.05} vertical={false} />
                   <XAxis
                     dataKey="date"
-                    tickFormatter={(val) => val.slice(5)}
-                    tick={{ fill: '#64748b', fontSize: 11, fontFamily: 'monospace' }}
-                    stroke="#222"
+                    interval={calculateXAxisInterval(currentDailyData.length, 7)}
+                    tickFormatter={(val) => {
+                      if (!val) return '';
+                      const parts = val.split('-');
+                      if (parts.length === 3) {
+                        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                        const m = months[parseInt(parts[1], 10) - 1] || parts[1];
+                        return `${m} ${parseInt(parts[2], 10)}`;
+                      }
+                      return val.slice(5);
+                    }}
+                    tick={{ fill: '#71717a', fontSize: 11, fontFamily: 'monospace' }}
+                    stroke="#27272a"
                     tickLine={false}
+                    dy={4}
                   />
                   <YAxis
                     tickFormatter={currentConfig.formatter}
-                    tick={{ fill: '#64748b', fontSize: 11, fontFamily: 'monospace' }}
-                    stroke="#222"
+                    tick={{ fill: '#71717a', fontSize: 11, fontFamily: 'monospace' }}
+                    stroke="#27272a"
                     tickLine={false}
+                    dx={-4}
                   />
                   <Tooltip
                     content={({ active, payload, label }) => {
