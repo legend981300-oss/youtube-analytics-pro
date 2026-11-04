@@ -225,3 +225,73 @@ describe('Multi-Niche Channel Catalog Engine', () => {
     assert.strictEqual(videos[0].tags[0], 'SaaS');
   });
 });
+
+// 7. SPONSORSHIP RATE CARD MATH ENGINE
+describe('Sponsorship Rate Card Math Engine', () => {
+  function calculateSponsorshipRates(projectedViews, cpm) {
+    const baseline = (projectedViews / 1000) * cpm;
+    return {
+      midRoll: Math.round(baseline),
+      dedicated: Math.round(baseline * 2.4),
+      preRoll: Math.round(baseline * 0.6),
+      short: Math.round(baseline * 0.45),
+    };
+  }
+
+  test('calculates correct mid-roll and dedicated rates for 50k views at $30 CPM', () => {
+    const rates = calculateSponsorshipRates(50000, 30);
+    // baseline = 50 * 30 = 1500
+    assert.strictEqual(rates.midRoll, 1500);
+    assert.strictEqual(rates.dedicated, 3600); // 1500 * 2.4
+    assert.strictEqual(rates.preRoll, 900);    // 1500 * 0.6
+    assert.strictEqual(rates.short, 675);     // 1500 * 0.45
+  });
+
+  test('handles lower view volume gracefully without negative or fractional rates', () => {
+    const rates = calculateSponsorshipRates(10000, 20);
+    assert.strictEqual(rates.midRoll, 200);
+    assert.strictEqual(rates.dedicated, 480);
+    assert.ok(rates.short > 0);
+  });
+});
+
+// 8. HEURISTIC TITLE OPTIMIZATION SCORER
+describe('Heuristic Title Optimization Scorer Engine', () => {
+  function scoreTitle(title) {
+    if (!title) return { score: 0 };
+    const lower = title.toLowerCase();
+    const powerWords = ['stop', 'wrong', 'secret', 'never', 'how i', 'blueprint', 'tested', 'insane', 'proven', 'shocking'];
+    const curiosityHooks = ['why', 'nobody', 'talking about', 'truth about', 'revealed', 'vs'];
+
+    const hasPower = powerWords.some((pw) => lower.includes(pw));
+    const hasCuriosity = curiosityHooks.some((hook) => lower.includes(hook));
+    const len = title.length;
+    const isOptimalLength = len >= 40 && len <= 65;
+
+    let score = 50;
+    if (isOptimalLength) score += 20;
+    else if (len >= 30 && len <= 75) score += 10;
+    else score -= 15;
+
+    if (hasPower) score += 15;
+    if (hasCuriosity) score += 15;
+
+    return { score: Math.min(100, Math.max(0, score)), isOptimalLength, hasPower, hasCuriosity };
+  }
+
+  test('awards maximum score for optimal length, power word, and curiosity hook', () => {
+    const title = 'Stop Building SaaS Wrong! The Truth About Next.js in 2026';
+    const result = scoreTitle(title);
+    assert.strictEqual(result.isOptimalLength, true);
+    assert.strictEqual(result.hasPower, true);
+    assert.strictEqual(result.hasCuriosity, true);
+    assert.strictEqual(result.score, 100);
+  });
+
+  test('penalizes titles that are too short without triggers', () => {
+    const title = 'My Cool App';
+    const result = scoreTitle(title);
+    assert.strictEqual(result.isOptimalLength, false);
+    assert.ok(result.score < 50);
+  });
+});

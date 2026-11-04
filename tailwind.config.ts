@@ -25,13 +25,13 @@ const config: Config = {
         // Linear/Vercel Obsidian Dark Palette
         navy: {
           950: "#090a0f", // Main canvas background
-          900: "#0e1017", // Primary surface/panels
-          850: "#13151f", // Card surface
-          800: "#181a26", // Card hover
-          750: "#222536", // Border hover
-          700: "#2d3248", // Borders
-          600: "#444a69",
-          500: "#636c99",
+          900: "#0c0d12", // Primary surface/panels
+          850: "#101116", // Card surface
+          800: "#15161d", // Card hover
+          750: "#1e202a", // Border hover
+          700: "#262935", // Borders
+          600: "#3d4255",
+          500: "#5c6380",
         },
       },
       fontFamily: {

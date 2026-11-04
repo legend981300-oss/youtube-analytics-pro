@@ -18,6 +18,7 @@ import { Badge } from '@/components/ui/Badge';
 import { useApp } from '@/context/AppContext';
 import { ThumbnailImage } from '@/components/ui/ThumbnailImage';
 import { SearchFeedSimulator } from '@/components/ab-testing/SearchFeedSimulator';
+import { StatisticalSignificanceSimulator } from '@/components/ab-testing/StatisticalSignificanceSimulator';
 
 interface VariantData {
   title: string;
@@ -448,6 +449,14 @@ export default function AbTestingPage() {
           </div>
         </div>
 
+        {/* Interactive Statistical Significance Simulator */}
+        <StatisticalSignificanceSimulator
+          initialCtrA={parseFloat(statsA.predictedCtr.replace('%', '')) || 4.8}
+          initialCtrB={parseFloat(statsB.predictedCtr.replace('%', '')) || 6.2}
+          titleA={variantA.title}
+          titleB={variantB.title}
+        />
+
         {/* Live Feed Simulator Preview */}
         <div className="pro-card p-5 space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-white/[0.06]">
@@ -497,7 +506,7 @@ export default function AbTestingPage() {
 
             {/* Feed Card B */}
             <div className="rounded-lg border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-white/[0.02] p-2.5 space-y-2">
-              <span className="font-mono text-[9px] uppercase font-semibold text-[#ff0033]">
+              <span className="font-mono text-[9px] uppercase font-semibold text-indigo-400">
                 Feed Preview B
               </span>
               <div className="aspect-video overflow-hidden rounded-md border border-slate-200 dark:border-white/[0.08] bg-slate-200 dark:bg-[#0c0e14] relative">

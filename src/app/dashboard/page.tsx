@@ -57,7 +57,7 @@ export default function DashboardOverviewPage() {
     },
     netSubscribers: {
       label: 'Net Subscribers',
-      color: '#ff0033',
+      color: '#6366f1',
       gradientId: 'subsGrad',
       formatter: (v: number) => `+${formatNumber(v)}`,
     },
