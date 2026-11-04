@@ -208,9 +208,9 @@ export const SearchFeedSimulator: React.FC<SearchFeedSimulatorProps> = ({ varian
       </div>
 
       {/* Standout Rating Callout */}
-      <div className="mx-4 my-4 rounded-xl border border-brand-500/30 bg-gradient-to-r from-brand-500/10 via-indigo-500/5 to-transparent p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+      <div className="mx-4 my-4 rounded-xl border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-white/[0.02] p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-500 text-white shadow-glow-brand">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#ff0033] text-white">
             <Flame className="h-4 w-4" />
           </div>
           <div>

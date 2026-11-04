@@ -367,7 +367,7 @@ export const ChannelExplorerModal: React.FC<ChannelExplorerModalProps> = ({ isOp
                   <span className="text-xs font-normal text-slate-400">/100</span>
                 </div>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-indigo-600 text-white font-extrabold text-xl shadow-glow-brand">
+              <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-slate-900 dark:bg-white/[0.08] text-white border border-slate-700 dark:border-white/[0.12] font-mono font-bold text-lg">
                 {activeProfile.healthGrade}
               </div>
             </div>

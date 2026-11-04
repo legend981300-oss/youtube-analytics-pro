@@ -31,7 +31,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   }, []);
 
   return (
-    <div className="h-screen w-screen overflow-hidden bg-slate-50 text-slate-900 dark:bg-navy-950 dark:text-slate-100 flex font-sans transition-colors duration-200 relative select-text">
+    <div className="h-screen w-screen overflow-hidden bg-slate-50 text-slate-900 dark:bg-[#090a0f] dark:text-slate-100 flex font-sans transition-colors duration-200 relative select-text">
       {/* Dynamic Ambient Gradient Backdrop */}
       <AmbientBackdrop />
 
@@ -44,7 +44,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div
-            className="fixed inset-0 bg-navy-950/70 backdrop-blur-sm transition-opacity"
+            className="fixed inset-0 bg-black/60 backdrop-blur-[2px] transition-opacity"
             onClick={() => setMobileMenuOpen(false)}
           />
           <div className="fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85vw] flex-col shadow-2xl animate-fade-in">

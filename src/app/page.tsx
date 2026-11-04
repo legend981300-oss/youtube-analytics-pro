@@ -8,7 +8,6 @@ import {
   Eye,
   Clock,
   DollarSign,
-  TrendingUp,
   Play,
   ArrowUpRight,
   Sparkles,
@@ -58,7 +57,7 @@ export default function DashboardOverviewPage() {
     },
     netSubscribers: {
       label: 'Net Subscribers',
-      color: '#f43f5e',
+      color: '#ff0033',
       gradientId: 'subsGrad',
       formatter: (v: number) => `+${formatNumber(v)}`,
     },
@@ -81,30 +80,23 @@ export default function DashboardOverviewPage() {
   return (
     <AppShell>
       <div className="space-y-6">
-        {/* Welcome & Channel Quick Banner */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pb-2">
+        {/* Confident, Quiet Header */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between pb-1 border-b border-slate-200/80 dark:border-white/[0.06]">
           <div>
             <div className="flex items-center gap-2.5">
-              <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white sm:text-3xl">
-                Creator Command Center
+              <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">
+                Channel Overview
               </h1>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-red-500/30 bg-red-500/10 px-3 py-0.5 text-[10px] font-bold text-red-500 shadow-[0_0_12px_rgba(239,68,68,0.2)]">
-                <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" /> Live Pulse
+              <span className="font-mono text-[10px] uppercase font-semibold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] px-2 py-0.5 rounded">
+                Last {dateRange.toUpperCase()}
               </span>
-              <Badge variant="purple" size="sm">
-                Demo Simulation
-              </Badge>
             </div>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              Algorithmic performance overview for{' '}
-              <strong className="text-slate-800 dark:text-slate-200">
-                {selectedChannel.name}
-              </strong>{' '}
-              ({selectedChannel.handle}) across the last {dateRange.toUpperCase()}.
+              Performance metrics for <strong className="font-medium text-slate-900 dark:text-slate-200">{selectedChannel.name}</strong> ({selectedChannel.handle})
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
@@ -113,7 +105,7 @@ export default function DashboardOverviewPage() {
                 showToast('Export Complete', `Dashboard metrics exported (${dateRange.toUpperCase()})`, 'success');
               }}
             >
-              <Download className="h-3.5 w-3.5 mr-1" /> Export Data
+              <Download className="h-3.5 w-3.5 mr-1" /> Export CSV
             </Button>
             <Link href="/ai-studio">
               <Button size="sm">
@@ -124,13 +116,12 @@ export default function DashboardOverviewPage() {
         </div>
 
         {/* 4 Core KPI Stat Cards */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
             title="Subscribers"
             value={formatNumber(selectedChannel.subscribers)}
             change={14.2}
             icon={Users}
-            iconColor="text-rose-500"
             subtitle={`+${formatNumber(totalNetSubs)} this period`}
           />
           <StatCard
@@ -138,7 +129,6 @@ export default function DashboardOverviewPage() {
             value={formatNumber(totalViews)}
             change={22.8}
             icon={Eye}
-            iconColor="text-blue-500"
             subtitle="Avg 19.4k views / day"
           />
           <StatCard
@@ -146,7 +136,6 @@ export default function DashboardOverviewPage() {
             value={`${formatNumber(totalWatchHours)}h`}
             change={18.5}
             icon={Clock}
-            iconColor="text-emerald-500"
             subtitle="Avg view duration 7:42"
           />
           <StatCard
@@ -154,69 +143,43 @@ export default function DashboardOverviewPage() {
             value={formatCurrency(totalRevenue)}
             change={26.4}
             icon={DollarSign}
-            iconColor="text-purple-500"
             subtitle="RPM: $3.85 • CPM: $8.40"
-            badge="DEMO"
           />
         </div>
 
         {/* Interactive Main Analytics Chart Card */}
-        <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm dark:border-white/[0.08] dark:bg-navy-900/95 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-slate-100 dark:border-white/[0.08]">
+        <div className="pro-card p-5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-slate-100 dark:border-white/[0.06]">
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                  Growth & Trend Trajectory
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
+                  Trajectory & Volume
                 </h3>
-                <span className="text-xs text-slate-400">({currentConfig.label})</span>
+                <span className="font-mono text-xs text-slate-400">({currentConfig.label})</span>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Daily timeline performance across {dateRange.toUpperCase()}.
+                Daily telemetry data across the selected window.
               </p>
             </div>
 
-            {/* Metric Switcher Pills */}
-            <div className="flex flex-wrap items-center gap-1 rounded-2xl bg-slate-100 p-1 dark:bg-navy-900 border border-slate-200 dark:border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
-              <button
-                onClick={() => setSelectedMetric('views')}
-                className={`rounded-xl px-3 py-1.5 text-xs font-bold transition-all ${
-                  selectedMetric === 'views'
-                    ? 'bg-white text-blue-600 shadow-sm dark:bg-blue-600 dark:text-white dark:shadow-[0_0_15px_rgba(59,130,246,0.4)]'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                Views
-              </button>
-              <button
-                onClick={() => setSelectedMetric('netSubscribers')}
-                className={`rounded-xl px-3 py-1.5 text-xs font-bold transition-all ${
-                  selectedMetric === 'netSubscribers'
-                    ? 'bg-white text-rose-600 shadow-sm dark:bg-rose-600 dark:text-white dark:shadow-[0_0_15px_rgba(244,63,94,0.4)]'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                Subscribers
-              </button>
-              <button
-                onClick={() => setSelectedMetric('watchHours')}
-                className={`rounded-xl px-3 py-1.5 text-xs font-bold transition-all ${
-                  selectedMetric === 'watchHours'
-                    ? 'bg-white text-emerald-600 shadow-sm dark:bg-emerald-600 dark:text-white dark:shadow-[0_0_15px_rgba(16,185,129,0.4)]'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                Watch Hours
-              </button>
-              <button
-                onClick={() => setSelectedMetric('estimatedRevenue')}
-                className={`rounded-xl px-3 py-1.5 text-xs font-bold transition-all ${
-                  selectedMetric === 'estimatedRevenue'
-                    ? 'bg-white text-purple-600 shadow-sm dark:bg-purple-600 dark:text-white dark:shadow-[0_0_15px_rgba(168,85,247,0.4)]'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                Est. Revenue
-              </button>
+            {/* Segmented Metric Switcher */}
+            <div className="inline-flex rounded-lg bg-slate-100 dark:bg-[#090a0f] p-0.5 border border-slate-200 dark:border-white/[0.06]">
+              {(['views', 'netSubscribers', 'watchHours', 'estimatedRevenue'] as const).map((key) => {
+                const active = selectedMetric === key;
+                return (
+                  <button
+                    key={key}
+                    onClick={() => setSelectedMetric(key)}
+                    className={`rounded-md px-2.5 py-1 text-xs transition-colors font-medium ${
+                      active
+                        ? 'bg-white dark:bg-white/[0.1] text-slate-900 dark:text-white shadow-sm'
+                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                    }`}
+                  >
+                    {metricConfigs[key].label}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -227,34 +190,49 @@ export default function DashboardOverviewPage() {
                 <AreaChart data={currentDailyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id={currentConfig.gradientId} x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={currentConfig.color} stopOpacity={0.4} />
+                      <stop offset="5%" stopColor={currentConfig.color} stopOpacity={0.2} />
                       <stop offset="95%" stopColor={currentConfig.color} stopOpacity={0.0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#222f52" opacity={0.25} vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" opacity={0.05} vertical={false} />
                   <XAxis
                     dataKey="date"
                     tickFormatter={(val) => val.slice(5)}
-                    tick={{ fill: '#64748b', fontSize: 11, fontWeight: 600 }}
-                    stroke="#1e293b"
+                    tick={{ fill: '#64748b', fontSize: 11, fontFamily: 'monospace' }}
+                    stroke="#222"
                     tickLine={false}
                   />
                   <YAxis
                     tickFormatter={currentConfig.formatter}
-                    tick={{ fill: '#64748b', fontSize: 11, fontWeight: 600 }}
-                    stroke="#1e293b"
+                    tick={{ fill: '#64748b', fontSize: 11, fontFamily: 'monospace' }}
+                    stroke="#222"
                     tickLine={false}
                   />
                   <Tooltip
-                    formatter={(value: any) => [currentConfig.formatter(Number(value)), currentConfig.label]}
-                    labelFormatter={(label) => `Date: ${formatDate(String(label))}`}
+                    content={({ active, payload, label }) => {
+                      if (!active || !payload?.length) return null;
+                      const val = Number(payload[0].value);
+                      return (
+                        <div className="rounded-lg border border-slate-200 dark:border-white/[0.1] bg-white dark:bg-[#11131a] p-2.5 shadow-xl">
+                          <p className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                            {formatDate(String(label))}
+                          </p>
+                          <p className="font-mono text-sm font-semibold text-slate-900 dark:text-white mt-0.5">
+                            {currentConfig.formatter(val)}
+                            <span className="text-xs font-normal text-slate-400 ml-1.5 font-sans">
+                              {currentConfig.label}
+                            </span>
+                          </p>
+                        </div>
+                      );
+                    }}
                   />
                   <Area
                     type="monotone"
                     isAnimationActive={false}
                     dataKey={selectedMetric}
                     stroke={currentConfig.color}
-                    strokeWidth={2.5}
+                    strokeWidth={1.75}
                     fillOpacity={1}
                     fill={`url(#${currentConfig.gradientId})`}
                   />
@@ -267,50 +245,50 @@ export default function DashboardOverviewPage() {
         {/* 2-Column Split: Top Performing Videos + Health & Goals */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Top Performing Videos (2 Cols) */}
-          <div className="lg:col-span-2 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-navy-750 dark:bg-navy-850">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-navy-750">
+          <div className="lg:col-span-2 pro-card p-5">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-white/[0.06]">
               <div className="flex items-center gap-2">
-                <Play className="h-4 w-4 text-brand-500 fill-brand-500/20" />
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                  Top Performing Videos
+                <Play className="h-4 w-4 text-[#ff0033]" />
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
+                  Top Performing Content
                 </h3>
               </div>
               <Link
                 href="/videos"
-                className="text-xs font-semibold text-brand-600 hover:text-brand-700 dark:text-brand-400 flex items-center gap-1"
+                className="text-xs font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white flex items-center gap-1 transition-colors"
               >
-                View All Videos <ArrowUpRight className="h-3.5 w-3.5" />
+                All Videos <ArrowUpRight className="h-3 w-3" />
               </Link>
             </div>
 
-            <div className="mt-4 space-y-3">
+            <div className="mt-3 divide-y divide-slate-100 dark:divide-white/[0.04]">
               {DEMO_VIDEOS.slice(0, 4).map((video, idx) => (
                 <div
                   key={video.id}
                   onClick={() => setActiveVideoModal(video)}
-                  className="flex items-center gap-3.5 rounded-xl p-2.5 hover:bg-slate-50 dark:hover:bg-navy-800/60 cursor-pointer transition-colors border border-transparent hover:border-slate-200 dark:hover:border-navy-700 group"
+                  className="flex items-center gap-3.5 py-3 hover:bg-slate-50 dark:hover:bg-white/[0.03] cursor-pointer transition-colors px-2 rounded-lg group"
                 >
-                  <span className="text-xs font-bold text-slate-400 w-4 text-center">
-                    #{idx + 1}
+                  <span className="font-mono text-xs font-semibold text-slate-400 w-4 text-center">
+                    {idx + 1}
                   </span>
-                  <div className="relative h-14 w-24 shrink-0 overflow-hidden rounded-lg">
+                  <div className="relative h-13 w-22 shrink-0 overflow-hidden rounded-md border border-slate-200 dark:border-white/[0.08]">
                     <ThumbnailImage
                       src={video.thumbnail}
                       alt={video.title}
                       duration={video.duration}
                       title={video.title}
-                      className="h-full w-full"
+                      className="h-full w-full object-cover"
                     />
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white line-clamp-1 group-hover:text-brand-500 transition-colors">
+                    <h4 className="text-xs font-medium text-slate-900 dark:text-slate-100 line-clamp-1 group-hover:text-[#ff0033] transition-colors">
                       {video.title}
                     </h4>
-                    <div className="flex items-center gap-2 mt-1 text-[11px] text-slate-500 dark:text-slate-400">
+                    <div className="flex items-center gap-2 mt-1 font-mono text-[11px] text-slate-500 dark:text-slate-400">
                       <span>{formatNumber(video.views)} views</span>
                       <span>•</span>
-                      <span>CTR: {video.ctr}%</span>
+                      <span>CTR {video.ctr}%</span>
                       <span>•</span>
                       <span className="text-emerald-500 font-medium">
                         {formatCurrency(video.estimatedRevenue)}
@@ -318,7 +296,7 @@ export default function DashboardOverviewPage() {
                     </div>
                   </div>
 
-                  <Badge variant="success" size="sm" className="hidden sm:inline-flex">
+                  <Badge variant="outline" size="sm" className="hidden sm:inline-flex">
                     {video.avgViewPercentage}% ret
                   </Badge>
                 </div>
@@ -329,55 +307,55 @@ export default function DashboardOverviewPage() {
           {/* Right Column: Health Score + Active Goal Tracker */}
           <div className="space-y-6">
             {/* Health Score Card */}
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-navy-750 dark:bg-navy-850">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-navy-750">
+            <div className="pro-card p-5">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-white/[0.06]">
                 <div className="flex items-center gap-2">
                   <Activity className="h-4 w-4 text-emerald-500" />
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                  <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
                     Channel Health
                   </h3>
                 </div>
                 <Badge variant="success" size="sm">
-                  Excellent
+                  Optimal
                 </Badge>
               </div>
 
               <div className="mt-4 flex items-center gap-4">
-                <div className="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 border-4 border-emerald-500">
+                <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/30">
                   <div className="text-center">
-                    <span className="text-2xl font-black text-emerald-500">86</span>
-                    <span className="block text-[9px] font-semibold text-slate-400">/ 100</span>
+                    <span className="font-mono text-xl font-bold text-emerald-500">86</span>
+                    <span className="block font-mono text-[9px] text-slate-400">/ 100</span>
                   </div>
                 </div>
                 <div className="text-xs space-y-1">
-                  <p className="font-semibold text-slate-900 dark:text-white">
-                    Strong Algorithmic Velocity
+                  <p className="font-medium text-slate-900 dark:text-white">
+                    Consistent Reach Velocity
                   </p>
                   <p className="text-slate-500 dark:text-slate-400 text-[11px] leading-relaxed">
-                    High CTR (9.8%) and consistent schedule give your channel top 10% reach in tech.
+                    Average CTR of 9.8% places this channel in the top tier for technical content.
                   </p>
                   <Link
                     href="/audit"
-                    className="inline-block pt-1 text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline"
+                    className="inline-block pt-1 text-[11px] font-medium text-slate-400 hover:text-white underline underline-offset-4"
                   >
-                    View 6 Audit Recommendations →
+                    View audit report →
                   </Link>
                 </div>
               </div>
             </div>
 
             {/* Active Goals Quick Widget */}
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-navy-750 dark:bg-navy-850">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-navy-750">
+            <div className="pro-card p-5">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-white/[0.06]">
                 <div className="flex items-center gap-2">
-                  <Target className="h-4 w-4 text-blue-500" />
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                    Goal Progress
+                  <Target className="h-4 w-4 text-slate-400" />
+                  <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
+                    Active Goals
                   </h3>
                 </div>
                 <Link
                   href="/goals"
-                  className="text-xs text-brand-600 dark:text-brand-400 font-semibold hover:underline"
+                  className="text-xs font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
                 >
                   Manage
                 </Link>
@@ -392,20 +370,20 @@ export default function DashboardOverviewPage() {
                   return (
                     <div key={goal.id} className="space-y-1.5">
                       <div className="flex justify-between text-xs">
-                        <span className="font-semibold text-slate-800 dark:text-slate-200">
+                        <span className="font-medium text-slate-800 dark:text-slate-200">
                           {goal.title}
                         </span>
-                        <span className="font-bold text-slate-900 dark:text-white">
+                        <span className="font-mono font-semibold text-slate-900 dark:text-white">
                           {progress}%
                         </span>
                       </div>
-                      <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-navy-950">
+                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-white/[0.06]">
                         <div
-                          className="h-full bg-gradient-to-r from-brand-600 to-rose-500 rounded-full transition-all duration-500"
+                          className="h-full bg-white dark:bg-slate-200 rounded-full transition-all duration-300"
                           style={{ width: `${progress}%` }}
                         />
                       </div>
-                      <div className="flex justify-between text-[10px] text-slate-400">
+                      <div className="flex justify-between font-mono text-[10px] text-slate-400">
                         <span>
                           {formatNumber(goal.currentValue)} {goal.unit}
                         </span>
@@ -431,52 +409,52 @@ export default function DashboardOverviewPage() {
         >
           {activeVideoModal && (
             <div className="space-y-4 text-xs">
-              <div className="aspect-video w-full overflow-hidden rounded-xl">
+              <div className="aspect-video w-full overflow-hidden rounded-lg border border-slate-200 dark:border-white/[0.08]">
                 <ThumbnailImage
                   src={activeVideoModal.thumbnail}
                   alt={activeVideoModal.title}
                   duration={activeVideoModal.duration}
                   title={activeVideoModal.title}
-                  className="h-full w-full"
+                  className="h-full w-full object-cover"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                <div className="rounded-xl border border-slate-100 bg-slate-50 p-3 dark:border-navy-750 dark:bg-navy-800">
-                  <span className="text-[10px] text-slate-400 uppercase font-semibold">Views</span>
-                  <p className="text-base font-bold text-slate-900 dark:text-white mt-0.5">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 font-mono">
+                <div className="rounded-lg border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-white/[0.02] p-3">
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wider">Views</span>
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white mt-0.5">
                     {formatNumber(activeVideoModal.views)}
                   </p>
                 </div>
-                <div className="rounded-xl border border-slate-100 bg-slate-50 p-3 dark:border-navy-750 dark:bg-navy-800">
-                  <span className="text-[10px] text-slate-400 uppercase font-semibold">CTR</span>
-                  <p className="text-base font-bold text-emerald-500 mt-0.5">
+                <div className="rounded-lg border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-white/[0.02] p-3">
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wider">CTR</span>
+                  <p className="text-sm font-semibold text-emerald-500 mt-0.5">
                     {activeVideoModal.ctr}%
                   </p>
                 </div>
-                <div className="rounded-xl border border-slate-100 bg-slate-50 p-3 dark:border-navy-750 dark:bg-navy-800">
-                  <span className="text-[10px] text-slate-400 uppercase font-semibold">Watch Time</span>
-                  <p className="text-base font-bold text-slate-900 dark:text-white mt-0.5">
+                <div className="rounded-lg border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-white/[0.02] p-3">
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wider">Watch Time</span>
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white mt-0.5">
                     {formatNumber(activeVideoModal.watchTimeHours)} hrs
                   </p>
                 </div>
-                <div className="rounded-xl border border-slate-100 bg-slate-50 p-3 dark:border-navy-750 dark:bg-navy-800">
-                  <span className="text-[10px] text-slate-400 uppercase font-semibold">Est. Earnings</span>
-                  <p className="text-base font-bold text-purple-500 mt-0.5">
+                <div className="rounded-lg border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-white/[0.02] p-3">
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wider">Revenue</span>
+                  <p className="text-sm font-semibold text-purple-400 mt-0.5">
                     {formatCurrency(activeVideoModal.estimatedRevenue)}
                   </p>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-slate-100 bg-slate-50 p-3 dark:border-navy-750 dark:bg-navy-800">
-                <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200">
-                  Active Tags & Keywords:
+              <div className="rounded-lg border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-white/[0.02] p-3">
+                <span className="text-[11px] font-medium text-slate-700 dark:text-slate-300">
+                  Target Keywords & Tags:
                 </span>
                 <div className="flex flex-wrap gap-1.5 mt-2">
                   {activeVideoModal.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="rounded-md bg-slate-200/80 px-2 py-0.5 text-[10px] font-medium text-slate-700 dark:bg-navy-700 dark:text-slate-300"
+                      className="rounded border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-white/[0.04] px-2 py-0.5 font-mono text-[10px] text-slate-600 dark:text-slate-400"
                     >
                       #{tag}
                     </span>
@@ -484,7 +462,7 @@ export default function DashboardOverviewPage() {
                 </div>
               </div>
 
-              <div className="flex justify-between items-center gap-2 pt-2 border-t border-slate-100 dark:border-navy-750">
+              <div className="flex justify-between items-center gap-2 pt-2 border-t border-slate-100 dark:border-white/[0.06]">
                 <Button
                   variant="outline"
                   size="sm"

@@ -151,10 +151,10 @@ export const MilestoneCardModal: React.FC<MilestoneCardModalProps> = ({ isOpen, 
                 <button
                   key={t.id}
                   onClick={() => setSelectedTheme(t)}
-                  className={`px-3 py-1 rounded-lg text-xs font-semibold border transition-all ${
+                  className={`px-3 py-1 rounded-md text-xs font-medium border transition-colors ${
                     selectedTheme.id === t.id
-                      ? 'border-brand-500 bg-brand-500/20 text-white shadow-glow-brand'
-                      : 'border-slate-700 bg-navy-800 text-slate-400 hover:text-white'
+                      ? 'border-white/30 bg-white/[0.12] text-white'
+                      : 'border-slate-700 bg-slate-800/40 text-slate-400 hover:text-white'
                   }`}
                 >
                   {t.name}

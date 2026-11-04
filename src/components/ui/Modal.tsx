@@ -48,29 +48,29 @@ export const Modal: React.FC<ModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-navy-950/70 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-black/60 backdrop-blur-[2px] transition-opacity"
         onClick={onClose}
       />
 
       {/* Modal Dialog */}
       <div
         className={cn(
-          'relative w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl transition-all duration-200 dark:border-navy-750 dark:bg-navy-850 dark:text-white',
+          'relative w-full rounded-xl border border-slate-200 bg-white p-6 shadow-2xl transition-all duration-150 dark:border-white/[0.08] dark:bg-[#11131a] dark:text-white',
           sizeClasses[size]
         )}
       >
-        <div className="flex items-start justify-between pb-4 border-b border-slate-100 dark:border-navy-750">
+        <div className="flex items-start justify-between pb-4 border-b border-slate-100 dark:border-white/[0.06]">
           <div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">{title}</h3>
+            <h3 className="text-base font-semibold text-slate-900 dark:text-white">{title}</h3>
             {description && (
-              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{description}</p>
+              <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{description}</p>
             )}
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-navy-750 dark:hover:text-white transition-colors"
+            className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/[0.06] dark:hover:text-white transition-colors"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
