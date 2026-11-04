@@ -244,13 +244,13 @@ export default function VideosPage() {
             <>
               {/* Desktop Table View */}
               <div className="hidden md:block overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="w-full text-left text-xs border-collapse">
                   <thead>
-                    <tr className="border-b border-slate-100 dark:border-white/[0.06] text-slate-400 font-mono text-[10px] uppercase tracking-wider select-none">
-                      <th className="pb-2.5 min-w-[280px]">Video Title</th>
-                      <th className="pb-2.5">Velocity Outlier</th>
+                    <tr className="border-b border-slate-100 dark:border-white/[0.06] text-slate-400 font-mono text-[10px] uppercase tracking-wider select-none bg-slate-50/50 dark:bg-white/[0.01]">
+                      <th className="py-3 px-3 min-w-[280px]">Video Title</th>
+                      <th className="py-3 px-3">Velocity Outlier</th>
                       <th
-                        className="pb-2.5 cursor-pointer group"
+                        className="py-3 px-3 cursor-pointer group"
                         onClick={() => handleSort('publishedAt')}
                       >
                         <div className="flex items-center gap-1.5">
@@ -259,7 +259,7 @@ export default function VideosPage() {
                         </div>
                       </th>
                       <th
-                        className="pb-2.5 cursor-pointer group"
+                        className="py-3 px-3 cursor-pointer group"
                         onClick={() => handleSort('views')}
                       >
                         <div className="flex items-center gap-1.5">
@@ -268,7 +268,7 @@ export default function VideosPage() {
                         </div>
                       </th>
                       <th
-                        className="pb-2.5 cursor-pointer group"
+                        className="py-3 px-3 cursor-pointer group"
                         onClick={() => handleSort('ctr')}
                       >
                         <div className="flex items-center gap-1.5">
@@ -277,7 +277,7 @@ export default function VideosPage() {
                         </div>
                       </th>
                       <th
-                        className="pb-2.5 cursor-pointer group"
+                        className="py-3 px-3 cursor-pointer group"
                         onClick={() => handleSort('avgViewPercentage')}
                       >
                         <div className="flex items-center gap-1.5">
@@ -286,7 +286,7 @@ export default function VideosPage() {
                         </div>
                       </th>
                       <th
-                        className="pb-2.5 cursor-pointer group"
+                        className="py-3 px-3 cursor-pointer group"
                         onClick={() => handleSort('watchTimeHours')}
                       >
                         <div className="flex items-center gap-1.5">
@@ -295,7 +295,7 @@ export default function VideosPage() {
                         </div>
                       </th>
                       <th
-                        className="pb-2.5 cursor-pointer group"
+                        className="py-3 px-3 cursor-pointer group"
                         onClick={() => handleSort('estimatedRevenue')}
                       >
                         <div className="flex items-center gap-1.5">
@@ -303,7 +303,7 @@ export default function VideosPage() {
                           {renderSortIndicator('estimatedRevenue')}
                         </div>
                       </th>
-                      <th className="pb-2.5 text-right">Action</th>
+                      <th className="py-3 px-3 text-right">Action</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
@@ -312,11 +312,11 @@ export default function VideosPage() {
                       return (
                         <tr
                           key={vid.id}
-                          className="hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors group"
+                          className="hover:bg-slate-50 dark:hover:bg-white/[0.025] transition-colors group"
                         >
-                          <td className="py-2.5">
+                          <td className="py-3.5 px-3">
                             <div className="flex items-center gap-3">
-                              <div className="relative h-12 w-20 shrink-0 overflow-hidden rounded-md border border-slate-200 dark:border-white/[0.08]">
+                              <div className="relative w-28 h-16 shrink-0 aspect-video overflow-hidden rounded-md border border-slate-200 dark:border-white/[0.08]">
                                 <ThumbnailImage
                                   src={vid.thumbnail}
                                   alt={vid.title}
@@ -340,10 +340,10 @@ export default function VideosPage() {
                               </div>
                             </div>
                           </td>
-                          <td className="py-2.5">
+                          <td className="py-3.5 px-3">
                             {outlier && outlier.tier !== 'normal' ? (
                               <span
-                                className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded font-mono text-[10px] font-semibold border ${outlier.badgeColor}`}
+                                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded font-mono text-[10px] font-semibold border ${outlier.badgeColor}`}
                               >
                                 {outlier.tier === '10x' && <Zap className="h-3 w-3 fill-amber-400 text-amber-400" />}
                                 {outlier.tier === '5x' && <Flame className="h-3 w-3 text-rose-400" />}
@@ -353,16 +353,16 @@ export default function VideosPage() {
                               <span className="font-mono text-[10px] text-slate-500">Normal</span>
                             )}
                           </td>
-                          <td className="py-2.5 font-mono text-slate-500 whitespace-nowrap text-[11px]">
+                          <td className="py-3.5 px-3 font-mono text-slate-500 whitespace-nowrap text-[11px]">
                             {formatDate(vid.publishedAt)}
                           </td>
-                          <td className="py-2.5 font-mono font-semibold text-slate-900 dark:text-white">
+                          <td className="py-3.5 px-3 font-mono font-semibold text-slate-900 dark:text-white">
                             {formatNumber(vid.views)}
                           </td>
-                          <td className="py-2.5 font-mono font-semibold text-emerald-500">
+                          <td className="py-3.5 px-3 font-mono font-semibold text-emerald-500">
                             {vid.ctr}%
                           </td>
-                          <td className="py-2.5 font-mono">
+                          <td className="py-3.5 px-3 font-mono">
                             <Badge
                               variant={vid.avgViewPercentage >= 50 ? 'success' : 'default'}
                               size="sm"
@@ -370,13 +370,13 @@ export default function VideosPage() {
                               {vid.avgViewPercentage}%
                             </Badge>
                           </td>
-                          <td className="py-2.5 font-mono text-slate-600 dark:text-slate-300">
+                          <td className="py-3.5 px-3 font-mono text-slate-600 dark:text-slate-300">
                             {formatNumber(vid.watchTimeHours)} hrs
                           </td>
-                          <td className="py-2.5 font-mono font-semibold text-purple-400">
+                          <td className="py-3.5 px-3 font-mono font-semibold text-purple-400">
                             {formatCurrency(vid.estimatedRevenue)}
                           </td>
-                          <td className="py-2.5 text-right">
+                          <td className="py-3.5 px-3 text-right">
                             <Button
                               size="sm"
                               variant="outline"

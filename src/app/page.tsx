@@ -184,17 +184,17 @@ export default function DashboardOverviewPage() {
           </div>
 
           {/* Chart Viewport wrapped in client-safe ChartWrapper */}
-          <div className="mt-4">
-            <ChartWrapper heightClass="h-72 sm:h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={currentDailyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+          <div className="mt-4 w-full" style={{ minHeight: '340px', height: '340px' }}>
+            <ChartWrapper heightClass="h-84" minHeight={340}>
+              <ResponsiveContainer width="100%" height={320}>
+                <AreaChart data={currentDailyData} margin={{ top: 15, right: 15, left: -10, bottom: 5 }}>
                   <defs>
                     <linearGradient id={currentConfig.gradientId} x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={currentConfig.color} stopOpacity={0.2} />
+                      <stop offset="5%" stopColor={currentConfig.color} stopOpacity={0.25} />
                       <stop offset="95%" stopColor={currentConfig.color} stopOpacity={0.0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" opacity={0.05} vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" opacity={0.06} vertical={false} />
                   <XAxis
                     dataKey="date"
                     tickFormatter={(val) => val.slice(5)}
@@ -232,7 +232,7 @@ export default function DashboardOverviewPage() {
                     isAnimationActive={false}
                     dataKey={selectedMetric}
                     stroke={currentConfig.color}
-                    strokeWidth={1.75}
+                    strokeWidth={2}
                     fillOpacity={1}
                     fill={`url(#${currentConfig.gradientId})`}
                   />
@@ -271,7 +271,7 @@ export default function DashboardOverviewPage() {
                   <span className="font-mono text-xs font-semibold text-slate-400 w-4 text-center">
                     {idx + 1}
                   </span>
-                  <div className="relative h-13 w-22 shrink-0 overflow-hidden rounded-md border border-slate-200 dark:border-white/[0.08]">
+                  <div className="relative w-32 sm:w-36 h-20 shrink-0 aspect-video overflow-hidden rounded-md border border-slate-200 dark:border-white/[0.08]">
                     <ThumbnailImage
                       src={video.thumbnail}
                       alt={video.title}

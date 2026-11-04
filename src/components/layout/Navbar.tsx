@@ -346,40 +346,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           ))}
         </div>
 
-        {/* Public Channel Explorer Button */}
-        {onOpenChannelExplorer && (
-          <button
-            onClick={onOpenChannelExplorer}
-            title="Explore any public YouTube channel"
-            className="hidden lg:inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] px-2.5 py-1 text-xs font-medium text-slate-700 dark:text-neutral-300 hover:bg-slate-50 dark:hover:bg-white/[0.06] transition-colors"
-          >
-            <SearchCode className="h-3.5 w-3.5 text-[#ff0033]" />
-            <span>Explore</span>
-          </button>
-        )}
-
-        {/* Milestone Card Button */}
-        {onOpenMilestoneCard && (
-          <button
-            onClick={onOpenMilestoneCard}
-            title="Generate milestone graphic"
-            className="hidden sm:inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] px-2.5 py-1 text-xs font-medium text-slate-700 dark:text-neutral-300 hover:bg-slate-50 dark:hover:bg-white/[0.06] transition-colors"
-          >
-            <Trophy className="h-3.5 w-3.5 text-amber-500" />
-            <span className="hidden md:inline">Milestone</span>
-          </button>
-        )}
-
-        {/* Quick CSV Export */}
-        <button
-          onClick={handleExportData}
-          title="Export CSV"
-          className="hidden xl:inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] px-2.5 py-1 text-xs font-medium text-slate-700 dark:text-neutral-300 hover:bg-slate-50 dark:hover:bg-white/[0.06] transition-colors"
-        >
-          <Download className="h-3.5 w-3.5 text-slate-400" />
-          <span>Export</span>
-        </button>
-
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
@@ -503,6 +469,37 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
 
               <div className="py-1">
+                {onOpenChannelExplorer && (
+                  <button
+                    onClick={() => {
+                      setProfileOpen(false);
+                      onOpenChannelExplorer();
+                    }}
+                    className="w-full flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/[0.04] transition-colors text-left"
+                  >
+                    <SearchCode className="h-3.5 w-3.5 text-[#ff0033]" /> Explore Any Channel
+                  </button>
+                )}
+                {onOpenMilestoneCard && (
+                  <button
+                    onClick={() => {
+                      setProfileOpen(false);
+                      onOpenMilestoneCard();
+                    }}
+                    className="w-full flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/[0.04] transition-colors text-left"
+                  >
+                    <Trophy className="h-3.5 w-3.5 text-amber-500" /> Milestone Card Maker
+                  </button>
+                )}
+                <button
+                  onClick={() => {
+                    setProfileOpen(false);
+                    handleExportData();
+                  }}
+                  className="w-full flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/[0.04] transition-colors text-left"
+                >
+                  <Download className="h-3.5 w-3.5 text-slate-400" /> Export CSV Report
+                </button>
                 <Link
                   href="/settings"
                   onClick={() => setProfileOpen(false)}

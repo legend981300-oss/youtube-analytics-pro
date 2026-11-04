@@ -57,48 +57,30 @@ export const Sidebar: React.FC<{ onCloseMobile?: () => void }> = ({ onCloseMobil
 
   const sections: NavSection[] = [
     {
-      title: 'Analytics',
+      title: 'Core Telemetry',
       items: [
-        { name: 'Overview', href: '/', icon: LayoutDashboard },
-        { name: 'Videos', href: '/videos', icon: Film },
-        { name: 'Subscribers', href: '/subscribers', icon: Users },
-        { name: 'Views', href: '/views', icon: Eye },
-        { name: 'Watch Time', href: '/watch-hours', icon: Clock },
+        { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+        { name: 'Video Hub & Radar', href: '/videos', icon: Film },
+        { name: 'Audience & Growth', href: '/subscribers', icon: Users },
         { name: 'Revenue & RPM', href: '/revenue', icon: DollarSign },
-        { name: 'Shorts Velocity', href: '/shorts', icon: Zap },
-        { name: 'Audience Insights', href: '/audience', icon: UserCheck },
-        { name: 'Comments & Sentiment', href: '/comments', icon: MessageSquare },
       ],
     },
     {
-      title: 'Optimization & SEO',
-      items: [
-        { name: 'A/B Testing Lab', href: '/ab-testing', icon: Split, badge: 'PRO' },
-        { name: 'Comparison Matrix', href: '/comparison', icon: GitCompare },
-        { name: 'Keyword Explorer', href: '/seo', icon: Search },
-        { name: 'Thumbnail Scorecard', href: '/thumbnails', icon: ImageIcon },
-        { name: 'Channel Health Audit', href: '/audit', icon: Activity },
-        { name: 'Growth Predictions', href: '/predictions', icon: TrendingUp },
-        { name: 'Milestone Goals', href: '/goals', icon: Target },
-      ],
-    },
-    {
-      title: 'Creator Studio',
+      title: 'Growth & Intelligence',
       items: [
         { name: 'AI Creative Studio', href: '/ai-studio', icon: Sparkles, badge: 'AI' },
-        { name: 'Content Calendar', href: '/calendar', icon: Calendar },
-        { name: 'Idea Vault', href: '/vault', icon: FolderKanban },
+        { name: 'A/B Testing Lab', href: '/ab-testing', icon: Split, badge: 'PRO' },
+        { name: 'SEO & Metadata', href: '/seo', icon: Search },
+        { name: 'Idea Vault Kanban', href: '/vault', icon: FolderKanban },
       ],
     },
     {
-      title: 'Operations',
+      title: 'Creator Operations',
       items: [
-        { name: 'Channels Hub', href: '/channels', icon: Tv2 },
         { name: 'Sponsor Media Kit', href: '/media-kit', icon: Award },
-        { name: 'Reports & Export', href: '/reports', icon: FileSpreadsheet },
-        { name: 'Pricing Plans', href: '/pricing', icon: CreditCard },
-        { name: 'Settings & OAuth', href: '/settings', icon: Settings },
-        { name: 'Admin Console', href: '/admin', icon: ShieldAlert },
+        { name: 'Content Calendar', href: '/calendar', icon: Calendar },
+        { name: 'Channel Health Audit', href: '/audit', icon: Activity },
+        { name: 'Settings & Cloud DB', href: '/settings', icon: Settings },
       ],
     },
   ];
