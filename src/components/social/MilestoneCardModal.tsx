@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import { Button } from '@/components/ui/Button';
+import { BrandMark } from '@/components/ui/BrandLogo';
 import { Badge } from '@/components/ui/Badge';
 import { formatNumber } from '@/lib/utils';
 
@@ -209,8 +210,8 @@ export const MilestoneCardModal: React.FC<MilestoneCardModalProps> = ({ isOpen, 
               {/* Card Bottom: Timestamp & Brand Footer */}
               <div className="flex items-center justify-between border-t border-white/10 pt-4 text-[11px] text-slate-300">
                 <div className="flex items-center gap-2">
-                  <Flame className="h-3.5 w-3.5 text-brand-400" />
-                  <span>Powered by YouTube Analytics Pro</span>
+                  <BrandMark sizeClass="h-4 w-4 rounded" />
+                  <span className="font-medium">YouTube Analytics Pro</span>
                 </div>
                 <div className="font-mono text-slate-400">
                   {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}

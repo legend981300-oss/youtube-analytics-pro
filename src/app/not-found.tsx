@@ -1,12 +1,13 @@
 import Link from 'next/link';
-import { PlaySquare, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { BrandMark } from '@/components/ui/BrandLogo';
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-navy-950 p-4 text-center font-sans">
-      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-brand-600 to-rose-500 shadow-lg shadow-brand-500/25 mb-4">
-        <PlaySquare className="h-6 w-6 text-white" />
+    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-[#090a0f] p-4 text-center font-sans">
+      <div className="mb-4">
+        <BrandMark sizeClass="h-12 w-12 rounded-xl" />
       </div>
       <h1 className="text-4xl font-black text-slate-900 dark:text-white">404</h1>
       <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200 mt-2">

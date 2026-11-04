@@ -36,6 +36,7 @@ import {
 } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import { cn } from '@/lib/utils';
+import { BrandLogo } from '@/components/ui/BrandLogo';
 
 interface NavItem {
   name: string;
@@ -106,24 +107,7 @@ export const Sidebar: React.FC<{ onCloseMobile?: () => void }> = ({ onCloseMobil
     <aside className="flex h-full w-64 flex-col border-r border-slate-200/80 bg-white dark:border-white/[0.07] dark:bg-[#0c0e14] transition-colors select-none">
       {/* Brand Header */}
       <div className="flex h-14 shrink-0 items-center justify-between px-4 border-b border-slate-200/80 dark:border-white/[0.07]">
-        <Link
-          href="/"
-          onClick={onCloseMobile}
-          className="flex items-center gap-2.5 font-semibold text-slate-900 dark:text-white group"
-        >
-          {/* Authentic YouTube crimson playmark */}
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#ff0033] text-white shadow-sm">
-            <Play className="h-3.5 w-3.5 fill-white text-white ml-0.5" />
-          </div>
-          <div className="flex items-center gap-1.5 leading-none">
-            <span className="text-sm font-bold tracking-tight text-slate-900 dark:text-white">
-              YouTube Analytics
-            </span>
-            <span className="rounded bg-slate-100 dark:bg-white/[0.08] px-1 py-0.5 text-[9px] font-bold text-slate-600 dark:text-neutral-300">
-              PRO
-            </span>
-          </div>
-        </Link>
+        <BrandLogo size="md" href="/" />
       </div>
 
       {/* Channel Switcher */}

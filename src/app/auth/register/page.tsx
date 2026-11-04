@@ -3,8 +3,9 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { PlaySquare, ShieldCheck, Check } from 'lucide-react';
+import { ShieldCheck, Check } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { BrandLogo } from '@/components/ui/BrandLogo';
 import { useApp } from '@/context/AppContext';
 
 export default function RegisterPage() {
@@ -37,19 +38,14 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-navy-950 p-4 font-sans">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-[#090a0f] p-4 font-sans">
       <div className="w-full max-w-md space-y-6">
         {/* Brand Header */}
-        <div className="text-center space-y-2">
-          <Link href="/" className="inline-flex items-center gap-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-tr from-brand-600 to-rose-500 shadow-lg shadow-brand-500/25">
-              <PlaySquare className="h-6 w-6 text-white fill-white/20" />
-            </div>
-            <span className="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-              YT Analytics<span className="text-brand-500">Pro</span>
-            </span>
-          </Link>
-          <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+        <div className="text-center space-y-3">
+          <div className="flex justify-center">
+            <BrandLogo size="lg" href="/" />
+          </div>
+          <h2 className="text-xl font-semibold tracking-tight text-slate-900 dark:text-white">
             Create your creator account
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400">
