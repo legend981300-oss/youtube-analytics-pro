@@ -49,13 +49,43 @@ const config: Config = {
       },
       animation: {
         "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-        "fade-in": "fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1)",
+        "fade-in": "fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+        "scale-in": "scaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1)",
+        "fade-up": "fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+        "float-drift-1": "floatDrift1 14s ease-in-out infinite",
+        "float-drift-2": "floatDrift2 18s ease-in-out infinite",
+        "shimmer-sweep": "shimmerSweep 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        "glow-pulse": "glowPulse 3s ease-in-out infinite",
         shimmer: "shimmer 2.5s linear infinite",
       },
       keyframes: {
         fadeIn: {
           "0%": { opacity: "0", transform: "translateY(6px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        fadeUp: {
+          "0%": { opacity: "0", transform: "translateY(16px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        scaleIn: {
+          "0%": { opacity: "0", transform: "scale(0.96)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
+        },
+        floatDrift1: {
+          "0%, 100%": { transform: "translate(0px, 0px) scale(1)" },
+          "50%": { transform: "translate(25px, -18px) scale(1.05)" },
+        },
+        floatDrift2: {
+          "0%, 100%": { transform: "translate(0px, 0px) scale(1)" },
+          "50%": { transform: "translate(-20px, 20px) scale(0.96)" },
+        },
+        shimmerSweep: {
+          "0%": { transform: "translateX(-150%) skewX(-20deg)" },
+          "100%": { transform: "translateX(250%) skewX(-20deg)" },
+        },
+        glowPulse: {
+          "0%, 100%": { opacity: "0.4", transform: "scale(1)" },
+          "50%": { opacity: "0.8", transform: "scale(1.02)" },
         },
         shimmer: {
           "0%": { backgroundPosition: "-200% 0" },

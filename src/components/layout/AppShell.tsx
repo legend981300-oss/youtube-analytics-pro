@@ -8,6 +8,7 @@ import { CommandPalette } from './CommandPalette';
 import { ChannelExplorerModal } from '@/components/channels/ChannelExplorerModal';
 import { MilestoneCardModal } from '@/components/social/MilestoneCardModal';
 import { FloatingAiCopilot } from '@/components/ai/FloatingAiCopilot';
+import { AmbientBackdrop } from '@/components/ui/AmbientBackdrop';
 import { X } from 'lucide-react';
 
 export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -30,7 +31,10 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-navy-950 dark:text-slate-100 flex flex-col font-sans transition-colors duration-200">
+    <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-navy-950 dark:text-slate-100 flex flex-col font-sans transition-colors duration-200 relative">
+      {/* Dynamic Ambient Gradient Backdrop */}
+      <AmbientBackdrop />
+
       {/* Top Demo Notice Banner */}
       <DemoNotice />
 

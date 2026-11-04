@@ -21,6 +21,7 @@ import { DEMO_KEYWORDS } from '@/lib/demo-data';
 import { KeywordInsight } from '@/types';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
 import { useApp } from '@/context/AppContext';
 
 const POWER_WORDS = [
@@ -393,7 +394,7 @@ export default function SeoPage() {
                           : 'text-rose-500'
                       }`}
                     >
-                      {seoScore}
+                      <AnimatedNumber value={seoScore} />
                     </span>
                     <span className="block text-[10px] font-semibold text-slate-400">/ 100</span>
                   </div>

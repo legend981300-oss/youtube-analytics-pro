@@ -17,6 +17,7 @@ import {
 import { DEMO_AUDIT_METRICS } from '@/lib/demo-data';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
 import { useApp } from '@/context/AppContext';
 
 export default function ChannelAuditPage() {
@@ -68,7 +69,7 @@ export default function ChannelAuditPage() {
                 Channel Health & Algorithmic Audit
               </h1>
               <Badge variant={dynamicScore >= 90 ? 'success' : 'purple'} size="sm">
-                Score: {dynamicScore} / 100
+                Score: <AnimatedNumber value={dynamicScore} /> / 100
               </Badge>
             </div>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
@@ -89,7 +90,9 @@ export default function ChannelAuditPage() {
             <div className="flex items-center gap-5">
               <div className="relative flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 border-4 border-emerald-500 transition-all">
                 <div className="text-center">
-                  <span className="text-3xl font-black text-emerald-500">{dynamicScore}</span>
+                  <span className="text-3xl font-black text-emerald-500">
+                    <AnimatedNumber value={dynamicScore} />
+                  </span>
                   <span className="block text-[10px] font-bold text-slate-400">
                     {dynamicScore >= 95 ? 'EXEMPLARY' : dynamicScore >= 85 ? 'EXCELLENT' : 'GOOD'}
                   </span>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { LucideIcon, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { AnimatedNumber } from './AnimatedNumber';
 
 interface StatCardProps {
   title: string;
@@ -32,7 +33,7 @@ export const StatCard: React.FC<StatCardProps> = ({
   return (
     <div
       className={cn(
-        'group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm transition-all duration-300 hover:shadow-xl dark:border-white/[0.08] dark:bg-navy-850/80 dark:backdrop-blur-xl dark:hover:border-white/[0.18] dark:hover:shadow-glow-brand/20 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]',
+        'group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm transition-all duration-300 hover:shadow-xl dark:border-white/[0.08] dark:bg-navy-850/80 dark:backdrop-blur-xl dark:hover:border-white/[0.18] dark:hover:shadow-glow-brand/20 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] shimmer-sheen',
         className
       )}
     >
@@ -53,7 +54,7 @@ export const StatCard: React.FC<StatCardProps> = ({
           </div>
           <div className="flex items-baseline gap-2">
             <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white tabular-nums">
-              {value}
+              <AnimatedNumber value={value} />
             </h3>
           </div>
         </div>

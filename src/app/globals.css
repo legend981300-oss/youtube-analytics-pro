@@ -42,12 +42,50 @@ body {
 
 .glass-card-hover {
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
 }
 
 .glass-card-hover:hover {
   border-color: rgba(255, 255, 255, 0.18);
   transform: translateY(-2px);
   box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.6), inset 0 1px 0 0 rgba(255, 255, 255, 0.16);
+}
+
+/* Diagonal Specular Sheen Sweep on Hover */
+.shimmer-sheen::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 100%
+  );
+  transform: translateX(-180%) skewX(-20deg);
+  pointer-events: none;
+}
+
+.shimmer-sheen:hover::after {
+  animation: shimmerSweep 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Staggered Content Animation Delay Utilities */
+.stagger-1 {
+  animation: fadeUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
+}
+.stagger-2 {
+  animation: fadeUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
+}
+.stagger-3 {
+  animation: fadeUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both;
+}
+.stagger-4 {
+  animation: fadeUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;
 }
 
 /* Subtle Tech Grid Texture */
