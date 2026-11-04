@@ -99,6 +99,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       { name: 'Video Idea Vault', href: '/vault', category: 'Content' },
       { name: 'Multi-Channel Hub', href: '/channels', category: 'Admin' },
       { name: 'Weekly Executive Reports', href: '/reports', category: 'Admin' },
+      { name: 'Public Landing Page', href: '/landing', category: 'Marketing' },
       { name: 'Pricing & Plans', href: '/pricing', category: 'Billing' },
       { name: 'Settings & Integrations', href: '/settings', category: 'Settings' },
       { name: 'Admin Command Center', href: '/admin', category: 'Admin' },

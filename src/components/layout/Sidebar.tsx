@@ -33,6 +33,7 @@ import {
   Play,
   Split,
   Award,
+  Globe,
 } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import { cn } from '@/lib/utils';
@@ -90,6 +91,7 @@ export const Sidebar: React.FC<{ onCloseMobile?: () => void }> = ({ onCloseMobil
         { name: 'Channel Health Audit', href: '/audit', icon: Activity },
         { name: 'Channels Hub', href: '/channels', icon: Tv2 },
         { name: 'Reports & Export', href: '/reports', icon: FileSpreadsheet },
+        { name: 'Public Landing Page', href: '/landing', icon: Globe },
         { name: 'Pricing Plans', href: '/pricing', icon: CreditCard },
         { name: 'Settings & Cloud DB', href: '/settings', icon: Settings },
       ],

@@ -31,6 +31,7 @@ import {
   PlusCircle,
   BarChart3,
   Calendar,
+  Globe,
 } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import { DEMO_VIDEOS } from '@/lib/demo-data';
@@ -165,6 +166,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     { title: 'Channel Milestones & Goals', path: '/goals', icon: Target, category: 'Planning' },
     { title: 'Predictive Growth Forecasts', path: '/predictions', icon: TrendingUp, category: 'Growth' },
     { title: 'Content Production Calendar', path: '/calendar', icon: Calendar, category: 'Planning' },
+    { title: 'Public Product Landing Page', path: '/landing', icon: Globe, category: 'Marketing' },
     { title: 'Export & Scheduled Reports', path: '/reports', icon: BarChart3, category: 'Business' },
     { title: 'Channel Settings & API Keys', path: '/settings', icon: Settings, category: 'System' },
   ];
