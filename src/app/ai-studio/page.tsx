@@ -547,8 +547,8 @@ export default function AiStudioPage() {
         </div>
 
         {/* Studio Disclaimer Banner */}
-        <div className="flex items-start gap-2.5 rounded-xl border border-brand-500/20 bg-brand-500/5 p-3 text-[11px] text-slate-600 dark:text-slate-300">
-          <Info className="h-4 w-4 shrink-0 text-brand-500 mt-0.5" />
+        <div className="flex items-start gap-2.5 rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-3 text-[11px] text-zinc-600 dark:text-zinc-300">
+          <Info className="h-4 w-4 shrink-0 text-indigo-400 mt-0.5" />
           <p className="leading-relaxed">
             <strong>Local Pattern Engine (Demo Mode):</strong> Content below is dynamically generated using algorithmic SaaS creator heuristics. In production, configure your Gemini 1.5 Pro or OpenAI API key in Settings for real LLM reasoning.
           </p>
@@ -648,9 +648,14 @@ export default function AiStudioPage() {
           </div>
 
           <div className="flex justify-end pt-2">
-            <Button isLoading={isGenerating} onClick={handleGenerate}>
-              <Sparkles className="h-4 w-4 mr-1.5" /> Generate {activeTab.toUpperCase()}
-            </Button>
+            <button
+              disabled={isGenerating}
+              onClick={handleGenerate}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium bg-indigo-600 hover:bg-indigo-500 text-white transition-all shadow-md shadow-indigo-600/20 disabled:opacity-50 select-none active:scale-[0.98]"
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              {isGenerating ? 'Generating...' : `Generate ${activeTab.toUpperCase()}`}
+            </button>
           </div>
         </div>
 
@@ -707,12 +712,12 @@ export default function AiStudioPage() {
                           </>
                         )}
                       </Button>
-                      <Button
-                        size="sm"
+                      <button
                         onClick={() => handleSaveTitleToVault(t)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-zinc-900 border border-zinc-800 text-zinc-200 hover:bg-zinc-800 hover:text-white dark:bg-white/[0.06] dark:border-white/[0.08] dark:text-zinc-200 dark:hover:bg-white/[0.1] transition-colors"
                       >
-                        <Bookmark className="h-3 w-3 mr-1" /> Save to Vault
-                      </Button>
+                        <Bookmark className="h-3 w-3 text-zinc-400" /> Save to Vault
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -797,12 +802,12 @@ export default function AiStudioPage() {
                     </div>
 
                     <div className="pt-2 flex justify-end border-t border-slate-200/50 dark:border-navy-750">
-                      <Button
-                        size="sm"
+                      <button
                         onClick={() => handleSaveIdeaToVault(idea)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-zinc-900 border border-zinc-800 text-zinc-200 hover:bg-zinc-800 hover:text-white dark:bg-white/[0.06] dark:border-white/[0.08] dark:text-zinc-200 dark:hover:bg-white/[0.1] transition-colors"
                       >
-                        <Plus className="h-3 w-3 mr-1" /> Add to Vault
-                      </Button>
+                        <Plus className="h-3 w-3 text-zinc-400" /> Add to Vault
+                      </button>
                     </div>
                   </div>
                 ))}

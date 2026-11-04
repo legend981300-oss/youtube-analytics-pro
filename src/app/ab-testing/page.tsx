@@ -197,33 +197,34 @@ export default function AbTestingPage() {
         <div className="pro-card p-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-start gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
                 <Trophy className="h-5 w-5" />
               </div>
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold text-slate-900 dark:text-white text-sm">
+                  <span className="font-semibold text-zinc-900 dark:text-zinc-100 text-sm">
                     Recommended: Variant {winner}
                   </span>
-                  <Badge variant="success" size="sm">
+                  <span className="font-mono text-[10px] font-semibold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 rounded uppercase">
                     +{scoreDiff} pts higher
-                  </Badge>
+                  </span>
                 </div>
-                <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed">
+                <p className="text-zinc-500 dark:text-zinc-400 text-xs leading-relaxed">
                   Variant {winner} scores higher in curiosity triggers and optimal packaging density. Projected CTR:{' '}
-                  <strong className="text-emerald-500 font-mono font-semibold">
+                  <strong className="text-indigo-400 font-mono font-semibold">
                     {winner === 'A' ? statsA.predictedCtr : statsB.predictedCtr}
                   </strong>.
                 </p>
               </div>
             </div>
 
-            <Button
-              size="sm"
+            <button
               onClick={() => handleSaveToVault(winner === 'A' ? variantA.title : variantB.title)}
+              className="bg-indigo-600 text-zinc-50 hover:bg-indigo-500 tracking-wide text-xs font-medium px-4 py-2.5 rounded-xl transition-all shadow-md shadow-indigo-600/20 shrink-0 inline-flex items-center gap-1.5"
             >
+              <Sparkles className="h-3.5 w-3.5" />
               Use Variant {winner} in Vault
-            </Button>
+            </button>
           </div>
         </div>
 
@@ -231,8 +232,10 @@ export default function AbTestingPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Variant A Card */}
           <div
-            className={`pro-card p-5 ${
-              winner === 'A' ? 'ring-1 ring-emerald-500/30' : ''
+            className={`pro-card p-5 transition-all ${
+              winner === 'A'
+                ? 'border-indigo-500/40 bg-indigo-500/[0.015] shadow-[0_0_20px_-5px_rgba(99,102,241,0.12)]'
+                : 'border-zinc-200/80 dark:border-white/[0.06]'
             }`}
           >
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-white/[0.06]">
@@ -243,9 +246,9 @@ export default function AbTestingPage() {
                 <h3 className="font-medium text-slate-900 dark:text-white text-xs">Variant A (Baseline)</h3>
               </div>
               {winner === 'A' && (
-                <Badge variant="success" size="sm">
+                <span className="font-mono text-[10px] uppercase font-semibold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 rounded">
                   Recommended
-                </Badge>
+                </span>
               )}
             </div>
 
@@ -332,8 +335,10 @@ export default function AbTestingPage() {
 
           {/* Variant B Card */}
           <div
-            className={`pro-card p-5 ${
-              winner === 'B' ? 'ring-1 ring-emerald-500/30' : ''
+            className={`pro-card p-5 transition-all ${
+              winner === 'B'
+                ? 'border-indigo-500/40 bg-indigo-500/[0.015] shadow-[0_0_20px_-5px_rgba(99,102,241,0.12)]'
+                : 'border-zinc-200/80 dark:border-white/[0.06]'
             }`}
           >
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-white/[0.06]">
@@ -344,9 +349,9 @@ export default function AbTestingPage() {
                 <h3 className="font-medium text-slate-900 dark:text-white text-xs">Variant B (Challenger)</h3>
               </div>
               {winner === 'B' && (
-                <Badge variant="success" size="sm">
+                <span className="font-mono text-[10px] uppercase font-semibold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 rounded">
                   Recommended
-                </Badge>
+                </span>
               )}
             </div>
 
