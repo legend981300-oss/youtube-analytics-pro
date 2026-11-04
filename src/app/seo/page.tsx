@@ -45,6 +45,10 @@ const POWER_WORDS = [
 export default function SeoPage() {
   const { addIdea, showToast } = useApp();
 
+  // Live URL Inspector state
+  const [videoUrlInput, setVideoUrlInput] = useState('');
+  const [isInspecting, setIsInspecting] = useState(false);
+
   // SEO Analyzer state
   const [title, setTitle] = useState(
     'How I Built a $10k/Month SaaS in 14 Days (Full Architecture)'
@@ -58,6 +62,38 @@ export default function SeoPage() {
   // Keyword tool state
   const [keywordQuery, setKeywordQuery] = useState('');
   const [keywordsList, setKeywordsList] = useState<KeywordInsight[]>(DEMO_KEYWORDS);
+
+  const handleInspectUrl = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const trimmed = videoUrlInput.trim();
+    if (!trimmed) {
+      showToast('URL Required', 'Please paste a valid YouTube video link or ID', 'warning');
+      return;
+    }
+
+    setIsInspecting(true);
+    try {
+      const res = await fetch(`/api/youtube/video-inspect?url=${encodeURIComponent(trimmed)}`);
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        setTitle(data.title || title);
+        if (data.description) setDescription(data.description);
+        if (data.tags) setTags(data.tags);
+        showToast(
+          data.provider === 'youtube_data_api_v3' ? 'Verified YouTube Metadata Extracted' : 'Video Data Loaded',
+          `Imported "${(data.title || '').slice(0, 36)}..." for SEO audit`,
+          'success'
+        );
+      } else {
+        showToast('Lookup Notice', data.error || 'Could not fetch video metadata', 'warning');
+      }
+    } catch (err) {
+      showToast('Network Notice', 'Failed to inspect YouTube URL', 'error');
+    } finally {
+      setIsInspecting(false);
+    }
+  };
 
   // Dynamic SEO Analysis Calculations
   const titleLen = title.trim().length;
@@ -255,6 +291,43 @@ export default function SeoPage() {
               <Bookmark className="h-3 w-3 mr-1" /> Save to Vault
             </Button>
           </div>
+        </div>
+
+        {/* Live YouTube URL Inspector Bar */}
+        <div className="pro-card p-4">
+          <form onSubmit={handleInspectUrl} className="flex flex-col sm:flex-row items-center gap-3">
+            <div className="relative flex-1 w-full">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <input
+                type="text"
+                data-mask="true"
+                value={videoUrlInput}
+                onChange={(e) => setVideoUrlInput(e.target.value)}
+                placeholder="Paste any YouTube Video URL to audit (e.g., https://www.youtube.com/watch?v=dQw4w9WgXcQ or youtu.be/...)"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-4 py-2.5 text-xs text-slate-900 focus:border-brand-500 focus:bg-white focus:outline-none dark:border-navy-750 dark:bg-navy-950 dark:text-white font-mono placeholder:font-sans"
+              />
+            </div>
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <Button
+                type="submit"
+                size="sm"
+                className="w-full sm:w-auto shrink-0 flex items-center justify-center gap-1.5"
+                isLoading={isInspecting}
+              >
+                <Sparkles className="h-3.5 w-3.5" /> Inspect Live Video
+              </Button>
+              <button
+                type="button"
+                onClick={() => {
+                  setVideoUrlInput('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+                  setTimeout(() => handleInspectUrl(), 50);
+                }}
+                className="text-[11px] text-slate-400 hover:text-slate-200 underline whitespace-nowrap hidden md:inline"
+              >
+                Try sample
+              </button>
+            </div>
+          </form>
         </div>
 
         {/* 2-Column Grid: SEO Analyzer + Live Scorecard */}

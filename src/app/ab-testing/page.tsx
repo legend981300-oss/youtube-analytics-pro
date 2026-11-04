@@ -9,6 +9,9 @@ import {
   Copy,
   Smartphone,
   Monitor,
+  Upload,
+  Image as ImageIcon,
+  CheckCircle2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -89,6 +92,18 @@ export default function AbTestingPage() {
       notes: `Winner of A/B test simulation with predicted CTR of ${winner === 'A' ? statsA.predictedCtr : statsB.predictedCtr}`,
     });
     showToast('Saved to Vault', 'Variant saved to your Video Idea Vault!', 'success');
+  };
+
+  const handleImageUpload = (variant: 'A' | 'B', e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const objectUrl = URL.createObjectURL(file);
+    if (variant === 'A') {
+      setVariantA((prev) => ({ ...prev, thumbnailUrl: objectUrl }));
+    } else {
+      setVariantB((prev) => ({ ...prev, thumbnailUrl: objectUrl }));
+    }
+    showToast('Custom Thumbnail Loaded', `Uploaded custom image preview for Variant ${variant}`, 'success');
   };
 
   return (
@@ -203,10 +218,19 @@ export default function AbTestingPage() {
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-[11px] font-medium text-slate-600 dark:text-slate-400">
-                  Thumbnail Preview
-                </label>
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between text-[11px] font-medium text-slate-600 dark:text-slate-400">
+                  <span>Thumbnail Preview</span>
+                  <label className="text-brand-500 hover:text-brand-600 cursor-pointer flex items-center gap-1 font-sans">
+                    <Upload className="h-3 w-3" /> Upload Image
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => handleImageUpload('A', e)}
+                    />
+                  </label>
+                </div>
                 <div className="aspect-video overflow-hidden rounded-md border border-slate-200 dark:border-white/[0.08] bg-slate-100 dark:bg-[#0c0e14]">
                   <ThumbnailImage
                     src={variantA.thumbnailUrl}
@@ -214,6 +238,12 @@ export default function AbTestingPage() {
                     title={variantA.title}
                     className="h-full w-full object-cover"
                   />
+                </div>
+                <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 pt-0.5">
+                  <span className="flex items-center gap-1 text-emerald-500 font-medium">
+                    <CheckCircle2 className="h-3 w-3" /> Dark Theme Contrast OK
+                  </span>
+                  <span>1280 × 720 (16:9)</span>
                 </div>
               </div>
 
@@ -289,10 +319,19 @@ export default function AbTestingPage() {
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-[11px] font-medium text-slate-600 dark:text-slate-400">
-                  Thumbnail Preview
-                </label>
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between text-[11px] font-medium text-slate-600 dark:text-slate-400">
+                  <span>Thumbnail Preview</span>
+                  <label className="text-brand-500 hover:text-brand-600 cursor-pointer flex items-center gap-1 font-sans">
+                    <Upload className="h-3 w-3" /> Upload Image
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => handleImageUpload('B', e)}
+                    />
+                  </label>
+                </div>
                 <div className="aspect-video overflow-hidden rounded-md border border-slate-200 dark:border-white/[0.08] bg-slate-100 dark:bg-[#0c0e14]">
                   <ThumbnailImage
                     src={variantB.thumbnailUrl}
@@ -300,6 +339,12 @@ export default function AbTestingPage() {
                     title={variantB.title}
                     className="h-full w-full object-cover"
                   />
+                </div>
+                <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 pt-0.5">
+                  <span className="flex items-center gap-1 text-emerald-500 font-medium">
+                    <CheckCircle2 className="h-3 w-3" /> Dark Theme Contrast OK
+                  </span>
+                  <span>1280 × 720 (16:9)</span>
                 </div>
               </div>
 

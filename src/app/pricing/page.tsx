@@ -2,16 +2,18 @@
 
 import React, { useState } from 'react';
 import { AppShell } from '@/components/layout/AppShell';
-import { Check, Sparkles, HelpCircle, ShieldCheck } from 'lucide-react';
+import { Check, Sparkles, HelpCircle, ShieldCheck, CreditCard, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Modal } from '@/components/ui/Modal';
 import { useApp } from '@/context/AppContext';
+import { getCheckoutUrl, getBillingConfig } from '@/lib/billing-config';
 
 export default function PricingPage() {
   const { currentUser, setCurrentUser, showToast } = useApp();
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('annual');
   const [selectedPlanModal, setSelectedPlanModal] = useState<string | null>(null);
+  const billingConfig = getBillingConfig();
 
   const plans = [
     {
@@ -72,6 +74,15 @@ export default function PricingPage() {
   ];
 
   const handleSelectPlan = (planName: string) => {
+    // 1. If live Stripe or Lemon Squeezy checkout link is configured in .env, redirect directly!
+    const checkout = getCheckoutUrl(planName as any, currentUser.email);
+    if (checkout.isConfigured && checkout.url) {
+      window.open(checkout.url, '_blank');
+      showToast('Redirecting to Checkout', `Opening secure checkout for ${planName}...`, 'info');
+      return;
+    }
+
+    // 2. Otherwise open demo plan switcher modal
     setSelectedPlanModal(planName);
   };
 
@@ -211,17 +222,17 @@ export default function PricingPage() {
           description="Simulate activating premium subscription tier."
         >
           <div className="space-y-4 text-xs">
-            <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-3.5 text-amber-800 dark:text-amber-300 space-y-1">
-              <p className="font-bold flex items-center gap-1.5">
-                <ShieldCheck className="h-4 w-4 text-amber-500" /> Demo Payment Notice
+            <div className="rounded-xl border border-brand-500/20 bg-brand-500/10 p-3.5 text-slate-800 dark:text-slate-200 space-y-1.5">
+              <p className="font-bold flex items-center gap-1.5 text-brand-600 dark:text-brand-400">
+                <CreditCard className="h-4 w-4" /> Turnkey Stripe & Lemon Squeezy Integration
               </p>
-              <p className="leading-relaxed">
-                As specified in requirements, real payment processing (Stripe / LemonSqueezy) is not active in this development build. Clicking confirm will switch your plan in local state immediately without charging any card.
+              <p className="leading-relaxed text-[11px] text-slate-600 dark:text-slate-300">
+                To connect live payments, set <code className="bg-slate-100 dark:bg-navy-950 px-1 py-0.5 rounded font-mono text-brand-500">NEXT_PUBLIC_STRIPE_PAYMENT_LINK_PRO</code> in your <code className="bg-slate-100 dark:bg-navy-950 px-1 py-0.5 rounded font-mono">.env.local</code>. This immediately redirects buyers directly to your live checkout.
               </p>
             </div>
 
             <p className="text-slate-600 dark:text-slate-300">
-              You are selecting the <strong>{selectedPlanModal} Plan</strong> with {billingCycle} billing.
+              Currently running in decoupled sandbox mode. You can switch to the <strong>{selectedPlanModal} Plan</strong> immediately for local testing.
             </p>
 
             <div className="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-navy-750">
@@ -229,7 +240,7 @@ export default function PricingPage() {
                 Cancel
               </Button>
               <Button size="sm" onClick={handleConfirmPlanSwitch}>
-                Confirm Plan Switch (Demo)
+                Switch to {selectedPlanModal} (Demo)
               </Button>
             </div>
           </div>

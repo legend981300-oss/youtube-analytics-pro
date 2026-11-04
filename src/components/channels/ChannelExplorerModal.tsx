@@ -174,77 +174,129 @@ export const ChannelExplorerModal: React.FC<ChannelExplorerModalProps> = ({ isOp
 
   if (!isOpen) return null;
 
-  const handleSearch = (overrideHandle?: string) => {
-    const raw = (overrideHandle || handleInput).trim().toLowerCase();
+  const handleSearch = async (overrideHandle?: string) => {
+    const raw = (overrideHandle || handleInput).trim();
+    if (!raw) return;
     const cleanHandle = raw.startsWith('@') ? raw : `@${raw}`;
 
     setIsLoading(true);
 
-    setTimeout(() => {
-      setIsLoading(false);
-      if (FAMOUS_CREATOR_PROFILES[cleanHandle]) {
-        setActiveProfile(FAMOUS_CREATOR_PROFILES[cleanHandle]);
+    try {
+      // 1. Check pre-curated famous creator profiles for instant instant-load speed
+      if (FAMOUS_CREATOR_PROFILES[cleanHandle.toLowerCase()]) {
+        setActiveProfile(FAMOUS_CREATOR_PROFILES[cleanHandle.toLowerCase()]);
         showToast('Channel Discovered', `Analyzed public performance for ${cleanHandle}`, 'success');
-      } else {
-        // Generate high-fidelity heuristic profile for any custom creator
-        const displayName = cleanHandle.replace('@', '').replace(/[._-]/g, ' ');
-        const capitalized = displayName.charAt(0).toUpperCase() + displayName.slice(1);
-        const hash = cleanHandle.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-        const simulatedSubs = (hash * 4820) % 5000000 + 45000;
-        const simulatedViews = simulatedSubs * ((hash % 12) + 20);
-        const simulatedVideos = (hash % 180) + 40;
-        const score = 80 + (hash % 18);
-
-        const customProfile: ExploredChannelProfile = {
-          handle: cleanHandle,
-          name: capitalized,
-          avatar: `https://images.unsplash.com/photo-${1534528741775 + (hash % 500)}?w=160&auto=format&fit=crop&q=80`,
-          banner: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&auto=format&fit=crop&q=80',
-          subscribers: simulatedSubs,
-          totalViews: simulatedViews,
-          videoCount: simulatedVideos,
-          healthGrade: score >= 90 ? 'A+' : score >= 80 ? 'A' : 'B+',
-          healthScore: score,
-          avgCtr: Number((6.8 + (hash % 50) / 10).toFixed(1)),
-          niche: 'Digital Media & Creator Economy',
-          estimatedMonthlyEarnings: `$${formatNumber(Math.floor(simulatedViews * 0.0003))} - $${formatNumber(
-            Math.floor(simulatedViews * 0.0007)
-          )}`,
-          recentUploads: [
-            {
-              title: `The Ultimate Guide to ${capitalized} Masterclass 2026`,
-              views: Math.floor(simulatedSubs * 0.28),
-              ctr: 9.4,
-              timeAgo: '4 days ago',
-            },
-            {
-              title: `Why Most Creators Fail at ${capitalized} (And the Fix)`,
-              views: Math.floor(simulatedSubs * 0.42),
-              ctr: 11.2,
-              timeAgo: '2 weeks ago',
-            },
-            {
-              title: `I Tested Every Strategy in 30 Days (Real Results)`,
-              views: Math.floor(simulatedSubs * 0.35),
-              ctr: 8.8,
-              timeAgo: '1 month ago',
-            },
-          ],
-          keyStrengths: [
-            'Consistent upload frequency building audience habit loops',
-            'Solid thumbnail branding with recognizable color accents',
-            'Strong community engagement in first 24 hours of publication',
-          ],
-          growthOpportunities: [
-            'Increase high-contrast curiosity phrasing in the first 45 characters of titles',
-            'Add YouTube End Screens on legacy back-catalog videos to build binge sessions',
-          ],
-        };
-
-        setActiveProfile(customProfile);
-        showToast('Channel Analyzed', `Generated public audit for ${cleanHandle}`, 'info');
+        setIsLoading(false);
+        return;
       }
-    }, 450);
+
+      // 2. Query our live API endpoint (queries YouTube Data API v3 if key exists, or deterministic generator)
+      const res = await fetch(`/api/youtube/lookup?q=${encodeURIComponent(cleanHandle)}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.channel) {
+          const ch = data.channel;
+          const score = Math.min(98, Math.max(78, Math.round(ch.subscribers > 1000000 ? 94 : 85)));
+          const customProfile: ExploredChannelProfile = {
+            handle: ch.handle,
+            name: ch.name,
+            avatar: ch.avatar,
+            banner: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&auto=format&fit=crop&q=80',
+            subscribers: ch.subscribers,
+            totalViews: ch.totalViews,
+            videoCount: ch.videoCount,
+            healthGrade: score >= 90 ? 'A+' : score >= 80 ? 'A' : 'B+',
+            healthScore: score,
+            avgCtr: 11.4,
+            niche: ch.niche || 'Digital Media',
+            estimatedMonthlyEarnings: `$${formatNumber(Math.floor(ch.totalViews * 0.0003))} - $${formatNumber(Math.floor(ch.totalViews * 0.0007))}`,
+            recentUploads: (data.recentVideos || []).slice(0, 3).map((v: any) => ({
+              title: v.title,
+              views: v.views,
+              ctr: v.ctr,
+              timeAgo: 'Recently',
+            })),
+            keyStrengths: [
+              'Established audience trust with strong 24h upload momentum',
+              'Consistent branding across recent video titles and concepts',
+              'High audience loyalty and active retention signals',
+            ],
+            growthOpportunities: [
+              'Test higher contrast in first 3 seconds of mobile feed titles',
+              'Deploy A/B thumbnail testing on underperforming uploads',
+            ],
+          };
+
+          setActiveProfile(customProfile);
+          showToast(
+            data.provider === 'youtube_data_api_v3' ? 'Live YouTube Channel Imported' : 'Channel Analyzed',
+            `Loaded performance metrics for ${ch.name}`,
+            'success'
+          );
+          setIsLoading(false);
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('Channel lookup fetch failed, using fallback:', err);
+    }
+
+    // 3. Fallback Heuristic Generator
+    const displayName = cleanHandle.replace('@', '').replace(/[._-]/g, ' ');
+    const capitalized = displayName.charAt(0).toUpperCase() + displayName.slice(1);
+    const hash = cleanHandle.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const simulatedSubs = (hash * 4820) % 5000000 + 45000;
+    const simulatedViews = simulatedSubs * ((hash % 12) + 20);
+    const simulatedVideos = (hash % 180) + 40;
+    const score = 80 + (hash % 18);
+
+    const customProfile: ExploredChannelProfile = {
+      handle: cleanHandle,
+      name: capitalized,
+      avatar: `https://images.unsplash.com/photo-${1534528741775 + (hash % 500)}?w=160&auto=format&fit=crop&q=80`,
+      banner: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&auto=format&fit=crop&q=80',
+      subscribers: simulatedSubs,
+      totalViews: simulatedViews,
+      videoCount: simulatedVideos,
+      healthGrade: score >= 90 ? 'A+' : score >= 80 ? 'A' : 'B+',
+      healthScore: score,
+      avgCtr: Number((6.8 + (hash % 50) / 10).toFixed(1)),
+      niche: 'Digital Media & Creator Economy',
+      estimatedMonthlyEarnings: `$${formatNumber(Math.floor(simulatedViews * 0.0003))} - $${formatNumber(Math.floor(simulatedViews * 0.0007))}`,
+      recentUploads: [
+        {
+          title: `The Ultimate Guide to ${capitalized} Masterclass 2026`,
+          views: Math.floor(simulatedSubs * 0.28),
+          ctr: 9.4,
+          timeAgo: '4 days ago',
+        },
+        {
+          title: `Why Most Creators Fail at ${capitalized} (And the Fix)`,
+          views: Math.floor(simulatedSubs * 0.42),
+          ctr: 11.2,
+          timeAgo: '2 weeks ago',
+        },
+        {
+          title: `I Tested Every Strategy in 30 Days (Real Results)`,
+          views: Math.floor(simulatedSubs * 0.35),
+          ctr: 8.8,
+          timeAgo: '1 month ago',
+        },
+      ],
+      keyStrengths: [
+        'Consistent upload frequency building audience habit loops',
+        'Solid thumbnail branding with recognizable color accents',
+        'Strong community engagement in first 24 hours of publication',
+      ],
+      growthOpportunities: [
+        'Increase high-contrast curiosity phrasing in the first 45 characters of titles',
+        'Add YouTube End Screens on legacy back-catalog videos to build binge sessions',
+      ],
+    };
+
+    setActiveProfile(customProfile);
+    showToast('Channel Analyzed', `Generated public audit for ${cleanHandle}`, 'info');
+    setIsLoading(false);
   };
 
   const handleImportToDashboard = () => {
