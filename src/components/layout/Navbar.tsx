@@ -79,7 +79,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const matchingPages = useMemo(() => {
     if (!trimmedQuery) return [];
     const allPages = [
-      { name: 'Dashboard Overview', href: '/', category: 'Analytics' },
+      { name: 'Dashboard Overview', href: '/dashboard', category: 'Analytics' },
       { name: 'Subscriber Growth', href: '/subscribers', category: 'Analytics' },
       { name: 'Views Analytics', href: '/views', category: 'Analytics' },
       { name: 'Watch Hours', href: '/watch-hours', category: 'Analytics' },
@@ -99,7 +99,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       { name: 'Video Idea Vault', href: '/vault', category: 'Content' },
       { name: 'Multi-Channel Hub', href: '/channels', category: 'Admin' },
       { name: 'Weekly Executive Reports', href: '/reports', category: 'Admin' },
-      { name: 'Public Landing Page', href: '/landing', category: 'Marketing' },
+      { name: 'Public Landing Page', href: '/', category: 'Marketing' },
       { name: 'Pricing & Plans', href: '/pricing', category: 'Billing' },
       { name: 'Settings & Integrations', href: '/settings', category: 'Settings' },
       { name: 'Admin Command Center', href: '/admin', category: 'Admin' },

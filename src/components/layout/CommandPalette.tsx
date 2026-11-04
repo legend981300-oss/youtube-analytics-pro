@@ -150,7 +150,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   ];
 
   const navigationPages = [
-    { title: 'Overview & Main Dashboard', path: '/', icon: LayoutDashboard, category: 'Analytics' },
+    { title: 'Overview & Main Dashboard', path: '/dashboard', icon: LayoutDashboard, category: 'Analytics' },
     { title: 'Video Performance & Retention', path: '/videos', icon: Film, category: 'Analytics' },
     { title: 'AI Video Studio & Generator', path: '/ai-studio', icon: Sparkles, category: 'Tools', badge: 'AI' },
     { title: 'A/B Testing Simulator Lab', path: '/ab-testing', icon: Layers, category: 'Tools', badge: 'PRO' },
@@ -166,7 +166,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     { title: 'Channel Milestones & Goals', path: '/goals', icon: Target, category: 'Planning' },
     { title: 'Predictive Growth Forecasts', path: '/predictions', icon: TrendingUp, category: 'Growth' },
     { title: 'Content Production Calendar', path: '/calendar', icon: Calendar, category: 'Planning' },
-    { title: 'Public Product Landing Page', path: '/landing', icon: Globe, category: 'Marketing' },
+    { title: 'Public Product Landing Page', path: '/', icon: Globe, category: 'Marketing' },
     { title: 'Export & Scheduled Reports', path: '/reports', icon: BarChart3, category: 'Business' },
     { title: 'Channel Settings & API Keys', path: '/settings', icon: Settings, category: 'System' },
   ];

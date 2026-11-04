@@ -60,7 +60,7 @@ export const Sidebar: React.FC<{ onCloseMobile?: () => void }> = ({ onCloseMobil
     {
       title: 'CORE TELEMETRY',
       items: [
-        { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+        { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
         { name: 'Video Hub & Radar', href: '/videos', icon: Film },
         { name: 'Views Telemetry', href: '/views', icon: Eye },
         { name: 'Watch Time', href: '/watch-hours', icon: Clock },
@@ -91,7 +91,7 @@ export const Sidebar: React.FC<{ onCloseMobile?: () => void }> = ({ onCloseMobil
         { name: 'Channel Health Audit', href: '/audit', icon: Activity },
         { name: 'Channels Hub', href: '/channels', icon: Tv2 },
         { name: 'Reports & Export', href: '/reports', icon: FileSpreadsheet },
-        { name: 'Public Landing Page', href: '/landing', icon: Globe },
+        { name: 'Public Landing Page', href: '/', icon: Globe },
         { name: 'Pricing Plans', href: '/pricing', icon: CreditCard },
         { name: 'Settings & Cloud DB', href: '/settings', icon: Settings },
       ],
@@ -102,7 +102,7 @@ export const Sidebar: React.FC<{ onCloseMobile?: () => void }> = ({ onCloseMobil
     <aside className="flex h-full w-64 flex-col border-r border-zinc-200/80 bg-white dark:border-white/[0.06] dark:bg-[#0c0d12] transition-colors select-none">
       {/* Brand Header */}
       <div className="flex h-13 shrink-0 items-center justify-between px-4 border-b border-zinc-200/80 dark:border-white/[0.06]">
-        <BrandLogo size="md" href="/" />
+        <BrandLogo size="md" href="/dashboard" />
       </div>
 
       {/* Channel Switcher */}
