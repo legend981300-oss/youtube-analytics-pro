@@ -1,8 +1,9 @@
 -- ==============================================================================
--- YOUTUBE ANALYTICS PRO - PRODUCTION POSTGRESQL SCHEMA (SUPABASE)
+-- YOUTUBE ANALYTICS PRO - PRODUCTION POSTGRESQL MASTER SCHEMA (SUPABASE)
 -- ==============================================================================
 -- Run this entire script in your Supabase SQL Editor (https://supabase.com/dashboard)
 -- It creates all tables, indexes, triggers, and Row-Level Security (RLS) policies.
+-- Fully compliant with Multi-Tenant Data Isolation (auth.uid() = user_id).
 -- ==============================================================================
 
 -- 1. EXTENSIONS
@@ -39,7 +40,24 @@ CREATE TABLE IF NOT EXISTS public.channels (
   UNIQUE(user_id, channel_id)
 );
 
--- 4. VIDEO ANALYTICS CACHE TABLE
+-- 4. CHANNEL HISTORICAL STATS (DAILY AGGREGATIONS)
+CREATE TABLE IF NOT EXISTS public.channel_stats (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  channel_id UUID REFERENCES public.channels(id) ON DELETE CASCADE NOT NULL,
+  date DATE NOT NULL,
+  views BIGINT DEFAULT 0,
+  watch_hours NUMERIC(10, 2) DEFAULT 0,
+  subscribers_gained INT DEFAULT 0,
+  subscribers_lost INT DEFAULT 0,
+  estimated_revenue NUMERIC(10, 2) DEFAULT 0,
+  impressions BIGINT DEFAULT 0,
+  ctr NUMERIC(5, 2) DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(channel_id, date)
+);
+
+-- 5. VIDEO ANALYTICS CACHE TABLE
 CREATE TABLE IF NOT EXISTS public.video_cache (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   channel_id UUID REFERENCES public.channels(id) ON DELETE CASCADE NOT NULL,
@@ -58,7 +76,50 @@ CREATE TABLE IF NOT EXISTS public.video_cache (
   UNIQUE(channel_id, youtube_video_id)
 );
 
--- 5. VIDEO IDEA VAULT (KANBAN)
+-- 6. A/B TESTING LAB (TITLE & THUMBNAIL EXPERIMENTS)
+CREATE TABLE IF NOT EXISTS public.ab_tests (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  channel_id UUID REFERENCES public.channels(id) ON DELETE CASCADE NOT NULL,
+  video_id TEXT NOT NULL,
+  title_a TEXT NOT NULL,
+  title_b TEXT NOT NULL,
+  thumbnail_a_url TEXT NOT NULL,
+  thumbnail_b_url TEXT NOT NULL,
+  current_variant TEXT DEFAULT 'A' CHECK (current_variant IN ('A', 'B')),
+  status TEXT DEFAULT 'active' CHECK (status IN ('draft', 'active', 'completed', 'paused')),
+  variant_a_views INT DEFAULT 0,
+  variant_b_views INT DEFAULT 0,
+  variant_a_impressions INT DEFAULT 0,
+  variant_b_impressions INT DEFAULT 0,
+  variant_a_ctr NUMERIC(5, 2) DEFAULT 0,
+  variant_b_ctr NUMERIC(5, 2) DEFAULT 0,
+  confidence_score NUMERIC(5, 2) DEFAULT 0,
+  winner_variant TEXT CHECK (winner_variant IN ('A', 'B', 'inconclusive')),
+  rotation_interval_hours INT DEFAULT 24,
+  last_rotated_at TIMESTAMPTZ DEFAULT NOW(),
+  test_duration_days INT DEFAULT 14,
+  started_at TIMESTAMPTZ DEFAULT NOW(),
+  ended_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 7. USER TOKENS (SECURE OAUTH STORAGE FOR CRON AUTOMATION)
+CREATE TABLE IF NOT EXISTS public.user_tokens (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL UNIQUE,
+  channel_id TEXT NOT NULL,
+  access_token TEXT NOT NULL,
+  refresh_token TEXT,
+  token_type TEXT DEFAULT 'Bearer',
+  scope TEXT,
+  expires_at TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 8. VIDEO IDEA VAULT (KANBAN)
 CREATE TABLE IF NOT EXISTS public.video_ideas (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
@@ -73,7 +134,7 @@ CREATE TABLE IF NOT EXISTS public.video_ideas (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 6. USER GOALS TABLE
+-- 9. USER GOALS TABLE
 CREATE TABLE IF NOT EXISTS public.user_goals (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
@@ -86,7 +147,7 @@ CREATE TABLE IF NOT EXISTS public.user_goals (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 7. EMAIL UNSUBSCRIBES (CAN-SPAM / GDPR COMPLIANCE)
+-- 10. EMAIL UNSUBSCRIBES (CAN-SPAM / GDPR COMPLIANCE)
 CREATE TABLE IF NOT EXISTS public.email_unsubscribes (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   email TEXT UNIQUE NOT NULL,
@@ -100,37 +161,85 @@ CREATE TABLE IF NOT EXISTS public.email_unsubscribes (
 
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.channels ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.channel_stats ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.ab_tests ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_tokens ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.video_cache ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.video_ideas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_goals ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.email_unsubscribes ENABLE ROW LEVEL SECURITY;
 
--- Profiles: Users can view and update only their own profile
+-- 1. Profiles
 CREATE POLICY "Users can view own profile" ON public.profiles
   FOR SELECT USING (auth.uid() = id);
 
 CREATE POLICY "Users can update own profile" ON public.profiles
   FOR UPDATE USING (auth.uid() = id);
 
--- Channels: Users can access only their channels
+-- 2. Channels
 CREATE POLICY "Users can manage own channels" ON public.channels
   FOR ALL USING (auth.uid() = user_id);
 
--- Video Cache: Users can view videos belonging to their channels
+-- 3. Channel Stats
+CREATE POLICY "Users can view own channel stats" ON public.channel_stats
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own channel stats" ON public.channel_stats
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own channel stats" ON public.channel_stats
+  FOR UPDATE USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own channel stats" ON public.channel_stats
+  FOR DELETE USING (auth.uid() = user_id);
+
+-- 4. A/B Tests
+CREATE POLICY "Users can view own ab tests" ON public.ab_tests
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own ab tests" ON public.ab_tests
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own ab tests" ON public.ab_tests
+  FOR UPDATE USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own ab tests" ON public.ab_tests
+  FOR DELETE USING (auth.uid() = user_id);
+
+CREATE POLICY "Service role manages ab tests" ON public.ab_tests
+  FOR ALL TO service_role USING (true) WITH CHECK (true);
+
+-- 5. User Tokens
+CREATE POLICY "Users can view own tokens" ON public.user_tokens
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own tokens" ON public.user_tokens
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own tokens" ON public.user_tokens
+  FOR UPDATE USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own tokens" ON public.user_tokens
+  FOR DELETE USING (auth.uid() = user_id);
+
+CREATE POLICY "Service role manages tokens" ON public.user_tokens
+  FOR ALL TO service_role USING (true) WITH CHECK (true);
+
+-- 6. Video Cache
 CREATE POLICY "Users can manage videos of own channels" ON public.video_cache
   FOR ALL USING (
     channel_id IN (SELECT id FROM public.channels WHERE user_id = auth.uid())
   );
 
--- Video Ideas: Users can manage only their own ideas
+-- 7. Video Ideas
 CREATE POLICY "Users can manage own ideas" ON public.video_ideas
   FOR ALL USING (auth.uid() = user_id);
 
--- User Goals: Users can manage only their own goals
+-- 8. User Goals
 CREATE POLICY "Users can manage own goals" ON public.user_goals
   FOR ALL USING (auth.uid() = user_id);
 
--- Unsubscribes: Public insert allowed for 1-click unsubscribe without login
+-- 9. Email Unsubscribes
 CREATE POLICY "Public can insert unsubscribes" ON public.email_unsubscribes
   FOR INSERT WITH CHECK (true);
 
@@ -165,10 +274,16 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
 
 -- ==============================================================================
--- PERFORMANCE INDEXES
+-- PERFORMANCE & ISOLATION INDEXES
 -- ==============================================================================
 
 CREATE INDEX IF NOT EXISTS idx_channels_user_id ON public.channels(user_id);
+CREATE INDEX IF NOT EXISTS idx_channel_stats_user_id ON public.channel_stats(user_id);
+CREATE INDEX IF NOT EXISTS idx_channel_stats_channel_date ON public.channel_stats(channel_id, date DESC);
+CREATE INDEX IF NOT EXISTS idx_ab_tests_user_id ON public.ab_tests(user_id);
+CREATE INDEX IF NOT EXISTS idx_ab_tests_status ON public.ab_tests(status);
+CREATE INDEX IF NOT EXISTS idx_ab_tests_last_rotated ON public.ab_tests(last_rotated_at);
+CREATE INDEX IF NOT EXISTS idx_user_tokens_user_id ON public.user_tokens(user_id);
 CREATE INDEX IF NOT EXISTS idx_video_cache_channel_id ON public.video_cache(channel_id);
 CREATE INDEX IF NOT EXISTS idx_video_ideas_user_id ON public.video_ideas(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_goals_user_id ON public.user_goals(user_id);
