@@ -10,10 +10,12 @@ interface AIGenerateRequest {
 }
 
 /**
- * OpenAI / Local Creator Intelligence API Endpoint
+ * AI Creator Intelligence API Endpoint
  * 
- * Automatically uses OpenAI GPT-4o-mini if OPENAI_API_KEY is configured in .env.local,
- * otherwise falls back seamlessly to the enhanced local heuristic engine.
+ * Supports decoupled zero-dependency external AI providers:
+ * 1. Google Gemini (GEMINI_API_KEY) -> Gemini 1.5 Flash (Super fast & free tier available)
+ * 2. OpenAI (OPENAI_API_KEY) -> GPT-4o-mini
+ * 3. Local Deterministic Creator Heuristic Engine -> 100% Free, zero external API keys needed
  */
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
@@ -27,26 +29,21 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    const apiKey = process.env.OPENAI_API_KEY;
-
-    // 1. If OpenAI API Key is present, query OpenAI GPT-4o-mini
-    if (apiKey && apiKey.startsWith('sk-') && !apiKey.includes('placeholder')) {
-      try {
-        const systemPrompt = `You are an elite YouTube strategist and retention architect (trained on top creator playbooks like MrBeast, Ali Abdaal, and Paddy Galloway).
+    const systemPrompt = `You are an elite YouTube strategist and retention architect (trained on top creator playbooks like MrBeast, Ali Abdaal, and Paddy Galloway).
 Your goal is to provide high-CTR, retention-optimized, authentic YouTube metadata and scripts for creators.
 Format your response as valid, pure JSON without Markdown code fences.`;
 
-        let userPrompt = '';
+    let userPrompt = '';
 
-        if (mode === 'titles') {
-          userPrompt = `Generate 5 viral, high-CTR YouTube video titles for the topic: "${topic}".
+    if (mode === 'titles') {
+      userPrompt = `Generate 5 viral, high-CTR YouTube video titles for the topic: "${topic}".
 Tone: ${tone}. Niche: ${niche}.
 Return a JSON array of objects with the structure:
 [
   { "title": "Title here", "pattern": "e.g. Curiosity Gap / Contrarian / Number Hook", "estimatedCtr": "e.g. 11.4%", "characterCount": 48 }
 ]`;
-        } else if (mode === 'description') {
-          userPrompt = `Generate an SEO-optimized YouTube video description for the topic: "${topic}".
+    } else if (mode === 'description') {
+      userPrompt = `Generate an SEO-optimized YouTube video description for the topic: "${topic}".
 Tone: ${tone}. Niche: ${niche}.
 Include a captivating hook (first 2 lines), structured value overview, chapter timestamps (0:00 to 12:45), resource links, and search keywords.
 Return a JSON object:
@@ -55,15 +52,15 @@ Return a JSON object:
   "fullDescription": "Complete description text with timestamps and links",
   "recommendedTags": ["tag1", "tag2", "tag3", "tag4", "tag5"]
 }`;
-        } else if (mode === 'ideas') {
-          userPrompt = `Generate 4 creative, breakout YouTube video ideas around: "${topic}".
+    } else if (mode === 'ideas') {
+      userPrompt = `Generate 4 creative, breakout YouTube video ideas around: "${topic}".
 Tone: ${tone}. Niche: ${niche}.
 Return a JSON array of objects:
 [
   { "concept": "Title/Idea", "thumbnailConcept": "Visual description of thumbnail", "difficulty": "Low|Medium|High", "viralPotential": "Very High|High" }
 ]`;
-        } else if (mode === 'script') {
-          userPrompt = `Create a retention-optimized video script outline for: "${topic}".
+    } else if (mode === 'script') {
+      userPrompt = `Create a retention-optimized video script outline for: "${topic}".
 Tone: ${tone}. Niche: ${niche}.
 Return a JSON object:
 {
@@ -77,8 +74,54 @@ Return a JSON object:
   ],
   "callToAction": "Natural bridge to subscribe or watch next video"
 }`;
-        }
+    }
 
+    // 1. Google Gemini 1.5 Flash Provider (if GEMINI_API_KEY is configured)
+    const geminiKey = process.env.GEMINI_API_KEY;
+    if (geminiKey && !geminiKey.includes('placeholder') && geminiKey.length > 10) {
+      try {
+        const geminiRes = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [
+                {
+                  parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }],
+                },
+              ],
+              generationConfig: {
+                temperature: 0.7,
+                maxOutputTokens: 1200,
+                responseMimeType: 'application/json',
+              },
+            }),
+          }
+        );
+
+        if (geminiRes.ok) {
+          const geminiData = await geminiRes.json();
+          const rawText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+          const cleanJson = rawText.replace(/```json\n?|```/g, '').trim();
+          const parsedData = JSON.parse(cleanJson);
+
+          return NextResponse.json({
+            provider: 'gemini',
+            model: 'gemini-1.5-flash',
+            data: parsedData,
+            generatedAt: new Date().toISOString(),
+          });
+        }
+      } catch (geminiErr) {
+        console.warn('[AI API] Gemini call failed, falling back to alternative or local engine');
+      }
+    }
+
+    // 2. OpenAI GPT-4o-mini Provider (if OPENAI_API_KEY is configured)
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (apiKey && apiKey.startsWith('sk-') && !apiKey.includes('placeholder')) {
+      try {
         const openAiRes = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
           headers: {
