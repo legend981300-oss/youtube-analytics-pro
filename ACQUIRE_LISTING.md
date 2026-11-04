@@ -28,7 +28,7 @@
 1. **Complete Project Codebase:** Pristine, human-readable repository matching pro industry standards with 33 compiled routes and 0 TypeScript errors.
 2. **Turnkey Deployment Configurations:** Pre-configured structural profiles (`vercel.json`) ready for one-click global hosting.
 3. **Comprehensive Handoff Documentation:** Full technical setup layout guide (`ACQUIRE_LISTING.md`) ensuring the buyer can seamlessly manage the architecture from Day 1.
-4. **Automated Mathematical Test Suite:** 17 unit tests (`npm test`) validating Z-test statistics, outlier multipliers, short-scale formatters, and webhook signatures.
+4. **Automated Mathematical Test Suite:** 21 unit tests (`npm test`) validating Z-test statistics, outlier multipliers, short-scale formatters, sponsorship rates, heuristic title scorers, and webhook signatures.
 
 ### Category & Asking Price
 - **Category**: SaaS / Developer Tools / Creator Economy & Media
@@ -126,7 +126,8 @@ The database schema is organized around a multi-tenant PostgreSQL model on Supab
 youtube-analytics-pro/
 ├── src/
 │   ├── app/                               # Next.js 14 App Router Views & API Routes
-│   │   ├── page.tsx                       # Unified KPI Command Center & Recharts Gradient
+│   │   ├── page.tsx                       # Conversion-Optimized Marketing Landing Page
+│   │   ├── dashboard/page.tsx             # Unified KPI Command Center & Recharts Gradient
 │   │   ├── videos/page.tsx                # Video Catalog, 1-of-10 Rank Radar & Outlier Multipliers
 │   │   ├── ab-testing/page.tsx            # A/B Testing Simulator & YouTube Feed Preview
 │   │   ├── ai-studio/page.tsx             # AI Title, Script & SEO Description Generator

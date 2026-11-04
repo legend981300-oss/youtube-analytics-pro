@@ -7,7 +7,7 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?logo=tailwind-css&logoColor=white&style=flat-square)](https://tailwindcss.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![Build Status](https://img.shields.io/badge/Build-Passing-10B981?style=flat-square)](https://github.com/legend981300-oss/youtube-analytics-pro)
-[![Tests Passing](https://img.shields.io/badge/Tests-17%2F17%20Passed-10B981?style=flat-square)](#-automated-unit-test-suite)
+[![Tests Passing](https://img.shields.io/badge/Tests-21%2F21%20Passed-10B981?style=flat-square)](#-automated-unit-test-suite)
 [![Zero Dependency](https://img.shields.io/badge/External_APIs-Optional-purple?style=flat-square)](#-decoupled-api-architecture)
 
 ---
@@ -33,7 +33,7 @@
 1. **Complete Project Codebase:** Pristine, human-readable repository matching pro industry standards with 33 compiled routes and 0 TypeScript errors.
 2. **Turnkey Deployment Configurations:** Pre-configured structural profiles (`vercel.json`) ready for one-click global hosting.
 3. **Comprehensive Handoff Documentation:** Full technical setup layout guide (`ACQUIRE_LISTING.md`) ensuring the buyer can seamlessly manage the architecture from Day 1.
-4. **Automated Mathematical Test Suite:** 17 unit tests (`npm test`) validating Z-test statistics, outlier multipliers, short-scale formatters, and webhook signatures.
+4. **Automated Mathematical Test Suite:** 21 unit tests (`npm test`) validating Z-test statistics, outlier multipliers, short-scale formatters, sponsorship rates, heuristic title scorers, and webhook signatures.
 
 ---
 
