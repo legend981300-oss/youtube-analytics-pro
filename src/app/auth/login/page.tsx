@@ -111,6 +111,10 @@ export default function LoginPage() {
               <input
                 type="email"
                 required
+                data-mask="true"
+                data-clarity-mask="true"
+                ph-no-capture="true"
+                data-private="true"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-xs text-slate-900 focus:border-brand-500 focus:bg-white focus:outline-none dark:border-navy-750 dark:bg-navy-950 dark:text-white"
@@ -129,6 +133,10 @@ export default function LoginPage() {
               <input
                 type="password"
                 required
+                data-mask="true"
+                data-clarity-mask="true"
+                ph-no-capture="true"
+                data-private="true"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-xs text-slate-900 focus:border-brand-500 focus:bg-white focus:outline-none dark:border-navy-750 dark:bg-navy-950 dark:text-white"

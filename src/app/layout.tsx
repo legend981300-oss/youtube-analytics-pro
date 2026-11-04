@@ -1,12 +1,7 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import './globals.css';
 import { AppProvider } from '@/context/AppContext';
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-});
+import { ConsentBanner } from '@/components/privacy/ConsentBanner';
 
 export const metadata: Metadata = {
   title: 'YouTube Analytics Pro | Creator Intelligence & Growth Platform',
@@ -25,8 +20,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body className={`${inter.variable} antialiased selection:bg-brand-500/20 selection:text-brand-500`}>
-        <AppProvider>{children}</AppProvider>
+      <body className="font-sans antialiased selection:bg-brand-500/20 selection:text-brand-500">
+        <AppProvider>
+          {children}
+          <ConsentBanner />
+        </AppProvider>
       </body>
     </html>
   );

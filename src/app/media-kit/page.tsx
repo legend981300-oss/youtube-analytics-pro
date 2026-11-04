@@ -30,7 +30,21 @@ export default function MediaKitPage() {
   };
 
   const handleCopyPitch = () => {
-    const pitch = `Hi [Brand Manager],\n\nI'm reaching out from ${selectedChannel.name} (YouTube Creator Channel, ${formatNumber(selectedChannel.subscribers)} subscribers, ${formatNumber(selectedChannel.totalViews)} total views).\n\nWe specialize in high-retention, educational and tech content with an audience primarily based in the US and Europe (72% aged 25-34). We'd love to explore an authentic integration with [Brand Name] for our upcoming video.\n\nOur full verified media kit and rates can be viewed here: https://ytanalytics.pro/channels/${selectedChannel.id}\n\nBest regards,\n${currentUser.name}`;
+    const pitch = `Hi [Brand Manager],
+
+I'm reaching out from ${selectedChannel.name} (YouTube Creator Channel, ${formatNumber(selectedChannel.subscribers)} subscribers, ${formatNumber(selectedChannel.totalViews)} total views).
+
+We specialize in high-retention, educational and tech content with an audience primarily based in the US and Europe (72% aged 25-34). We'd love to explore an authentic integration with [Brand Name] for our upcoming video.
+
+Our full verified media kit and rates can be viewed here: https://ytanalytics.pro/channels/${selectedChannel.id}
+
+Best regards,
+${currentUser.name}
+Creator, ${selectedChannel.name}
+
+--
+Sender Address: YouTube Analytics Pro, Inc. • 548 Market St, Suite 98130, San Francisco, CA 94104-5401, USA
+To opt out or unsubscribe from future sponsor correspondence: https://ytanalytics.pro/unsubscribe?email=[BrandEmail]`;
     navigator.clipboard.writeText(pitch);
     showToast('Pitch Email Copied', 'Sponsor outreach template copied to your clipboard!', 'success');
   };
