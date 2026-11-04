@@ -171,20 +171,20 @@ export const Navbar: React.FC<NavbarProps> = ({
   ];
 
   return (
-    <header className="sticky top-0 z-40 flex h-14 w-full items-center justify-between border-b border-slate-200/80 bg-white dark:border-white/[0.07] dark:bg-[#0c0e14] px-4 sm:px-6 transition-colors select-none">
+    <header className="sticky top-0 z-40 flex h-13 w-full items-center justify-between border-b border-zinc-200/80 bg-white/95 dark:border-white/[0.06] dark:bg-[#0c0d12]/95 backdrop-blur-sm px-4 sm:px-6 transition-colors select-none">
       {/* Left: Mobile hamburger & Global Search */}
       <div className="flex items-center gap-3 lg:gap-4 flex-1 max-w-md">
         <button
           onClick={onToggleMobileMenu}
-          className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-neutral-400 dark:hover:bg-white/[0.06] dark:hover:text-white lg:hidden"
+          className="rounded-md p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-500 dark:hover:bg-white/[0.04] dark:hover:text-zinc-200 lg:hidden"
           aria-label="Open navigation menu"
         >
-          <Menu className="h-5 w-5" />
+          <Menu className="h-4 w-4" />
         </button>
 
         {/* Global Search Input with Dynamic Results Dropdown */}
         <div className="relative w-full" ref={searchRef}>
-          <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400 dark:text-neutral-500" />
+          <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400 dark:text-zinc-500" />
           <input
             type="text"
             value={searchQuery}
@@ -195,7 +195,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             }}
             onKeyDown={handleSearchKeyDown}
             placeholder="Search metrics, videos, keywords... (Ctrl+K)"
-            className="w-full rounded-lg border border-slate-200 bg-slate-50 py-1.5 pl-8 pr-12 text-xs text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:bg-white focus:outline-none dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-white dark:placeholder:text-neutral-500 dark:focus:border-white/20 transition-colors"
+            className="w-full rounded-md border border-zinc-200/60 bg-zinc-50/60 py-1.5 pl-8 pr-12 text-xs text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-300 focus:bg-white focus:outline-none dark:border-white/[0.05] dark:bg-white/[0.03] dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-white/[0.12] transition-colors"
           />
           {searchQuery ? (
             <button
@@ -203,7 +203,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 setSearchQuery('');
                 setSearchFocused(false);
               }}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
               title="Clear search"
             >
               <X className="h-3.5 w-3.5" />
@@ -212,7 +212,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               type="button"
               onClick={onOpenCommandPalette}
-              className="hidden sm:inline-flex absolute right-2 top-1/2 -translate-y-1/2 items-center rounded bg-slate-200/80 dark:bg-white/[0.08] px-1.5 py-0.5 text-[10px] font-mono font-medium text-slate-600 dark:text-neutral-400 border border-slate-300/40 dark:border-white/[0.06]"
+              className="hidden sm:inline-flex absolute right-2 top-1/2 -translate-y-1/2 items-center rounded bg-zinc-200/60 dark:bg-white/[0.06] px-1.5 py-0.5 text-[10px] font-mono font-medium text-zinc-600 dark:text-zinc-400 border border-zinc-300/40 dark:border-white/[0.04]"
               title="Open Command Palette (Ctrl+K)"
             >
               ⌘K
@@ -328,17 +328,17 @@ export const Navbar: React.FC<NavbarProps> = ({
       </div>
 
       {/* Right Controls */}
-      <div className="flex items-center gap-2">
-        {/* Date Range Selector: Clean macOS Segmented Style */}
-        <div className="hidden sm:flex items-center rounded-lg bg-slate-100 dark:bg-white/[0.04] p-0.5 border border-slate-200 dark:border-white/[0.06]">
+      <div className="flex items-center gap-1.5 sm:gap-2">
+        {/* Date Range Selector: Clean macOS / Linear Segmented Style */}
+        <div className="hidden sm:flex items-center rounded-md bg-zinc-100/70 dark:bg-white/[0.03] p-0.5 border border-zinc-200/50 dark:border-white/[0.05]">
           {dateRangeOptions.map((opt) => (
             <button
               key={opt.id}
               onClick={() => setDateRange(opt.id)}
-              className={`rounded-md px-2.5 py-1 text-xs font-semibold transition-all ${
+              className={`rounded px-2.5 py-1 text-[11px] font-medium transition-colors ${
                 dateRange === opt.id
-                  ? 'bg-white text-slate-900 shadow-sm dark:bg-white/[0.1] dark:text-white'
-                  : 'text-slate-500 hover:text-slate-900 dark:text-neutral-400 dark:hover:text-white'
+                  ? 'bg-white text-zinc-900 shadow-sm dark:bg-white/[0.08] dark:text-white'
+                  : 'text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200'
               }`}
             >
               {opt.label}
@@ -349,7 +349,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
-          className="rounded-lg border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] p-1.5 text-slate-500 hover:bg-slate-50 dark:text-neutral-400 dark:hover:bg-white/[0.06] dark:hover:text-white transition-colors"
+          className="rounded-md p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-500 dark:hover:bg-white/[0.04] dark:hover:text-zinc-200 transition-colors"
           title="Toggle theme"
         >
           {theme === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
@@ -359,12 +359,12 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="relative" ref={notifRef}>
           <button
             onClick={() => setNotificationsOpen(!notificationsOpen)}
-            className="relative rounded-lg border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] p-1.5 text-slate-500 hover:bg-slate-50 dark:text-neutral-400 dark:hover:bg-white/[0.06] dark:hover:text-white transition-colors"
+            className="relative rounded-md p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-500 dark:hover:bg-white/[0.04] dark:hover:text-zinc-200 transition-colors"
             aria-label="View notifications"
           >
             <Bell className="h-3.5 w-3.5" />
             {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 flex h-1.5 w-1.5 rounded-full bg-[#ff0033]" />
+              <span className="absolute top-1.5 right-1.5 flex h-1.5 w-1.5 rounded-full bg-[#ff0033]" />
             )}
           </button>
 

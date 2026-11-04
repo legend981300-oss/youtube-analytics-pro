@@ -97,34 +97,34 @@ export const Sidebar: React.FC<{ onCloseMobile?: () => void }> = ({ onCloseMobil
   ];
 
   return (
-    <aside className="flex h-full w-64 flex-col border-r border-slate-200/80 bg-white dark:border-white/[0.07] dark:bg-[#0c0e14] transition-colors select-none">
+    <aside className="flex h-full w-64 flex-col border-r border-zinc-200/80 bg-white dark:border-white/[0.06] dark:bg-[#0c0d12] transition-colors select-none">
       {/* Brand Header */}
-      <div className="flex h-14 shrink-0 items-center justify-between px-4 border-b border-slate-200/80 dark:border-white/[0.07]">
+      <div className="flex h-13 shrink-0 items-center justify-between px-4 border-b border-zinc-200/80 dark:border-white/[0.06]">
         <BrandLogo size="md" href="/" />
       </div>
 
       {/* Channel Switcher */}
-      <div className="relative px-3 py-2 shrink-0 border-b border-slate-200/60 dark:border-white/[0.05]">
+      <div className="relative px-3 py-2 shrink-0 border-b border-zinc-200/60 dark:border-white/[0.04]">
         <button
           onClick={() => setChannelDropdownOpen(!channelDropdownOpen)}
-          className="flex w-full items-center justify-between rounded-lg border border-slate-200 bg-slate-50/80 p-2 text-left hover:border-slate-300 dark:border-white/[0.06] dark:bg-white/[0.02] dark:hover:bg-white/[0.04] dark:hover:border-white/[0.1] transition-all"
+          className="flex w-full items-center justify-between rounded-md border border-zinc-200/60 bg-zinc-50/50 p-2 text-left hover:border-zinc-300 dark:border-white/[0.05] dark:bg-white/[0.02] dark:hover:bg-white/[0.04] transition-colors"
         >
           <div className="flex items-center gap-2.5 min-w-0">
             <img
               src={selectedChannel.avatar}
               alt={selectedChannel.name}
-              className="h-6 w-6 rounded-md object-cover ring-1 ring-slate-200 dark:ring-white/10"
+              className="h-5 w-5 rounded object-cover ring-1 ring-zinc-200 dark:ring-white/10"
             />
             <div className="min-w-0 flex-1">
-              <p className="truncate text-xs font-semibold text-slate-900 dark:text-neutral-200">
+              <p className="truncate text-xs font-medium text-zinc-900 dark:text-zinc-200">
                 {selectedChannel.name}
               </p>
-              <p className="truncate text-[10px] text-slate-400 dark:text-neutral-500">
-                {(selectedChannel.subscribers / 1000).toFixed(1)}k subscribers
+              <p className="truncate text-[10px] text-zinc-400 dark:text-zinc-500 font-mono">
+                {(selectedChannel.subscribers / 1000).toFixed(1)}k subs
               </p>
             </div>
           </div>
-          <ChevronDown className="h-3.5 w-3.5 shrink-0 text-slate-400 dark:text-neutral-500" />
+          <ChevronDown className="h-3 w-3 shrink-0 text-zinc-400 dark:text-zinc-500" />
         </button>
 
         {channelDropdownOpen && (
@@ -221,20 +221,20 @@ export const Sidebar: React.FC<{ onCloseMobile?: () => void }> = ({ onCloseMobil
         ))}
       </nav>
 
-      {/* Clean User Profile Footer */}
-      <div className="p-3 shrink-0 border-t border-slate-200/80 dark:border-white/[0.07] bg-slate-50/50 dark:bg-[#090a0f]">
+      {/* Clean Minimalist User Profile Footer */}
+      <div className="p-3 shrink-0 border-t border-zinc-200/80 dark:border-white/[0.06] bg-transparent">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5 min-w-0">
             <img
               src={currentUser.avatar}
               alt={currentUser.name}
-              className="h-7 w-7 rounded-full object-cover ring-1 ring-slate-200 dark:ring-white/10"
+              className="h-6 w-6 rounded-full object-cover ring-1 ring-zinc-200 dark:ring-white/10"
             />
             <div className="min-w-0">
-              <p className="truncate text-xs font-semibold text-slate-900 dark:text-neutral-200">
+              <p className="truncate text-xs font-medium text-zinc-900 dark:text-zinc-200">
                 {currentUser.name}
               </p>
-              <p className="truncate text-[10px] text-slate-400 dark:text-neutral-500">
+              <p className="truncate text-[10px] text-zinc-400 dark:text-zinc-500 font-mono">
                 {currentUser.plan} Plan
               </p>
             </div>
@@ -242,10 +242,10 @@ export const Sidebar: React.FC<{ onCloseMobile?: () => void }> = ({ onCloseMobil
           <Link
             href="/settings"
             onClick={onCloseMobile}
-            className="rounded-lg p-1.5 text-slate-400 hover:text-slate-700 dark:text-neutral-500 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors"
+            className="rounded-md p-1.5 text-zinc-400 hover:text-zinc-700 dark:text-zinc-500 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-white/[0.04] transition-colors"
             title="Settings"
           >
-            <Settings className="h-4 w-4" />
+            <Settings className="h-3.5 w-3.5" />
           </Link>
         </div>
       </div>

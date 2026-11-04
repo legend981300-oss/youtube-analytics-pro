@@ -81,18 +81,18 @@ export default function DashboardOverviewPage() {
     <AppShell>
       <div className="space-y-6">
         {/* Confident, Quiet Header */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between pb-1 border-b border-slate-200/80 dark:border-white/[0.06]">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-baseline sm:justify-between pb-3 border-b border-zinc-200/80 dark:border-white/[0.06]">
           <div>
             <div className="flex items-center gap-2.5">
-              <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">
+              <h1 className="text-xl font-medium tracking-tight text-zinc-900 dark:text-zinc-100">
                 Channel Overview
               </h1>
-              <span className="font-mono text-[10px] uppercase font-semibold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] px-2 py-0.5 rounded">
-                Last {dateRange.toUpperCase()}
+              <span className="font-mono text-[10px] text-zinc-400 dark:text-zinc-500">
+                • {selectedChannel.name}
               </span>
             </div>
-            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              Performance metrics for <strong className="font-medium text-slate-900 dark:text-slate-200">{selectedChannel.name}</strong> ({selectedChannel.handle})
+            <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+              Performance metrics for <strong className="font-medium text-zinc-900 dark:text-zinc-200">{selectedChannel.name}</strong> ({selectedChannel.handle}) across the last {dateRange.toUpperCase()}.
             </p>
           </div>
 
@@ -104,11 +104,12 @@ export default function DashboardOverviewPage() {
                 exportToCSV(`analytics-${selectedChannel.handle}-${dateRange}`, currentDailyData);
                 showToast('Export Complete', `Dashboard metrics exported (${dateRange.toUpperCase()})`, 'success');
               }}
+              className="text-xs font-normal"
             >
-              <Download className="h-3.5 w-3.5 mr-1" /> Export CSV
+              <Download className="h-3.5 w-3.5 mr-1 text-zinc-400" /> Export CSV
             </Button>
             <Link href="/ai-studio">
-              <Button size="sm">
+              <Button size="sm" className="text-xs font-normal">
                 <Sparkles className="h-3.5 w-3.5 mr-1" /> AI Studio
               </Button>
             </Link>
@@ -163,17 +164,17 @@ export default function DashboardOverviewPage() {
             </div>
 
             {/* Segmented Metric Switcher */}
-            <div className="inline-flex rounded-lg bg-slate-100 dark:bg-[#090a0f] p-0.5 border border-slate-200 dark:border-white/[0.06]">
+            <div className="inline-flex rounded-md bg-zinc-100/70 dark:bg-white/[0.03] p-0.5 border border-zinc-200/50 dark:border-white/[0.05]">
               {(['views', 'netSubscribers', 'watchHours', 'estimatedRevenue'] as const).map((key) => {
                 const active = selectedMetric === key;
                 return (
                   <button
                     key={key}
                     onClick={() => setSelectedMetric(key)}
-                    className={`rounded-md px-2.5 py-1 text-xs transition-colors font-medium ${
+                    className={`rounded px-2.5 py-1 text-[11px] font-medium transition-colors ${
                       active
-                        ? 'bg-white dark:bg-white/[0.1] text-slate-900 dark:text-white shadow-sm'
-                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                        ? 'bg-white dark:bg-white/[0.08] text-zinc-900 dark:text-white shadow-none'
+                        : 'text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200'
                     }`}
                   >
                     {metricConfigs[key].label}
@@ -190,12 +191,12 @@ export default function DashboardOverviewPage() {
                 <AreaChart data={currentDailyData} margin={{ top: 15, right: 15, left: -10, bottom: 5 }}>
                   <defs>
                     <linearGradient id={currentConfig.gradientId} x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={currentConfig.color} stopOpacity={0.35} />
-                      <stop offset="50%" stopColor={currentConfig.color} stopOpacity={0.10} />
+                      <stop offset="0%" stopColor={currentConfig.color} stopOpacity={0.20} />
+                      <stop offset="60%" stopColor={currentConfig.color} stopOpacity={0.05} />
                       <stop offset="100%" stopColor={currentConfig.color} stopOpacity={0.0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" strokeOpacity={0.05} vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" strokeOpacity={0.03} vertical={false} />
                   <XAxis
                     dataKey="date"
                     interval={calculateXAxisInterval(currentDailyData.length, 7)}
@@ -334,22 +335,22 @@ export default function DashboardOverviewPage() {
               </div>
 
               <div className="mt-4 flex items-center gap-4">
-                <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/30">
+                <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 border border-emerald-500/20">
                   <div className="text-center">
-                    <span className="font-mono text-xl font-bold text-emerald-500">86</span>
-                    <span className="block font-mono text-[9px] text-slate-400">/ 100</span>
+                    <span className="font-mono text-lg font-semibold text-emerald-500">86</span>
+                    <span className="block font-mono text-[9px] text-zinc-400">/ 100</span>
                   </div>
                 </div>
                 <div className="text-xs space-y-1">
-                  <p className="font-medium text-slate-900 dark:text-white">
+                  <p className="font-medium text-zinc-900 dark:text-zinc-100">
                     Consistent Reach Velocity
                   </p>
-                  <p className="text-slate-500 dark:text-slate-400 text-[11px] leading-relaxed">
+                  <p className="text-zinc-500 dark:text-zinc-400 text-[11px] leading-relaxed">
                     Average CTR of 9.8% places this channel in the top tier for technical content.
                   </p>
                   <Link
                     href="/audit"
-                    className="inline-block pt-1 text-[11px] font-medium text-slate-400 hover:text-white underline underline-offset-4"
+                    className="inline-block pt-0.5 text-[11px] text-zinc-400 hover:text-zinc-100 transition-colors"
                   >
                     View audit report →
                   </Link>

@@ -166,23 +166,23 @@ export default function VideosPage() {
         <OneOfTenRankCard audit={oneOfTenAudit} onSelectVideo={(v) => setActiveVideo(v)} />
 
         {/* Filter & Search Bar */}
-        <div className="pro-card p-3 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div className="pro-card p-2.5 flex flex-col gap-2.5 lg:flex-row lg:items-center lg:justify-between">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by title, topic, or keyword (#react, #saas)..."
-              className="w-full rounded-md border border-slate-200 bg-slate-50 py-1.5 pl-8 pr-4 text-xs text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:bg-white focus:outline-none dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-white dark:placeholder:text-slate-500 transition-colors"
+              className="w-full rounded-md border border-zinc-200/60 bg-zinc-50/50 py-1.5 pl-8 pr-4 text-xs text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-300 focus:bg-white focus:outline-none dark:border-white/[0.05] dark:bg-white/[0.02] dark:text-zinc-100 dark:placeholder:text-zinc-500 transition-colors"
             />
           </div>
 
-          <div className="inline-flex rounded-lg bg-slate-100 dark:bg-[#090a0f] p-0.5 border border-slate-200 dark:border-white/[0.06] overflow-x-auto no-scrollbar">
+          <div className="inline-flex rounded-md bg-zinc-100/70 dark:bg-white/[0.03] p-0.5 border border-zinc-200/50 dark:border-white/[0.05] overflow-x-auto no-scrollbar">
             {(
               [
                 { id: 'all', label: 'All Videos', count: counts.all },
-                { id: 'outliers', label: '🔥 Outliers', count: counts.outliers },
+                { id: 'outliers', label: 'Outliers', count: counts.outliers },
                 { id: 'high_ctr', label: 'High CTR (>9%)', count: counts.high_ctr },
                 { id: 'high_retention', label: 'Retention (>50%)', count: counts.high_retention },
                 { id: 'top_earners', label: 'Top Rev ($400+)', count: counts.top_earners },
@@ -193,14 +193,14 @@ export default function VideosPage() {
                 <button
                   key={tab.id}
                   onClick={() => setFilterType(tab.id as FilterType)}
-                  className={`flex items-center gap-1.5 whitespace-nowrap rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+                  className={`flex items-center gap-1.5 whitespace-nowrap rounded px-2.5 py-1 text-[11px] font-medium transition-colors ${
                     active
-                      ? 'bg-white dark:bg-white/[0.1] text-slate-900 dark:text-white shadow-sm font-semibold'
-                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                      ? 'bg-white dark:bg-white/[0.08] text-zinc-900 dark:text-white shadow-none font-medium'
+                      : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
                   }`}
                 >
                   <span>{tab.label}</span>
-                  <span className="font-mono text-[10px] text-slate-400">({tab.count})</span>
+                  <span className="font-mono text-[10px] text-zinc-400">({tab.count})</span>
                 </button>
               );
             })}
