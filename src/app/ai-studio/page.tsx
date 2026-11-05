@@ -144,9 +144,67 @@ export default function AiStudioPage() {
   const handleGenerate = async () => {
     const cleanTopic = topic.trim() || 'Modern Full Stack Web Apps';
     setIsGenerating(true);
-    await delay(800); // UI feel
 
-    // 1. Generate Titles based on tone
+    try {
+      const modeKey = activeTab === 'descriptions' ? 'description' : activeTab === 'scripts' ? 'script' : activeTab;
+      const res = await fetch('/api/ai/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: modeKey, topic: cleanTopic, tone }),
+      });
+
+      if (res.ok) {
+        const result = await res.json();
+        if (result?.data) {
+          if (activeTab === 'titles' && Array.isArray(result.data)) {
+            setGeneratedTitles(
+              result.data.map((item: any, idx: number) => ({
+                id: `t-${Date.now()}-${idx}`,
+                category: item.pattern || 'High-CTR Hook',
+                title: item.title,
+                patternStyle: `Estimated CTR: ${item.estimatedCtr || '11.8%'} • ${item.characterCount || item.title.length} chars`,
+              }))
+            );
+            showToast(result.provider === 'gemini' ? 'Gemini AI Generated' : 'AI Generated', `Generated 5 viral titles for "${cleanTopic}"`, 'success');
+            setIsGenerating(false);
+            return;
+          } else if (activeTab === 'descriptions' && result.data.fullDescription) {
+            setGeneratedDesc(result.data.fullDescription);
+            showToast(result.provider === 'gemini' ? 'Gemini AI Generated' : 'AI Generated', 'SEO Description & chapters generated', 'success');
+            setIsGenerating(false);
+            return;
+          } else if (activeTab === 'ideas' && Array.isArray(result.data)) {
+            setGeneratedIdeas(
+              result.data.map((item: any, idx: number) => ({
+                id: `i-${Date.now()}-${idx}`,
+                title: item.concept || item.title,
+                format: item.difficulty ? `${item.difficulty} Effort` : 'Case Study',
+                potential: item.viralPotential || 'Very High',
+                reason: item.thumbnailConcept || 'High organic search & browse momentum.',
+              }))
+            );
+            showToast(result.provider === 'gemini' ? 'Gemini AI Generated' : 'AI Generated', 'Generated breakout video ideas', 'success');
+            setIsGenerating(false);
+            return;
+          } else if (activeTab === 'scripts' && result.data.first10SecondsHook) {
+            const formatted = `[00:00 - 00:10] THE 3-SECOND HOOK:\n${result.data.first10SecondsHook}\n\n` +
+              `[00:10 - 01:00] THE PROBLEM:\n${result.data.theProblem}\n\n` +
+              (result.data.keyPoints || []).map((kp: any) => `[${kp.timestamp || '02:00'}] ${kp.headline}:\n${kp.talkingPoints}`).join('\n\n') +
+              `\n\n[OUTRO] CALL TO ACTION:\n${result.data.callToAction}`;
+            setGeneratedScript(formatted);
+            showToast(result.provider === 'gemini' ? 'Gemini AI Generated' : 'AI Generated', 'Video script outline generated', 'success');
+            setIsGenerating(false);
+            return;
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('AI endpoint failed, using local generator fallback:', err);
+    }
+
+    await delay(600); // UI feel fallback
+
+    // 1. Generate Titles based on tone fallback
     if (activeTab === 'titles') {
       let titlesForTone: GeneratedTitle[] = [];
       if (tone === 'educational') {
