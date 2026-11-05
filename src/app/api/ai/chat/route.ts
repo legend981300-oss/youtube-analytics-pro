@@ -255,7 +255,9 @@ Rules:
       lower.includes('can i ask') ||
       lower.includes('have a question') ||
       lower.includes('ask you a question') ||
-      lower === 'question'
+      lower.includes('sak') ||
+      lower.includes('ask') ||
+      lower.includes('question')
     ) {
       reply = `Yes, absolutely! I'm here 24/7 to help you grow **${channelName}**.
 

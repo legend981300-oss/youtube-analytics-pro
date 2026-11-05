@@ -51,6 +51,10 @@ export const FloatingAiCopilot: React.FC = () => {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('youtube_analytics_ai_key') || '';
       setUserApiKey(stored);
+      // Auto-open key drawer if user hasn't added an AI key yet
+      if (!stored) {
+        setShowKeyModal(true);
+      }
     }
   }, []);
 
@@ -191,10 +195,15 @@ export const FloatingAiCopilot: React.FC = () => {
             <div className="flex items-center gap-1.5">
               <button
                 onClick={() => setShowKeyModal(!showKeyModal)}
-                className={`rounded p-1 transition-colors ${userApiKey ? 'text-emerald-400 hover:text-emerald-300' : 'text-slate-400 hover:text-slate-200'}`}
-                title={userApiKey ? 'AI Key connected' : 'Connect NVIDIA or Gemini API key'}
+                className={`flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium transition-all ${
+                  userApiKey
+                    ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
+                    : 'bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30'
+                }`}
+                title={userApiKey ? 'AI Key connected' : 'Click to paste your NVIDIA or Gemini API key'}
               >
-                <Key className="h-3.5 w-3.5" />
+                <Key className="h-3 w-3" />
+                <span>{userApiKey ? (userApiKey.startsWith('nvapi-') ? 'NVIDIA NIM' : 'Gemini AI') : 'Paste AI Key'}</span>
               </button>
               <button
                 onClick={() => setIsOpen(false)}
@@ -207,30 +216,49 @@ export const FloatingAiCopilot: React.FC = () => {
 
           {/* Inline AI Key Settings Drawer */}
           {showKeyModal && (
-            <div className="border-b border-white/[0.08] bg-[#0c0e14] p-3 text-xs space-y-2 animate-fade-in">
-              <div className="flex justify-between items-center text-slate-300 font-medium">
-                <span className="flex items-center gap-1.5">
-                  <Key className="h-3 w-3 text-amber-400" /> Connect AI Key
+            <div className="border-b border-amber-500/20 bg-[#161824] p-3 text-xs space-y-2 animate-fade-in">
+              <div className="flex justify-between items-center text-slate-200 font-semibold">
+                <span className="flex items-center gap-1.5 text-amber-400">
+                  <Key className="h-3.5 w-3.5" /> Paste Your NVIDIA or Gemini Key
                 </span>
-                <span className="text-[10px] text-emerald-400 font-mono">
-                  {userApiKey ? (userApiKey.startsWith('nvapi-') ? 'NVIDIA NIM' : 'Gemini AI') : 'Live Auto'}
+                <span className="text-[10px] text-slate-400">
+                  Free $0 Models
                 </span>
               </div>
-              <input
-                type="password"
-                value={userApiKey}
-                onChange={(e) => {
-                  const val = e.target.value.trim();
-                  setUserApiKey(val);
-                  if (typeof window !== 'undefined') {
-                    localStorage.setItem('youtube_analytics_ai_key', val);
-                  }
-                }}
-                placeholder="Paste nvapi-... (NVIDIA) or AIzaSy... (Gemini)"
-                className="w-full bg-[#161822] border border-white/10 rounded px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#ff0033]"
-              />
+              <div className="flex gap-1.5">
+                <input
+                  type="password"
+                  value={userApiKey}
+                  onChange={(e) => {
+                    const val = e.target.value.trim();
+                    setUserApiKey(val);
+                    if (typeof window !== 'undefined') {
+                      localStorage.setItem('youtube_analytics_ai_key', val);
+                    }
+                  }}
+                  placeholder="Paste nvapi-... (NVIDIA) or AIzaSy... (Gemini)"
+                  className="flex-1 bg-[#0c0e14] border border-white/15 rounded px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 font-mono"
+                />
+                <button
+                  onClick={() => {
+                    if (userApiKey) {
+                      setShowKeyModal(false);
+                      showToast(
+                        userApiKey.startsWith('nvapi-') ? 'NVIDIA NIM Active' : 'Gemini AI Active',
+                        'Real AI models unlocked for all chats & generations!',
+                        'success'
+                      );
+                    } else {
+                      showToast('Missing Key', 'Please paste an API key first', 'warning');
+                    }
+                  }}
+                  className="bg-amber-500 hover:bg-amber-400 text-black font-semibold px-3 py-1.5 rounded text-xs transition-colors shrink-0"
+                >
+                  Save & Connect
+                </button>
+              </div>
               <div className="flex items-center justify-between text-[10px] text-slate-400">
-                <span>Direct browser connection (Zero waiting for redeploys)</span>
+                <span>Supports NVIDIA NIM (nvapi-...) or Google Gemini (AIzaSy...)</span>
                 {userApiKey && (
                   <button
                     onClick={() => {
@@ -242,7 +270,7 @@ export const FloatingAiCopilot: React.FC = () => {
                     }}
                     className="text-rose-400 hover:underline"
                   >
-                    Clear
+                    Clear Key
                   </button>
                 )}
               </div>
