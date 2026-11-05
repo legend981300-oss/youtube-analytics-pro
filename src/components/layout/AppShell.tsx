@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { Sidebar } from './Sidebar';
 import { Navbar } from './Navbar';
-import { DemoNotice } from '@/components/ui/DemoNotice';
 import { CommandPalette } from './CommandPalette';
 import { ChannelExplorerModal } from '@/components/channels/ChannelExplorerModal';
 import { MilestoneCardModal } from '@/components/social/MilestoneCardModal';
@@ -63,10 +62,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
       {/* Right Area: Pinned Top Controls + Independently Scrollable Main Content */}
       <div className="flex flex-1 flex-col h-full min-w-0 overflow-hidden relative z-10">
-        {/* Top Notice Banner */}
-        <div className="shrink-0">
-          <DemoNotice />
-        </div>
+
 
         {/* Pinned Navbar */}
         <div className="shrink-0">
