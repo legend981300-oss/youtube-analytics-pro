@@ -50,7 +50,7 @@ export const FloatingAiCopilot: React.FC = () => {
     }
   }, [messages, isOpen]);
 
-  const handleSendMessage = (customPrompt?: string) => {
+  const handleSendMessage = async (customPrompt?: string) => {
     const textToSend = customPrompt || input.trim();
     if (!textToSend || isTyping) return;
 
@@ -65,32 +65,54 @@ export const FloatingAiCopilot: React.FC = () => {
     if (!customPrompt) setInput('');
     setIsTyping(true);
 
-    setTimeout(() => {
-      let reply = '';
-      const lower = textToSend.toLowerCase();
+    try {
+      const historyPayload = messages.slice(-6).map((m) => ({
+        role: m.sender === 'assistant' ? ('assistant' as const) : ('user' as const),
+        content: m.text,
+      }));
 
-      if (lower.includes('views drop') || lower.includes('drop')) {
-        reply = `📉 Root-Cause Analysis for View Drop:\n\n1. Browse Feed Impression Burn: Your impressions remained flat while initial 2-hour CTR dipped by 1.8%, causing the recommendation engine to stop wide testing.\n2. Day of Week Seasonal Dip: Historical analytics show Thursday releases in ${selectedChannel.category} experience 22% lower day-one velocity than Sunday uploads.\n3. Action Plan: Pin an engaging curiosity comment on your recent video and test thumbnail Variant B to trigger a second recommendation surge.`;
-      } else if (lower.includes('5 viral titles') || lower.includes('titles')) {
-        reply = `🔥 5 High-CTR Title Concepts for ${selectedChannel.name}:\n\n1. "Stop Building Next.js Apps Wrong! (2026 Production Architecture)"\n2. "Why 90% of Developers Will Be Replaced by AI Agents This Year"\n3. "I Built a Full Stack SaaS in 48 Hours with AI (Here's What Happened)"\n4. "The Uncomfortable Truth About Software Engineering Careers"\n5. "Don't Learn To Code in 2026 Until You Watch This"\n\n(Tip: Titles with power words like "Stop", "Truth", and "Why" deliver 2.3x higher CTR)`;
-      } else if (lower.includes('ctr') || lower.includes('lift')) {
-        reply = `🎯 Formulas to Lift CTR from 7% to 10%+:\n\n• Rule of 3 Elements: Ensure your thumbnail has max 3 focal points: 1 Face with high emotion, 1 Focal Object, and max 3 words of bold text.\n• Curiosity Gap Over Summary: Don't repeat the video title on the thumbnail image. Complement it. (e.g., Title: "I Tested 50 Keyboards", Thumbnail: "This Broke My Hands").\n• Visual Contrast: High specular contrast between text and background boosts mobile glance-rate by 34%.`;
-      } else if (lower.includes('duration') || lower.includes('length')) {
-        reply = `⏱️ Optimal Duration Recommendation:\n\n• For ${selectedChannel.category}, your highest-earning videos average 14 to 18 minutes.\n• This duration unlocks mid-roll ad placement eligibility while maintaining average view duration above 45% (6m30s+), maximizing algorithmic promotion.`;
-      } else {
-        reply = `💡 Strategic Advice for ${selectedChannel.name}:\n\nBased on your ${selectedChannel.subscribers.toLocaleString()} subscribers and recent upload velocity, your most effective lever is audience binge-sessions.\n\n1. Structure end-screen cards linking to an episodic series.\n2. Fulfill your thumbnail promise within the first 6 seconds to eliminate hook drop-off.\n3. Publish on your primary audience peak window (Sunday 18:00 UTC).`;
+      const res = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: textToSend,
+          channelContext: {
+            name: selectedChannel.name,
+            handle: selectedChannel.handle,
+            subscribers: selectedChannel.subscribers,
+            category: selectedChannel.category,
+            totalViews: selectedChannel.totalViews,
+          },
+          history: historyPayload,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data?.reply) {
+          const assistantMsg: Message = {
+            id: `msg-${Date.now() + 1}`,
+            sender: 'assistant',
+            text: data.reply,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          };
+          setMessages((prev) => [...prev, assistantMsg]);
+          setIsTyping(false);
+          return;
+        }
       }
+    } catch (err) {
+      console.warn('AI chat error, using fallback:', err);
+    }
 
-      const assistantMsg: Message = {
-        id: `msg-${Date.now() + 1}`,
-        sender: 'assistant',
-        text: reply,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      };
-
-      setMessages((prev) => [...prev, assistantMsg]);
-      setIsTyping(false);
-    }, 500);
+    const assistantMsg: Message = {
+      id: `msg-${Date.now() + 1}`,
+      sender: 'assistant',
+      text: `💡 Strategic Advice for ${selectedChannel.name}:\n\n1. Double down on high-CTR contrast thumbnails.\n2. Cut verbal intros to keep retention >70% in the first 30 seconds.\n3. Create playlist binge-loops on end-screens.`,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    };
+    setMessages((prev) => [...prev, assistantMsg]);
+    setIsTyping(false);
   };
 
   const handleCopy = (id: string, text: string) => {
