@@ -54,6 +54,9 @@ interface AppContextType {
   addCalendarEvent: (event: Omit<CalendarEvent, 'id'>) => void;
   currentUser: UserProfile;
   setCurrentUser: (user: UserProfile) => void;
+  isAuthenticated: boolean;
+  setIsAuthenticated: (val: boolean) => void;
+  logout: () => void;
   searchQuery: string;
   setSearchQuery: (q: string) => void;
   demoNoticeDismissed: boolean;
@@ -73,6 +76,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [goals, setGoals] = useState<Goal[]>(DEMO_GOALS);
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>(DEMO_CALENDAR_EVENTS);
   const [currentUser, setCurrentUser] = useState<UserProfile>(CURRENT_USER);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [demoNoticeDismissed, setDemoNoticeDismissed] = useState<boolean>(false);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
@@ -105,11 +109,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         if (parsed && typeof parsed === 'object') setCustomVideos(parsed);
       }
 
-      // Hydrate user session
+      // Hydrate user session & auth state
       const savedUser = localStorage.getItem('yt_pro_current_user');
-      if (savedUser) {
+      const savedAuth = localStorage.getItem('yt_pro_is_authenticated');
+      if (savedUser && savedAuth === 'true') {
         const parsed = JSON.parse(savedUser);
-        if (parsed && parsed.email) setCurrentUser(parsed);
+        if (parsed && parsed.email) {
+          setCurrentUser(parsed);
+          setIsAuthenticated(true);
+        }
+      } else {
+        setIsAuthenticated(false);
       }
 
       // Hydrate channels
@@ -329,6 +339,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     showToast('Upload Scheduled', `"${event.title}" planned for ${event.date}.`, 'success');
   };
 
+  const logout = () => {
+    setIsAuthenticated(false);
+    try {
+      localStorage.removeItem('yt_pro_is_authenticated');
+      localStorage.removeItem('yt_pro_current_user');
+    } catch {}
+    showToast('Signed Out', 'You have been signed out of your account.', 'info');
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -357,6 +376,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         addCalendarEvent,
         currentUser,
         setCurrentUser,
+        isAuthenticated,
+        setIsAuthenticated,
+        logout,
         searchQuery,
         setSearchQuery,
         demoNoticeDismissed,

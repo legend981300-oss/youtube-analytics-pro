@@ -4,9 +4,11 @@ import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { CheckCircle2, ArrowRight } from 'lucide-react';
+import { useApp } from '@/context/AppContext';
 
 export default function LandingPage() {
   const router = useRouter();
+  const { isAuthenticated, logout } = useApp();
 
   return (
     <div className="bg-[#09090b] text-[#f4f4f5] min-h-screen font-sans selection:bg-indigo-500/30 selection:text-indigo-200">
@@ -27,24 +29,37 @@ export default function LandingPage() {
             <a href="#pricing" className="text-zinc-400 hover:text-zinc-200 text-sm transition-colors">
               Pricing
             </a>
-            <Link
-              href="/auth/login"
-              className="text-zinc-300 hover:text-white text-xs font-medium transition-colors"
-            >
-              Sign In
-            </Link>
-            <Link
-              href="/auth/register"
-              className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3.5 py-2 rounded-lg transition-colors"
-            >
-              Sign Up Free
-            </Link>
-            <button
-              onClick={() => router.push('/dashboard')}
-              className="hidden sm:inline-flex bg-zinc-100 text-zinc-950 text-xs font-semibold px-3 py-2 rounded-lg hover:bg-zinc-200 transition-colors items-center gap-1.5"
-            >
-              Dashboard <ArrowRight className="h-3 w-3" />
-            </button>
+            {isAuthenticated ? (
+              <>
+                <Link
+                  href="/dashboard"
+                  className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3.5 py-2 rounded-lg transition-colors inline-flex items-center gap-1.5"
+                >
+                  Dashboard <ArrowRight className="h-3 w-3" />
+                </Link>
+                <button
+                  onClick={logout}
+                  className="text-zinc-400 hover:text-white text-xs font-medium transition-colors"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/auth/login"
+                  className="text-zinc-300 hover:text-white text-xs font-medium transition-colors"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/auth/register"
+                  className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3.5 py-2 rounded-lg transition-colors"
+                >
+                  Sign Up Free
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </nav>
@@ -64,20 +79,31 @@ export default function LandingPage() {
           The elite telemetry hub running cron-driven asset optimization, retention drop-off analytics, and instant multi-channel metadata updates.
         </p>
 
-        {/* Hero Button Triggers to hit local dashboard paths */}
+        {/* Hero Auth CTAs */}
         <div className="mt-10 flex flex-wrap justify-center gap-4">
-          <Link 
-            href="/auth/register"
-            className="bg-indigo-600 hover:bg-indigo-500 text-zinc-50 text-sm font-semibold px-6 py-3 rounded-xl transition-all shadow-lg shadow-indigo-600/20 inline-flex items-center gap-2"
-          >
-            Create Free Account <ArrowRight className="h-4 w-4" />
-          </Link>
-          <Link 
-            href="/dashboard"
-            className="bg-zinc-900 border border-[#1f1f23] hover:bg-zinc-800 text-zinc-300 text-sm font-medium px-6 py-3 rounded-xl transition-colors"
-          >
-            View Live Sandbox
-          </Link>
+          {isAuthenticated ? (
+            <Link 
+              href="/dashboard"
+              className="bg-indigo-600 hover:bg-indigo-500 text-zinc-50 text-sm font-semibold px-6 py-3 rounded-xl transition-all shadow-lg shadow-indigo-600/20 inline-flex items-center gap-2"
+            >
+              Open Dashboard <ArrowRight className="h-4 w-4" />
+            </Link>
+          ) : (
+            <>
+              <Link 
+                href="/auth/register"
+                className="bg-indigo-600 hover:bg-indigo-500 text-zinc-50 text-sm font-semibold px-6 py-3 rounded-xl transition-all shadow-lg shadow-indigo-600/20 inline-flex items-center gap-2"
+              >
+                Create Free Account <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link 
+                href="/auth/login"
+                className="bg-zinc-900 border border-[#1f1f23] hover:bg-zinc-800 text-zinc-300 text-sm font-medium px-6 py-3 rounded-xl transition-colors"
+              >
+                Sign In to Workspace
+              </Link>
+            </>
+          )}
         </div>
       </section>
 
@@ -153,7 +179,7 @@ export default function LandingPage() {
               </ul>
             </div>
             <button
-              onClick={() => router.push('/pricing')}
+              onClick={() => router.push('/auth/register')}
               className="mt-8 w-full bg-zinc-900 border border-[#1f1f23] text-zinc-300 text-xs font-medium py-2.5 rounded-xl hover:bg-zinc-800 transition-colors"
             >
               Get Started
@@ -179,7 +205,7 @@ export default function LandingPage() {
               </ul>
             </div>
             <button
-              onClick={() => router.push('/pricing')}
+              onClick={() => router.push('/auth/register')}
               className="mt-8 w-full bg-indigo-600 text-zinc-50 text-xs font-semibold py-2.5 rounded-xl hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-600/20"
             >
               Upgrade to Pro

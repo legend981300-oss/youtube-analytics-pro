@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Sidebar } from './Sidebar';
 import { Navbar } from './Navbar';
 import { CommandPalette } from './CommandPalette';
@@ -8,13 +9,27 @@ import { ChannelExplorerModal } from '@/components/channels/ChannelExplorerModal
 import { MilestoneCardModal } from '@/components/social/MilestoneCardModal';
 import { FloatingAiCopilot } from '@/components/ai/FloatingAiCopilot';
 import { AmbientBackdrop } from '@/components/ui/AmbientBackdrop';
+import { useApp } from '@/context/AppContext';
 import { X } from 'lucide-react';
 
 export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const router = useRouter();
+  const { isAuthenticated } = useApp();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [channelExplorerOpen, setChannelExplorerOpen] = useState(false);
   const [milestoneModalOpen, setMilestoneModalOpen] = useState(false);
+  const [isVerifyingAuth, setIsVerifyingAuth] = useState(true);
+
+  // Authentication Guard: strictly verify session before rendering protected app shell
+  useEffect(() => {
+    const storedAuth = typeof window !== 'undefined' ? localStorage.getItem('yt_pro_is_authenticated') : null;
+    if (storedAuth !== 'true') {
+      router.push('/auth/login?required=true');
+    } else {
+      setIsVerifyingAuth(false);
+    }
+  }, [router, isAuthenticated]);
 
   // Global Ctrl+K / Cmd+K keyboard shortcut listener
   useEffect(() => {
@@ -28,6 +43,17 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
+
+  if (isVerifyingAuth) {
+    return (
+      <div className="h-screen w-screen bg-[#090a0f] flex items-center justify-center font-sans">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-xs text-zinc-400 font-mono">Verifying creator access...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen w-screen overflow-hidden bg-slate-50 text-slate-900 dark:bg-[#090a0f] dark:text-slate-100 flex font-sans transition-colors duration-200 relative select-text">

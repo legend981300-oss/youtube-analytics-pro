@@ -10,7 +10,7 @@ import { useApp } from '@/context/AppContext';
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { setCurrentUser } = useApp();
+  const { setCurrentUser, setIsAuthenticated } = useApp();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -74,7 +74,7 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     setTimeout(() => {
-      setCurrentUser({
+      const newUser = {
         id: `usr-${Date.now()}`,
         name: name || 'New Creator',
         email: email || 'creator@example.com',
@@ -82,11 +82,17 @@ export default function RegisterPage() {
         plan,
         channelsCount: 1,
         joinedDate: 'Today',
-        role: 'creator',
-      });
+        role: 'creator' as const,
+      };
+      setCurrentUser(newUser);
+      setIsAuthenticated(true);
+      try {
+        localStorage.setItem('yt_pro_is_authenticated', 'true');
+        localStorage.setItem('yt_pro_current_user', JSON.stringify(newUser));
+      } catch {}
       setIsLoading(false);
       router.push('/dashboard');
-    }, 600);
+    }, 400);
   };
 
   return (

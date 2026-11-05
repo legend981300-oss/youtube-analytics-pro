@@ -11,10 +11,17 @@ import { useApp } from '@/context/AppContext';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { setCurrentUser } = useApp();
+  const { setCurrentUser, setIsAuthenticated } = useApp();
   const [email, setEmail] = useState('alex@creatorsuite.io');
   const [password, setPassword] = useState('demo123456');
   const [isLoading, setIsLoading] = useState(false);
+  const [isRequired, setIsRequired] = useState(false);
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.search.includes('required=true')) {
+      setIsRequired(true);
+    }
+  }, []);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,16 +31,22 @@ export default function LoginPage() {
     const capitalized = userDisplayName.charAt(0).toUpperCase() + userDisplayName.slice(1);
 
     setTimeout(() => {
-      setCurrentUser({
+      const newUser = {
         id: `usr-${Date.now()}`,
         name: capitalized,
         email,
         avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
-        plan: 'Pro',
+        plan: 'Pro' as const,
         channelsCount: 1,
         joinedDate: 'Active Session',
-        role: 'creator',
-      });
+        role: 'creator' as const,
+      };
+      setCurrentUser(newUser);
+      setIsAuthenticated(true);
+      try {
+        localStorage.setItem('yt_pro_is_authenticated', 'true');
+        localStorage.setItem('yt_pro_current_user', JSON.stringify(newUser));
+      } catch {}
       setIsLoading(false);
       router.push('/dashboard');
     }, 400);
@@ -42,16 +55,22 @@ export default function LoginPage() {
   const handleQuickDemoLogin = (role: 'creator' | 'admin') => {
     setIsLoading(true);
     setTimeout(() => {
-      setCurrentUser({
+      const demoUser = {
         id: role === 'admin' ? 'usr-admin-01' : 'usr-8821',
         name: role === 'admin' ? 'Admin Operator' : 'Alex Rivera',
         email: role === 'admin' ? 'admin@ytanalytics.pro' : 'alex@creatorsuite.io',
         avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
-        plan: role === 'admin' ? 'Creator' : 'Pro',
+        plan: role === 'admin' ? ('Creator' as const) : ('Pro' as const),
         channelsCount: 3,
         joinedDate: 'November 2023',
         role,
-      });
+      };
+      setCurrentUser(demoUser);
+      setIsAuthenticated(true);
+      try {
+        localStorage.setItem('yt_pro_is_authenticated', 'true');
+        localStorage.setItem('yt_pro_current_user', JSON.stringify(demoUser));
+      } catch {}
       setIsLoading(false);
       router.push(role === 'admin' ? '/admin' : '/dashboard');
     }, 400);
@@ -72,6 +91,16 @@ export default function LoginPage() {
             Sign in to access your YouTube analytics command center.
           </p>
         </div>
+
+        {/* Authentication Required Guard Banner */}
+        {isRequired && (
+          <div className="rounded-2xl border border-amber-500/40 bg-amber-500/10 p-3.5 text-xs text-amber-300 flex items-center gap-2.5 shadow-sm">
+            <Lock className="h-4 w-4 text-amber-400 shrink-0" />
+            <p className="leading-relaxed">
+              <strong className="font-semibold text-white">Sign In Required:</strong> Please log in or register a free account to enter the YouTube Analytics workspace.
+            </p>
+          </div>
+        )}
 
         {/* Session Status Notice */}
         <div className="rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-3.5 text-xs text-indigo-800 dark:text-indigo-300 space-y-1">
