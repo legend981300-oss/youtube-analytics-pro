@@ -16,9 +16,9 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push('/')}>
             <div className="w-6 h-6 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-xs text-white">
-              T
+              Y
             </div>
-            <span className="font-semibold tracking-tight text-sm text-zinc-100">TechPulse Studio</span>
+            <span className="font-semibold tracking-tight text-sm text-zinc-100">YouTube Analytics Pro</span>
           </div>
           <div className="flex items-center gap-4">
             <a href="#features" className="text-zinc-400 hover:text-zinc-200 text-sm transition-colors">
@@ -202,7 +202,7 @@ export default function LandingPage() {
       {/* Minimal Footer */}
       <footer className="border-t border-[#1f1f23] py-10 text-center text-xs text-zinc-500">
         <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>© {new Date().getFullYear()} TechPulse Studio. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} YouTube Analytics Pro. All rights reserved.</p>
           <div className="flex items-center gap-6">
             <Link href="/dashboard" className="hover:text-zinc-300 transition-colors">Dashboard</Link>
             <Link href="/ab-testing" className="hover:text-zinc-300 transition-colors">A/B Testing</Link>
