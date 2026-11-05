@@ -45,20 +45,15 @@ Keep your answers:
     const geminiKey = process.env.GEMINI_API_KEY;
     if (geminiKey && !geminiKey.includes('placeholder') && geminiKey.length > 10) {
       try {
-        const contents = [
-          ...history.slice(-6).map((msg) => ({
-            role: msg.role === 'assistant' ? 'model' : 'user',
-            parts: [{ text: msg.content }],
-          })),
-          {
-            role: 'user',
-            parts: [
-              {
-                text: `${systemPrompt}\n\nUser Question: ${message}`,
-              },
-            ],
-          },
-        ];
+        const historyText = history
+          .filter((m, idx) => !(idx === 0 && m.role === 'assistant'))
+          .slice(-6)
+          .map((m) => `${m.role === 'assistant' ? 'Copilot' : 'User'}: ${m.content}`)
+          .join('\n');
+
+        const promptText = `${systemPrompt}\n\n` +
+          (historyText ? `Recent Conversation History:\n${historyText}\n\n` : '') +
+          `User: ${message}\n\nCopilot:`;
 
         const geminiRes = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`,
@@ -66,7 +61,11 @@ Keep your answers:
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              contents,
+              contents: [
+                {
+                  parts: [{ text: promptText }],
+                },
+              ],
               generationConfig: {
                 temperature: 0.7,
                 maxOutputTokens: 1000,
@@ -85,6 +84,9 @@ Keep your answers:
               model: 'gemini-1.5-flash',
             });
           }
+        } else {
+          const errorDetails = await geminiRes.text();
+          console.warn('[AI Chat] Gemini API error response:', errorDetails);
         }
       } catch (geminiErr) {
         console.warn('[AI Chat] Gemini call failed, falling back:', geminiErr);
@@ -95,9 +97,14 @@ Keep your answers:
     const nvidiaKey = process.env.NVIDIA_NIM_API_KEY || process.env.NVIDIA_API_KEY;
     if (nvidiaKey && (nvidiaKey.startsWith('nvapi-') || nvidiaKey.length > 20) && !nvidiaKey.includes('placeholder')) {
       try {
+        const filteredHistory = history
+          .filter((m, idx) => !(idx === 0 && m.role === 'assistant'))
+          .slice(-6)
+          .map((msg) => ({ role: msg.role, content: msg.content }));
+
         const messages = [
           { role: 'system', content: systemPrompt },
-          ...history.slice(-6).map((msg) => ({ role: msg.role, content: msg.content })),
+          ...filteredHistory,
           { role: 'user', content: message },
         ];
 
@@ -125,6 +132,9 @@ Keep your answers:
               model: 'meta/llama-3.3-70b-instruct',
             });
           }
+        } else {
+          const errText = await nvidiaRes.text();
+          console.warn('[AI Chat] NVIDIA NIM error response:', errText);
         }
       } catch (nvidiaErr) {
         console.warn('[AI Chat] NVIDIA NIM call failed, falling back:', nvidiaErr);
@@ -170,10 +180,27 @@ Keep your answers:
     }
 
     // 4. Intelligent Algorithmic Creator Advisor (Offline/Zero-Key Fallback)
-    const lower = message.toLowerCase();
+    const lower = message.toLowerCase().trim();
     let reply = '';
 
-    if (lower.includes('niche') || lower.includes('ideas') || lower.includes('topic')) {
+    if (
+      lower.startsWith('how are you') ||
+      lower.startsWith('hello') ||
+      lower.startsWith('hi') ||
+      lower.startsWith('hey') ||
+      lower === 'how are you ?' ||
+      lower === 'how are you'
+    ) {
+      reply = `👋 Hey there! I'm running smoothly and fully calibrated with **${channelName}**'s channel telemetry!
+
+How can I help you dominate YouTube today?
+• 💡 **Brainstorming high-RPM niches & viral series**
+• 🎯 **Fixing a CTR dip or optimizing thumbnail formulas**
+• ⏱️ **Auditing 30-second retention drop-offs**
+• 💰 **Maximizing mid-roll ad placement & sponsorships**
+
+Ask me anything or pick a topic to get started!`;
+    } else if (lower.includes('niche') || lower.includes('ideas') || lower.includes('topic')) {
       reply = `🎯 Top High-RPM & Viral Niches for YouTube in 2026:
 
 1. **AI Automations & Micro-SaaS ($22 - $45 RPM)**:
