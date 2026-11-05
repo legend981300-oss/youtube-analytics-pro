@@ -156,6 +156,14 @@ export default function AiStudioPage() {
       if (res.ok) {
         const result = await res.json();
         if (result?.data) {
+          const providerLabel = result.provider === 'nvidia' 
+            ? 'NVIDIA NIM (Llama 3.3)' 
+            : result.provider === 'gemini' 
+            ? 'Google Gemini AI' 
+            : result.provider === 'openai' 
+            ? 'OpenAI' 
+            : 'AI Intelligence';
+
           if (activeTab === 'titles' && Array.isArray(result.data)) {
             setGeneratedTitles(
               result.data.map((item: any, idx: number) => ({
@@ -165,12 +173,12 @@ export default function AiStudioPage() {
                 patternStyle: `Estimated CTR: ${item.estimatedCtr || '11.8%'} • ${item.characterCount || item.title.length} chars`,
               }))
             );
-            showToast(result.provider === 'gemini' ? 'Gemini AI Generated' : 'AI Generated', `Generated 5 viral titles for "${cleanTopic}"`, 'success');
+            showToast(providerLabel, `Generated 5 viral titles for "${cleanTopic}"`, 'success');
             setIsGenerating(false);
             return;
           } else if (activeTab === 'descriptions' && result.data.fullDescription) {
             setGeneratedDesc(result.data.fullDescription);
-            showToast(result.provider === 'gemini' ? 'Gemini AI Generated' : 'AI Generated', 'SEO Description & chapters generated', 'success');
+            showToast(providerLabel, 'SEO Description & chapters generated', 'success');
             setIsGenerating(false);
             return;
           } else if (activeTab === 'ideas' && Array.isArray(result.data)) {
@@ -183,7 +191,7 @@ export default function AiStudioPage() {
                 reason: item.thumbnailConcept || 'High organic search & browse momentum.',
               }))
             );
-            showToast(result.provider === 'gemini' ? 'Gemini AI Generated' : 'AI Generated', 'Generated breakout video ideas', 'success');
+            showToast(providerLabel, 'Generated breakout video ideas', 'success');
             setIsGenerating(false);
             return;
           } else if (activeTab === 'scripts' && result.data.first10SecondsHook) {
@@ -192,7 +200,7 @@ export default function AiStudioPage() {
               (result.data.keyPoints || []).map((kp: any) => `[${kp.timestamp || '02:00'}] ${kp.headline}:\n${kp.talkingPoints}`).join('\n\n') +
               `\n\n[OUTRO] CALL TO ACTION:\n${result.data.callToAction}`;
             setGeneratedScript(formatted);
-            showToast(result.provider === 'gemini' ? 'Gemini AI Generated' : 'AI Generated', 'Video script outline generated', 'success');
+            showToast(providerLabel, 'Video script outline generated', 'success');
             setIsGenerating(false);
             return;
           }
