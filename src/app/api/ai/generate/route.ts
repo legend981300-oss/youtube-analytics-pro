@@ -18,6 +18,48 @@ interface AIGenerateRequest {
  * 3. OpenAI (OPENAI_API_KEY) -> GPT-4o-mini
  * 4. Local Deterministic Creator Heuristic Engine -> 100% Free, zero external API keys needed
  */
+function resolveAiKey(req: NextRequest): {
+  type: 'nvidia' | 'gemini' | 'openai' | null;
+  key: string;
+} {
+  const clientHeader =
+    req.headers.get('x-ai-key') ||
+    req.headers.get('x-nvidia-key') ||
+    req.headers.get('x-gemini-key') ||
+    req.headers.get('x-openai-key') ||
+    '';
+
+  if (clientHeader.trim()) {
+    const trimmed = clientHeader.trim();
+    if (trimmed.startsWith('nvapi-')) return { type: 'nvidia', key: trimmed };
+    if (trimmed.startsWith('AIzaSy')) return { type: 'gemini', key: trimmed };
+    if (trimmed.startsWith('sk-')) return { type: 'openai', key: trimmed };
+  }
+
+  if (process.env.NVIDIA_NIM_API_KEY && process.env.NVIDIA_NIM_API_KEY.startsWith('nvapi-')) {
+    return { type: 'nvidia', key: process.env.NVIDIA_NIM_API_KEY };
+  }
+  if (process.env.NVIDIA_API_KEY && process.env.NVIDIA_API_KEY.startsWith('nvapi-')) {
+    return { type: 'nvidia', key: process.env.NVIDIA_API_KEY };
+  }
+  if (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.length > 15 && !process.env.GEMINI_API_KEY.includes('placeholder')) {
+    return { type: 'gemini', key: process.env.GEMINI_API_KEY };
+  }
+  if (process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY.startsWith('sk-')) {
+    return { type: 'openai', key: process.env.OPENAI_API_KEY };
+  }
+
+  for (const [envName, envVal] of Object.entries(process.env)) {
+    if (!envVal || typeof envVal !== 'string') continue;
+    const val = envVal.trim();
+    if (val.startsWith('nvapi-')) return { type: 'nvidia', key: val };
+    if (val.startsWith('AIzaSy') && !envName.includes('YOUTUBE')) return { type: 'gemini', key: val };
+    if (val.startsWith('sk-') && !envName.includes('STRIPE')) return { type: 'openai', key: val };
+  }
+
+  return { type: null, key: '' };
+}
+
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const body: AIGenerateRequest = await request.json();
@@ -77,12 +119,53 @@ Return a JSON object:
 }`;
     }
 
-    // 1. Google Gemini 1.5 Flash Provider (if GEMINI_API_KEY is configured)
-    const geminiKey = process.env.GEMINI_API_KEY;
-    if (geminiKey && !geminiKey.includes('placeholder') && geminiKey.length > 10) {
+    const { type: providerType, key: activeKey } = resolveAiKey(request);
+
+    // 1. NVIDIA NIM Provider (if key is configured)
+    if (providerType === 'nvidia' || (process.env.NVIDIA_NIM_API_KEY && process.env.NVIDIA_NIM_API_KEY.startsWith('nvapi-'))) {
+      const keyToUse = activeKey || process.env.NVIDIA_NIM_API_KEY || process.env.NVIDIA_API_KEY || '';
+      try {
+        const nvidiaRes = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${keyToUse}`,
+          },
+          body: JSON.stringify({
+            model: 'meta/llama-3.3-70b-instruct',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt },
+            ],
+            temperature: 0.7,
+            max_tokens: 1200,
+          }),
+        });
+
+        if (nvidiaRes.ok) {
+          const completion = await nvidiaRes.json();
+          const rawContent = completion.choices?.[0]?.message?.content || '{}';
+          const cleanJson = rawContent.replace(/```json\n?|```/g, '').trim();
+          const parsedData = JSON.parse(cleanJson);
+
+          return NextResponse.json({
+            provider: 'nvidia',
+            model: 'meta/llama-3.3-70b-instruct',
+            data: parsedData,
+            generatedAt: new Date().toISOString(),
+          });
+        }
+      } catch (nvidiaErr) {
+        console.warn('[AI API] NVIDIA NIM call failed, falling back to next provider');
+      }
+    }
+
+    // 2. Google Gemini 1.5 Flash Provider (if key is configured)
+    if (providerType === 'gemini' || (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.length > 15)) {
+      const keyToUse = activeKey || process.env.GEMINI_API_KEY || '';
       try {
         const geminiRes = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${keyToUse}`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -116,45 +199,6 @@ Return a JSON object:
         }
       } catch (geminiErr) {
         console.warn('[AI API] Gemini call failed, falling back to alternative or local engine');
-      }
-    }
-
-    // 2. NVIDIA NIM Provider (if NVIDIA_NIM_API_KEY or NVIDIA_API_KEY is configured)
-    const nvidiaKey = process.env.NVIDIA_NIM_API_KEY || process.env.NVIDIA_API_KEY;
-    if (nvidiaKey && (nvidiaKey.startsWith('nvapi-') || nvidiaKey.length > 20) && !nvidiaKey.includes('placeholder')) {
-      try {
-        const nvidiaRes = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${nvidiaKey}`,
-          },
-          body: JSON.stringify({
-            model: 'meta/llama-3.3-70b-instruct',
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userPrompt },
-            ],
-            temperature: 0.7,
-            max_tokens: 1200,
-          }),
-        });
-
-        if (nvidiaRes.ok) {
-          const completion = await nvidiaRes.json();
-          const rawContent = completion.choices?.[0]?.message?.content || '{}';
-          const cleanJson = rawContent.replace(/```json\n?|```/g, '').trim();
-          const parsedData = JSON.parse(cleanJson);
-
-          return NextResponse.json({
-            provider: 'nvidia',
-            model: 'meta/llama-3.3-70b-instruct',
-            data: parsedData,
-            generatedAt: new Date().toISOString(),
-          });
-        }
-      } catch (nvidiaErr) {
-        console.warn('[AI API] NVIDIA NIM call failed, falling back to alternative or local engine');
       }
     }
 

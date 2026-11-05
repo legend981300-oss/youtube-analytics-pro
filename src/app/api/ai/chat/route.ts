@@ -19,6 +19,60 @@ interface AIChatRequest {
   history?: ChatMessage[];
 }
 
+/**
+ * Auto-detects AI key from headers or environment variables regardless of exact naming
+ */
+function resolveAiKey(req: NextRequest): {
+  type: 'nvidia' | 'gemini' | 'openai' | null;
+  key: string;
+} {
+  // 1. Check custom headers passed from client UI (e.g. from local user settings)
+  const clientHeader =
+    req.headers.get('x-ai-key') ||
+    req.headers.get('x-nvidia-key') ||
+    req.headers.get('x-gemini-key') ||
+    req.headers.get('x-openai-key') ||
+    '';
+
+  if (clientHeader.trim()) {
+    const trimmed = clientHeader.trim();
+    if (trimmed.startsWith('nvapi-')) return { type: 'nvidia', key: trimmed };
+    if (trimmed.startsWith('AIzaSy')) return { type: 'gemini', key: trimmed };
+    if (trimmed.startsWith('sk-')) return { type: 'openai', key: trimmed };
+  }
+
+  // 2. Check explicit env variables
+  if (process.env.NVIDIA_NIM_API_KEY && process.env.NVIDIA_NIM_API_KEY.startsWith('nvapi-')) {
+    return { type: 'nvidia', key: process.env.NVIDIA_NIM_API_KEY };
+  }
+  if (process.env.NVIDIA_API_KEY && process.env.NVIDIA_API_KEY.startsWith('nvapi-')) {
+    return { type: 'nvidia', key: process.env.NVIDIA_API_KEY };
+  }
+  if (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.length > 15 && !process.env.GEMINI_API_KEY.includes('placeholder')) {
+    return { type: 'gemini', key: process.env.GEMINI_API_KEY };
+  }
+  if (process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY.startsWith('sk-')) {
+    return { type: 'openai', key: process.env.OPENAI_API_KEY };
+  }
+
+  // 3. Scan all environment variables for matching signatures
+  for (const [envName, envVal] of Object.entries(process.env)) {
+    if (!envVal || typeof envVal !== 'string') continue;
+    const val = envVal.trim();
+    if (val.startsWith('nvapi-')) {
+      return { type: 'nvidia', key: val };
+    }
+    if (val.startsWith('AIzaSy') && !envName.includes('YOUTUBE')) {
+      return { type: 'gemini', key: val };
+    }
+    if (val.startsWith('sk-') && !envName.includes('STRIPE')) {
+      return { type: 'openai', key: val };
+    }
+  }
+
+  return { type: null, key: '' };
+}
+
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const body: AIChatRequest = await request.json();
@@ -30,33 +84,87 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     const channelName = channelContext?.name || 'Creator';
     const channelSubs = channelContext?.subscribers?.toLocaleString() || '10,000+';
-    const channelCategory = channelContext?.category || 'General Entertainment & Tech';
+    const channelCategory = channelContext?.category || 'Creator Media';
 
     const systemPrompt = `You are "Channel Copilot", an elite YouTube Growth Consultant & Retention Architect for YouTube Analytics Pro.
-You are advising the creator of "${channelName}" (Category: ${channelCategory}, Current Audience: ${channelSubs} subscribers).
-Your knowledge encompasses the best strategies from MrBeast, Paddy Galloway, Ali Abdaal, Colin & Samir, and YouTube internal algorithmic whitepapers.
+You are advising the creator of "${channelName}" (Category: ${channelCategory}, Audience: ${channelSubs} subscribers).
+Your knowledge encompasses top creator playbooks (MrBeast, Paddy Galloway, Ali Abdaal, Colin & Samir).
 
-Keep your answers:
-1. Direct, tactical, and immediately actionable (bullet points, clear steps, concrete examples).
-2. Grounded in YouTube math (CTR, Average View Duration, retention dips, browse feature velocity).
-3. Concise, punchy, and formatted with clean markdown and emojis. Do not output walls of vague text.`;
+Rules:
+1. Always be conversational, friendly, sharp, and helpful.
+2. If the user greets you or asks casual questions ("how are you", "can I ask you something"), respond naturally like an expert friend!
+3. If the user asks for strategies, niches, titles, or advice, give concrete, actionable bullet points grounded in YouTube analytics (CTR, retention, browse velocity).
+4. Use clean markdown formatting with emojis.`;
 
-    // 1. Google Gemini 1.5 Flash Provider
-    const geminiKey = process.env.GEMINI_API_KEY;
-    if (geminiKey && !geminiKey.includes('placeholder') && geminiKey.length > 10) {
+    const { type: providerType, key: activeKey } = resolveAiKey(request);
+
+    // =========================================================================
+    // 1. NVIDIA NIM Provider (Llama 3.3 70B)
+    // =========================================================================
+    if (providerType === 'nvidia' || (process.env.NVIDIA_NIM_API_KEY && process.env.NVIDIA_NIM_API_KEY.startsWith('nvapi-'))) {
+      const keyToUse = activeKey || process.env.NVIDIA_NIM_API_KEY || process.env.NVIDIA_API_KEY || '';
       try {
-        const historyText = history
+        const cleanHistory = history
+          .filter((m, idx) => !(idx === 0 && m.role === 'assistant'))
+          .slice(-6)
+          .map((msg) => ({ role: msg.role, content: msg.content }));
+
+        const messages = [
+          { role: 'system', content: systemPrompt },
+          ...cleanHistory,
+          { role: 'user', content: message },
+        ];
+
+        const nvidiaRes = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${keyToUse}`,
+          },
+          body: JSON.stringify({
+            model: 'meta/llama-3.3-70b-instruct',
+            messages,
+            temperature: 0.7,
+            max_tokens: 1000,
+          }),
+        });
+
+        if (nvidiaRes.ok) {
+          const completion = await nvidiaRes.json();
+          const replyText = completion.choices?.[0]?.message?.content;
+          if (replyText) {
+            return NextResponse.json({
+              reply: replyText.trim(),
+              provider: 'nvidia',
+              model: 'meta/llama-3.3-70b-instruct',
+            });
+          }
+        } else {
+          console.warn('[AI Chat] NVIDIA NIM returned HTTP', nvidiaRes.status);
+        }
+      } catch (nvidiaErr) {
+        console.warn('[AI Chat] NVIDIA NIM failed, falling back:', nvidiaErr);
+      }
+    }
+
+    // =========================================================================
+    // 2. Google Gemini 1.5 Flash Provider
+    // =========================================================================
+    if (providerType === 'gemini' || (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.length > 15)) {
+      const keyToUse = activeKey || process.env.GEMINI_API_KEY || '';
+      try {
+        const cleanHistoryText = history
           .filter((m, idx) => !(idx === 0 && m.role === 'assistant'))
           .slice(-6)
           .map((m) => `${m.role === 'assistant' ? 'Copilot' : 'User'}: ${m.content}`)
           .join('\n');
 
         const promptText = `${systemPrompt}\n\n` +
-          (historyText ? `Recent Conversation History:\n${historyText}\n\n` : '') +
+          (cleanHistoryText ? `Recent Chat History:\n${cleanHistoryText}\n\n` : '') +
           `User: ${message}\n\nCopilot:`;
 
         const geminiRes = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${keyToUse}`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -85,77 +193,35 @@ Keep your answers:
             });
           }
         } else {
-          const errorDetails = await geminiRes.text();
-          console.warn('[AI Chat] Gemini API error response:', errorDetails);
+          console.warn('[AI Chat] Gemini returned HTTP', geminiRes.status);
         }
       } catch (geminiErr) {
         console.warn('[AI Chat] Gemini call failed, falling back:', geminiErr);
       }
     }
 
-    // 2. NVIDIA NIM Provider (Llama 3.3 70B)
-    const nvidiaKey = process.env.NVIDIA_NIM_API_KEY || process.env.NVIDIA_API_KEY;
-    if (nvidiaKey && (nvidiaKey.startsWith('nvapi-') || nvidiaKey.length > 20) && !nvidiaKey.includes('placeholder')) {
+    // =========================================================================
+    // 3. OpenAI GPT-4o-mini Provider
+    // =========================================================================
+    if (providerType === 'openai' || (process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY.startsWith('sk-'))) {
+      const keyToUse = activeKey || process.env.OPENAI_API_KEY || '';
       try {
-        const filteredHistory = history
+        const cleanHistory = history
           .filter((m, idx) => !(idx === 0 && m.role === 'assistant'))
           .slice(-6)
           .map((msg) => ({ role: msg.role, content: msg.content }));
 
-        const messages = [
-          { role: 'system', content: systemPrompt },
-          ...filteredHistory,
-          { role: 'user', content: message },
-        ];
-
-        const nvidiaRes = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${nvidiaKey}`,
-          },
-          body: JSON.stringify({
-            model: 'meta/llama-3.3-70b-instruct',
-            messages,
-            temperature: 0.7,
-            max_tokens: 1000,
-          }),
-        });
-
-        if (nvidiaRes.ok) {
-          const completion = await nvidiaRes.json();
-          const replyText = completion.choices?.[0]?.message?.content;
-          if (replyText) {
-            return NextResponse.json({
-              reply: replyText.trim(),
-              provider: 'nvidia',
-              model: 'meta/llama-3.3-70b-instruct',
-            });
-          }
-        } else {
-          const errText = await nvidiaRes.text();
-          console.warn('[AI Chat] NVIDIA NIM error response:', errText);
-        }
-      } catch (nvidiaErr) {
-        console.warn('[AI Chat] NVIDIA NIM call failed, falling back:', nvidiaErr);
-      }
-    }
-
-    // 3. OpenAI GPT-4o-mini Provider
-    const openAiKey = process.env.OPENAI_API_KEY;
-    if (openAiKey && openAiKey.startsWith('sk-') && !openAiKey.includes('placeholder')) {
-      try {
         const openAiRes = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${openAiKey}`,
+            Authorization: `Bearer ${keyToUse}`,
           },
           body: JSON.stringify({
             model: 'gpt-4o-mini',
             messages: [
               { role: 'system', content: systemPrompt },
-              ...history.slice(-6).map((msg) => ({ role: msg.role, content: msg.content })),
+              ...cleanHistory,
               { role: 'user', content: message },
             ],
             temperature: 0.7,
@@ -179,11 +245,28 @@ Keep your answers:
       }
     }
 
-    // 4. Intelligent Algorithmic Creator Advisor (Offline/Zero-Key Fallback)
+    // =========================================================================
+    // 4. Conversational Intelligent Offline Fallback Engine
+    // =========================================================================
     const lower = message.toLowerCase().trim();
     let reply = '';
 
     if (
+      lower.includes('can i ask') ||
+      lower.includes('have a question') ||
+      lower.includes('ask you a question') ||
+      lower === 'question'
+    ) {
+      reply = `Yes, absolutely! I'm here 24/7 to help you grow **${channelName}**.
+
+What's on your mind? You can ask me about:
+• 🎯 **CTR & Thumbnails**: How to get higher click-through rates
+• 💡 **Video Ideas**: Finding breakout topics and viral hooks
+• ⏱️ **Watch Time**: Keeping viewers hooked past the 30-second mark
+• 💰 **Monetization**: Brand deals, CPM rates, and sponsorship pricing
+
+Go ahead and shoot your question!`;
+    } else if (
       lower.startsWith('how are you') ||
       lower.startsWith('hello') ||
       lower.startsWith('hi') ||
@@ -191,81 +274,60 @@ Keep your answers:
       lower === 'how are you ?' ||
       lower === 'how are you'
     ) {
-      reply = `👋 Hey there! I'm running smoothly and fully calibrated with **${channelName}**'s channel telemetry!
+      reply = `👋 Hey! I'm running smoothly and fully calibrated to **${channelName}**'s channel metrics!
 
-How can I help you dominate YouTube today?
-• 💡 **Brainstorming high-RPM niches & viral series**
-• 🎯 **Fixing a CTR dip or optimizing thumbnail formulas**
-• ⏱️ **Auditing 30-second retention drop-offs**
-• 💰 **Maximizing mid-roll ad placement & sponsorships**
-
-Ask me anything or pick a topic to get started!`;
+How can I help you level up your content today?`;
     } else if (lower.includes('niche') || lower.includes('ideas') || lower.includes('topic')) {
       reply = `🎯 Top High-RPM & Viral Niches for YouTube in 2026:
 
-1. **AI Automations & Micro-SaaS ($22 - $45 RPM)**:
-   • Tutorials showing non-technical founders building tools with AI workflows.
-   • High advertiser interest from B2B SaaS, dev tools, and hosting providers.
+1. **AI Automation & Micro-SaaS ($25 - $45 RPM)**:
+   • Non-technical guides building automated business workflows.
+   • Sponsors pay premium rates for business and developer software.
 
-2. **Personal Finance & Wealth Engineering ($18 - $38 RPM)**:
-   • Index fund investing, side hustle teardowns, and realistic tax optimization.
-   • Peak sponsor budgets from FinTech and brokerage platforms.
+2. **Personal Finance & Wealth Systems ($20 - $40 RPM)**:
+   • Step-by-step investing, tax breakdown, and realistic online cash-flow models.
 
-3. **Curiosity Documentaries / Deep Dives ($12 - $24 RPM)**:
-   • 15-minute cinematic investigative videos into internet subcultures or company collapses (e.g. MagnatesMedia style).
-   • Very high retention & international algorithmic recommendation velocity.
+3. **Cinematic Internet Documentaries ($14 - $28 RPM)**:
+   • Deep dives into internet mysteries, creator empires, and business scandals.
+   • Massive international browse velocity and high 15+ minute watch-time.
 
-4. **Productivity Tech & Desk Setups ($14 - $28 RPM)**:
-   • Minimalist desk setups, Notion system builds, hardware reviews.
-   • High affiliate conversion rates on Amazon and custom hardware.
+4. **Hardware & Minimalist Tech Desk Setups ($15 - $30 RPM)**:
+   • High affiliate purchase conversion on mechanical keyboards, audio gear, and monitors.
 
-💡 **Action Tip for ${channelName}**:
-Test a 3-video mini-series in one of these niches using a contrarian hook ("Why I Stopped Using X") to test audience resonance before pivoting completely.`;
+💡 **Action Step for ${channelName}**:
+Which of these directions fits your personal interests most? I can generate 5 video concepts for it immediately!`;
     } else if (lower.includes('views drop') || lower.includes('drop') || lower.includes('low view')) {
       reply = `📉 3-Step Diagnostic for View Drops on ${channelName}:
 
-1. **Browse Feed Impression Burn**:
-   • Check your 24-hour CTR. If impressions spiked but CTR dropped below 5%, YouTube's algorithm tested a broader cold audience and pulled back.
-   • **Fix**: Replace thumbnail with a version having fewer than 3 focal points and higher contrast.
-
-2. **First 30-Second Retention Hook**:
-   • If retention dips below 65% in the first 30 seconds, viewers felt clickbaited.
-   • **Fix**: Fulfill the thumbnail premise within the first 5 seconds with zero intro logos or chit-chat.
-
-3. **Publishing Cadence Timing**:
-   • Consistent day-of-week timing establishes viewer habit loops. Test Sunday 14:00 - 18:00 UTC for maximum weekend browse velocity.`;
+1. **24-Hour CTR Collapse**: Check your first 2 hours of CTR. If it dropped below 5%, YouTube's algorithm tested cold browse viewers and pulled back.
+2. **First 30 Seconds**: If retention drops below 65% in the opening 30 seconds, viewers didn't see the thumbnail promise delivered right away.
+3. **Thumbnail Redesign**: Change the thumbnail focal point to 1 single high-contrast subject to trigger a second algorithmic push.`;
     } else if (lower.includes('ctr') || lower.includes('thumbnail') || lower.includes('title')) {
       reply = `🎯 The 3 Golden Rules to Lift CTR from 7% to 11%+:
 
-1. **The 3-Element Rule**:
-   • A winning thumbnail contains strictly: 1 Expressive Face + 1 Focal Subject + max 3 words of bold text. Anything more creates visual noise.
+1. **Rule of 3 Elements**: 1 Expressive Face + 1 Focal Object + max 3 words of bold text.
+2. **Curiosity Gap**: Don't repeat the video title on the thumbnail image. Complement it.
+3. **The Mobile Glance Test**: Zoom out to 10% on your screen. If the emotion and subject aren't clear in 0.5s, simplify it.`;
+    } else if (lower.includes('who are you') || lower.includes('what can you do') || lower.includes('help')) {
+      reply = `🤖 I'm **Channel Copilot**, your real-time YouTube strategy partner.
 
-2. **Curiosity Gap (Don't Repeat Title)**:
-   • If your title is *"I Tested 10 AI Coding Agents"*, your thumbnail should say *"Fired on Day 1"* or show a red error symbol. The thumbnail creates the curiosity; the title delivers the context.
+I analyze your channel's metrics (${channelSubs} subscribers) and help you:
+1. Brainstorm high-converting video concepts and niches.
+2. Write viral, high-CTR titles and scripts.
+3. Diagnose algorithmic retention drops and view anomalies.
+4. Calculate sponsorship card rates ($ CPM).
 
-3. **Extreme Contrast on Mobile**:
-   • Over 75% of YouTube clicks happen on mobile screens smaller than 6 inches. Shrink your thumbnail to 10% zoom—if the focal point isn't obvious in 0.5 seconds, redesign it.`;
-    } else if (lower.includes('revenue') || lower.includes('sponsor') || lower.includes('money') || lower.includes('rpm')) {
-      reply = `💰 Revenue Optimization Playbook for ${channelName}:
-
-• **Mid-Roll Ad Stacking**: Ensure videos exceed 8:01 in length. Place natural mid-roll ad breaks right before high-suspense scene transitions (averages +35% RPM).
-• **Sponsorship Rate Card**: At your current volume, quote sponsors **$25 - $35 CPM** for dedicated 60-second integrated mid-rolls.
-• **Digital Product Back-End**: Launch a Notion template, preset pack, or community. Converting just 0.5% of your viewers often surpasses AdSense revenue by 4x.`;
+Ask me anything about YouTube strategy or video optimization!`;
     } else {
-      reply = `💡 Strategic Growth Recommendation for ${channelName}:
+      reply = `💡 Strategic Insight for **${channelName}**:
 
-Based on your current channel scale (${channelSubs} subscribers in ${channelCategory}):
+Regarding *"**${message.trim()}**"*:
 
-1. **Binge-Session Architecture**:
-   • Use pinned comments and end-screens to create continuous viewing loops linking your top 3 highest-retention videos.
+1. **Algorithmic Leverage**: Keep your viewer's expectations aligned with your thumbnail hook within the first 6 seconds to eliminate instant drop-off.
+2. **Title Optimization**: Frame your video around a curiosity gap or contrarian question rather than a plain statement.
+3. **Session Watch-Time**: Use an end-screen video card linked to your top-performing playlist to keep viewers on YouTube.
 
-2. **Retention Drop-Off Mitigation**:
-   • Cut out all "verbal transitions" (e.g., *"So guys, next up...", "Without further ado"*). Cut straight to the next point.
-
-3. **Community Tab Polling**:
-   • Post 2 interactive polls per week to maintain algorithmic feed presence between video uploads.
-
-What specific metric would you like to improve next—CTR, average watch time, or sponsor monetization?`;
+Would you like me to write 5 high-CTR titles, or generate a full script outline for this topic?`;
     }
 
     return NextResponse.json({
@@ -274,7 +336,7 @@ What specific metric would you like to improve next—CTR, average watch time, o
       model: 'creator-strategy-engine-v2',
     });
   } catch (error: any) {
-    console.error('Chat API error:', error);
+    console.error('[AI Chat API Error]:', error);
     return NextResponse.json(
       { error: error?.message || 'Failed to process AI chat message' },
       { status: 500 }

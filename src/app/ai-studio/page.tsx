@@ -147,9 +147,13 @@ export default function AiStudioPage() {
 
     try {
       const modeKey = activeTab === 'descriptions' ? 'description' : activeTab === 'scripts' ? 'script' : activeTab;
+      const userKey = typeof window !== 'undefined' ? localStorage.getItem('youtube_analytics_ai_key') || '' : '';
+      const reqHeaders: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (userKey) reqHeaders['x-ai-key'] = userKey;
+
       const res = await fetch('/api/ai/generate', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: reqHeaders,
         body: JSON.stringify({ mode: modeKey, topic: cleanTopic, tone }),
       });
 

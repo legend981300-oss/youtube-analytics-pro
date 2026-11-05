@@ -9,6 +9,7 @@ import {
   Copy,
   Check,
   PlusCircle,
+  Key,
 } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import { Button } from '@/components/ui/Button';
@@ -31,11 +32,13 @@ const STRATEGIC_PROMPT_PILLS = [
 export const FloatingAiCopilot: React.FC = () => {
   const { selectedChannel, addIdea, showToast } = useApp();
   const [isOpen, setIsOpen] = useState(false);
+  const [userApiKey, setUserApiKey] = useState('');
+  const [showKeyModal, setShowKeyModal] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'init-1',
       sender: 'assistant',
-      text: `Hello. I'm your channel copilot for ${selectedChannel.name} (${selectedChannel.subscribers.toLocaleString()} subscribers). Ask me about retention curves, CTR levers, or keyword strategy.`,
+      text: `Hello! I'm your AI Copilot for ${selectedChannel.name} (${selectedChannel.subscribers.toLocaleString()} subscribers). Ask me anything—brainstorming video ideas, writing viral titles, or auditing your retention metrics.`,
       timestamp: 'Just now',
     },
   ]);
@@ -43,6 +46,13 @@ export const FloatingAiCopilot: React.FC = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('youtube_analytics_ai_key') || '';
+      setUserApiKey(stored);
+    }
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -71,9 +81,15 @@ export const FloatingAiCopilot: React.FC = () => {
         content: m.text,
       }));
 
+      const activeKey = userApiKey || (typeof window !== 'undefined' ? localStorage.getItem('youtube_analytics_ai_key') || '' : '');
+      const reqHeaders: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (activeKey) {
+        reqHeaders['x-ai-key'] = activeKey;
+      }
+
       const res = await fetch('/api/ai/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: reqHeaders,
         body: JSON.stringify({
           message: textToSend,
           channelContext: {
@@ -172,13 +188,66 @@ export const FloatingAiCopilot: React.FC = () => {
               </div>
             </div>
 
-            <button
-              onClick={() => setIsOpen(false)}
-              className="rounded p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
-            >
-              <X className="h-4 w-4" />
-            </button>
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => setShowKeyModal(!showKeyModal)}
+                className={`rounded p-1 transition-colors ${userApiKey ? 'text-emerald-400 hover:text-emerald-300' : 'text-slate-400 hover:text-slate-200'}`}
+                title={userApiKey ? 'AI Key connected' : 'Connect NVIDIA or Gemini API key'}
+              >
+                <Key className="h-3.5 w-3.5" />
+              </button>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="rounded p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
           </div>
+
+          {/* Inline AI Key Settings Drawer */}
+          {showKeyModal && (
+            <div className="border-b border-white/[0.08] bg-[#0c0e14] p-3 text-xs space-y-2 animate-fade-in">
+              <div className="flex justify-between items-center text-slate-300 font-medium">
+                <span className="flex items-center gap-1.5">
+                  <Key className="h-3 w-3 text-amber-400" /> Connect AI Key
+                </span>
+                <span className="text-[10px] text-emerald-400 font-mono">
+                  {userApiKey ? (userApiKey.startsWith('nvapi-') ? 'NVIDIA NIM' : 'Gemini AI') : 'Live Auto'}
+                </span>
+              </div>
+              <input
+                type="password"
+                value={userApiKey}
+                onChange={(e) => {
+                  const val = e.target.value.trim();
+                  setUserApiKey(val);
+                  if (typeof window !== 'undefined') {
+                    localStorage.setItem('youtube_analytics_ai_key', val);
+                  }
+                }}
+                placeholder="Paste nvapi-... (NVIDIA) or AIzaSy... (Gemini)"
+                className="w-full bg-[#161822] border border-white/10 rounded px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#ff0033]"
+              />
+              <div className="flex items-center justify-between text-[10px] text-slate-400">
+                <span>Direct browser connection (Zero waiting for redeploys)</span>
+                {userApiKey && (
+                  <button
+                    onClick={() => {
+                      setUserApiKey('');
+                      if (typeof window !== 'undefined') {
+                        localStorage.removeItem('youtube_analytics_ai_key');
+                      }
+                      showToast('Key Cleared', 'Using default server configuration', 'info');
+                    }}
+                    className="text-rose-400 hover:underline"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Prompt suggestions */}
           <div className="border-b border-slate-100 dark:border-white/[0.04] bg-slate-50/50 dark:bg-white/[0.01] p-2 overflow-x-auto flex gap-1.5 scrollbar-thin">
