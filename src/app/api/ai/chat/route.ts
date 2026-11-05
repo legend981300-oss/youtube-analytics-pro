@@ -130,44 +130,68 @@ Rules:
           (cleanHistoryText ? `Recent Chat History:\n${cleanHistoryText}\n\n` : '') +
           `User: ${message}\n\nCopilot:`;
 
-        const geminiRes = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${activeKey}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [
-                {
-                  parts: [{ text: promptText }],
-                },
-              ],
-              generationConfig: {
-                temperature: 0.7,
-                maxOutputTokens: 1000,
-              },
-            }),
-          }
-        );
+        const geminiModels = [
+          'gemini-2.0-flash',
+          'gemini-1.5-flash-latest',
+          'gemini-2.5-flash',
+          'gemini-2.0-flash-exp',
+          'gemini-1.5-flash',
+        ];
 
-        if (geminiRes.ok) {
-          const geminiData = await geminiRes.json();
-          const replyText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (replyText) {
-            return NextResponse.json({
-              reply: replyText.trim(),
-              provider: 'gemini',
-              model: 'gemini-1.5-flash',
-            });
+        let successReply = '';
+        let successModel = '';
+        let lastGeminiErr = '';
+
+        for (const modelName of geminiModels) {
+          const geminiRes = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${activeKey}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [
+                  {
+                    parts: [{ text: promptText }],
+                  },
+                ],
+                generationConfig: {
+                  temperature: 0.7,
+                  maxOutputTokens: 1000,
+                },
+              }),
+            }
+          );
+
+          if (geminiRes.ok) {
+            const geminiData = await geminiRes.json();
+            const replyText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (replyText) {
+              successReply = replyText.trim();
+              successModel = modelName;
+              break;
+            }
+          } else {
+            const errText = await geminiRes.text();
+            lastGeminiErr = `HTTP ${geminiRes.status}: ${errText}`;
+            console.warn(`[AI Chat] Gemini ${modelName} returned:`, lastGeminiErr);
+            // If it's invalid key 400 or 403, other models will also fail
+            if (geminiRes.status === 400 || geminiRes.status === 403) break;
           }
-        } else {
-          const errText = await geminiRes.text();
-          console.warn('[AI Chat] Gemini API error:', errText);
+        }
+
+        if (successReply) {
           return NextResponse.json({
-            reply: `⚠️ **Google Gemini Connection Error** (HTTP ${geminiRes.status}):\n\`${errText.slice(0, 300)}\`\n\nPlease check that your Gemini API key from [aistudio.google.com](https://aistudio.google.com/app/apikey) is active.`,
-            provider: 'gemini-error',
-            model: 'error',
+            reply: successReply,
+            provider: 'gemini',
+            model: successModel,
           });
         }
+
+        return NextResponse.json({
+          reply: `⚠️ **Google Gemini Connection Error**:\n\`${lastGeminiErr.slice(0, 300)}\`\n\nPlease verify that your Gemini API key from [aistudio.google.com](https://aistudio.google.com/app/apikey) is active.`,
+          provider: 'gemini-error',
+          model: 'error',
+        });
       } catch (geminiErr: any) {
         console.warn('[AI Chat] Gemini call failed:', geminiErr);
         return NextResponse.json({

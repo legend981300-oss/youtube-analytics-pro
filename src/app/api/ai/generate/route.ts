@@ -141,38 +141,51 @@ Return a JSON object:
     // 1. Google Gemini 1.5 Flash Provider (Priority 1)
     if (providerType === 'gemini') {
       try {
-        const geminiRes = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${activeKey}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [
-                {
-                  parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }],
+        const geminiModels = [
+          'gemini-2.0-flash',
+          'gemini-1.5-flash-latest',
+          'gemini-2.5-flash',
+          'gemini-2.0-flash-exp',
+          'gemini-1.5-flash',
+        ];
+
+        for (const modelName of geminiModels) {
+          const geminiRes = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${activeKey}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [
+                  {
+                    parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }],
+                  },
+                ],
+                generationConfig: {
+                  temperature: 0.7,
+                  maxOutputTokens: 1200,
+                  responseMimeType: 'application/json',
                 },
-              ],
-              generationConfig: {
-                temperature: 0.7,
-                maxOutputTokens: 1200,
-                responseMimeType: 'application/json',
-              },
-            }),
+              }),
+            }
+          );
+
+          if (geminiRes.ok) {
+            const geminiData = await geminiRes.json();
+            const rawText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+            const cleanJson = rawText.replace(/```json\n?|```/g, '').trim();
+            const parsedData = JSON.parse(cleanJson);
+
+            return NextResponse.json({
+              provider: 'gemini',
+              model: modelName,
+              data: parsedData,
+              generatedAt: new Date().toISOString(),
+            });
+          } else {
+            console.warn(`[AI API] Gemini ${modelName} returned HTTP`, geminiRes.status);
+            if (geminiRes.status === 400 || geminiRes.status === 403) break;
           }
-        );
-
-        if (geminiRes.ok) {
-          const geminiData = await geminiRes.json();
-          const rawText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
-          const cleanJson = rawText.replace(/```json\n?|```/g, '').trim();
-          const parsedData = JSON.parse(cleanJson);
-
-          return NextResponse.json({
-            provider: 'gemini',
-            model: 'gemini-1.5-flash',
-            data: parsedData,
-            generatedAt: new Date().toISOString(),
-          });
         }
       } catch (geminiErr) {
         console.warn('[AI API] Gemini call failed, falling back to next provider:', geminiErr);
