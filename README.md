@@ -29,34 +29,34 @@
 
 ---
 
-## 📦 What is Included in the Sale
-1. **Complete Project Codebase:** Pristine, human-readable repository matching pro industry standards with 33 compiled routes and 0 TypeScript errors.
-2. **Turnkey Deployment Configurations:** Pre-configured structural profiles (`vercel.json`) ready for one-click global hosting.
-3. **Comprehensive Handoff Documentation:** Full technical setup layout guide (`ACQUIRE_LISTING.md`) ensuring the buyer can seamlessly manage the architecture from Day 1.
-4. **Automated Mathematical Test Suite:** 21 unit tests (`npm test`) validating Z-test statistics, outlier multipliers, short-scale formatters, sponsorship rates, heuristic title scorers, and webhook signatures.
+## 📦 Platform Capabilities & Modules
+1. **Complete Creator Intelligence Engine:** 33 compiled routes covering real-time YouTube Data API v3 telemetry, retention analytics, and SEO scoring with 0 TypeScript errors.
+2. **Turnkey Deployment Configurations:** Pre-configured structural profiles (`vercel.json`) ready for one-click global edge hosting.
+3. **Comprehensive Architectural Documentation:** Full technical setup layout guide, API route mapping, and system flowcharts.
+4. **Automated Mathematical Test Suite:** 21 passing unit tests (`npm test`) validating Z-test statistics, outlier multipliers, short-scale formatters, sponsorship rates, heuristic title scorers, and webhook signatures.
 
 ---
 
 ## 🌐 Live Interactive Demo
 
-- **Live Landing Page**: `http://localhost:3000` *(High-converting marketing homepage)*
-- **Live Creator Dashboard**: `http://localhost:3000/dashboard` *(Or your 1-click Vercel staging deployment)*
+- **Live Production App**: [https://youtube-analytics-pro-flame.vercel.app](https://youtube-analytics-pro-flame.vercel.app)
+- **Local Dev**: `http://localhost:3000` *(Run with `npm run dev`)*
 - **Demo Mode**: Instant zero-config access with high-fidelity deterministic creator telemetry. No credit card or paid API keys required to test every feature.
 
 ---
 
-## 💎 Executive Summary for Buyers (Acquire.com)
+## 💎 Product Overview & Philosophy
 
-**YouTube Analytics Pro** is a turnkey, production-grade micro-SaaS engineered for independent video creators, digital media agencies, and multi-channel networks (MCNs). 
+**YouTube Analytics Pro** is an open-source, production-grade creator intelligence platform engineered for independent video creators, digital media agencies, and multi-channel networks (MCNs). 
 
-Unlike legacy creator tools (e.g., VidIQ, TubeBuddy, Social Blade) that lock creators into aggressive \$39–\$149/month recurring subscriptions with cluttered interfaces, YouTube Analytics Pro delivers an authentic **Linear / Raycast Pro Max** aesthetic with client-side velocity outlier math, 1-of-10 upload diagnostics, an SEO scoring engine, and an offline-first architecture.
+Unlike legacy creator tools (e.g., VidIQ, TubeBuddy, Social Blade) that lock creators into aggressive $39–$149/month recurring subscriptions with cluttered interfaces, YouTube Analytics Pro delivers an authentic **Linear / Raycast Pro Max** obsidian aesthetic with client-side velocity outlier math, 1-of-10 upload diagnostics, an SEO scoring engine, and an offline-first architecture.
 
-### Turnkey Highlights
-- **100% Free & Decoupled to Operate**: Runs completely out-of-the-box using offline-first local storage and deterministic simulations. Zero mandatory database or third-party API monthly costs to maintain live demos.
-- **Plug-and-Play AI Integrations**: Seamlessly toggle between **Google Gemini 1.5 Flash**, **OpenAI GPT-4o-mini**, or the internal heuristic engine with simple environment variables (`.env`).
-- **Zero-Dependency Cloud Handover**: Configured with `vercel.json` for immediate 1-click global edge deployment.
+### Key Highlights
+- **100% Free & Decoupled to Operate**: Runs out-of-the-box using offline-first local storage and deterministic simulations. Zero mandatory database or third-party API monthly costs to run.
+- **Plug-and-Play AI Integrations**: Seamlessly toggle between **Google Gemini 2.0 Flash**, **NVIDIA NIM (Llama 3.3)**, **OpenAI**, or the internal heuristic engine with simple environment variables (`.env`).
+- **One-Click Cloud Deployment**: Configured with `vercel.json` for immediate 1-click global edge deployment.
 - **Strict TypeScript**: 100% type-checked (`npx tsc --noEmit` clean) with zero compiler errors.
-- **Commercial IP**: Standard MIT License. Clean code ownership ready for immediate rebrand, domain mapping, or paid subscription monetization (Stripe / Lemon Squeezy ready).
+- **Open Source Freedom**: Standard MIT License. Clean code ownership for custom self-hosting, developer extensions, or community contributions.
 
 ---
 
@@ -239,17 +239,6 @@ The repository includes a verified `vercel.json` manifest. To deploy a live stag
 1. Click the **Deploy with Vercel** button above or import the GitHub repository directly into [Vercel](https://vercel.com/new).
 2. Leave environment variables empty to run in instant demo mode, or add your `GEMINI_API_KEY` and `NEXT_PUBLIC_APP_URL`.
 3. Click **Deploy**. Vercel will build and assign a free global edge URL (e.g., `https://youtube-analytics-pro.vercel.app`).
-
----
-
-## 🤝 Acquire.com Handover Package
-
-For buyers acquiring this repository on **Acquire.com**:
-
-- ✅ **Complete Clean Codebase**: Full source code with commit history and MIT License.
-- ✅ **Decoupled Architecture**: Zero hardcoded credentials or proprietary vendor lock-in.
-- ✅ **Turnkey Documentation**: Comprehensive setup, API mapping, and architecture diagrams.
-- ✅ **Acquire Listing Guide**: See `ACQUIRE_LISTING.md` for pre-written marketplace listing copy, monetization blueprints, and valuation models.
 
 ---
 

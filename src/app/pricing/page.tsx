@@ -227,7 +227,7 @@ export default function PricingPage() {
                 <CreditCard className="h-4 w-4" /> Turnkey Stripe & Lemon Squeezy Integration
               </p>
               <p className="leading-relaxed text-[11px] text-slate-600 dark:text-slate-300">
-                To connect live payments, set <code className="bg-slate-100 dark:bg-navy-950 px-1 py-0.5 rounded font-mono text-brand-500">NEXT_PUBLIC_STRIPE_PAYMENT_LINK_PRO</code> in your <code className="bg-slate-100 dark:bg-navy-950 px-1 py-0.5 rounded font-mono">.env.local</code>. This immediately redirects buyers directly to your live checkout.
+                To connect live payments, set <code className="bg-slate-100 dark:bg-navy-950 px-1 py-0.5 rounded font-mono text-brand-500">NEXT_PUBLIC_STRIPE_PAYMENT_LINK_PRO</code> in your <code className="bg-slate-100 dark:bg-navy-950 px-1 py-0.5 rounded font-mono">.env.local</code>. This immediately redirects users directly to your live Stripe checkout.
               </p>
             </div>
 
