@@ -36,7 +36,7 @@ import {
   Globe,
 } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
-import { cn } from '@/lib/utils';
+import { cn, formatNumber } from '@/lib/utils';
 import { BrandLogo } from '@/components/ui/BrandLogo';
 
 interface NavItem {
@@ -122,7 +122,7 @@ export const Sidebar: React.FC<{ onCloseMobile?: () => void }> = ({ onCloseMobil
                 {selectedChannel.name}
               </p>
               <p className="truncate text-[10px] text-zinc-400 dark:text-zinc-500 font-mono">
-                {(selectedChannel.subscribers / 1000).toFixed(1)}k subs
+                {formatNumber(selectedChannel.subscribers)} subs
               </p>
             </div>
           </div>

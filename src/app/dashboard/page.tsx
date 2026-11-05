@@ -237,10 +237,10 @@ export default function DashboardOverviewPage() {
           />
           <StatCard
             title="Total Views"
-            value={totalViews}
+            value={selectedChannel.totalViews > 0 ? selectedChannel.totalViews : totalViews}
             change={22.8}
             icon={Eye}
-            subtitle="Avg 19.4k views / day"
+            subtitle={selectedChannel.totalViews > 0 ? `Lifetime • +${formatNumber(totalViews)} this period` : 'Avg 19.4k views / day'}
           />
           <StatCard
             title="Watch Time"
