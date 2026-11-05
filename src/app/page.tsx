@@ -27,11 +27,23 @@ export default function LandingPage() {
             <a href="#pricing" className="text-zinc-400 hover:text-zinc-200 text-sm transition-colors">
               Pricing
             </a>
+            <Link
+              href="/auth/login"
+              className="text-zinc-300 hover:text-white text-xs font-medium transition-colors"
+            >
+              Sign In
+            </Link>
+            <Link
+              href="/auth/register"
+              className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3.5 py-2 rounded-lg transition-colors"
+            >
+              Sign Up Free
+            </Link>
             <button
               onClick={() => router.push('/dashboard')}
-              className="bg-zinc-100 text-zinc-950 text-xs font-semibold px-4 py-2 rounded-lg hover:bg-zinc-200 transition-colors inline-flex items-center gap-1.5"
+              className="hidden sm:inline-flex bg-zinc-100 text-zinc-950 text-xs font-semibold px-3 py-2 rounded-lg hover:bg-zinc-200 transition-colors items-center gap-1.5"
             >
-              Go to Dashboard <ArrowRight className="h-3 w-3" />
+              Dashboard <ArrowRight className="h-3 w-3" />
             </button>
           </div>
         </div>
@@ -53,19 +65,19 @@ export default function LandingPage() {
         </p>
 
         {/* Hero Button Triggers to hit local dashboard paths */}
-        <div className="mt-10 flex gap-4">
-          <button 
-            onClick={() => router.push('/dashboard')}
-            className="bg-indigo-600 hover:bg-indigo-500 text-zinc-50 text-sm font-medium px-6 py-3 rounded-xl transition-all shadow-lg shadow-indigo-600/20"
+        <div className="mt-10 flex flex-wrap justify-center gap-4">
+          <Link 
+            href="/auth/register"
+            className="bg-indigo-600 hover:bg-indigo-500 text-zinc-50 text-sm font-semibold px-6 py-3 rounded-xl transition-all shadow-lg shadow-indigo-600/20 inline-flex items-center gap-2"
           >
-            Start Free Pilot
-          </button>
-          <button 
-            onClick={() => router.push('/dashboard')}
+            Create Free Account <ArrowRight className="h-4 w-4" />
+          </Link>
+          <Link 
+            href="/dashboard"
             className="bg-zinc-900 border border-[#1f1f23] hover:bg-zinc-800 text-zinc-300 text-sm font-medium px-6 py-3 rounded-xl transition-colors"
           >
             View Live Sandbox
-          </button>
+          </Link>
         </div>
       </section>
 

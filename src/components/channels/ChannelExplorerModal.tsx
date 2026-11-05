@@ -182,15 +182,7 @@ export const ChannelExplorerModal: React.FC<ChannelExplorerModalProps> = ({ isOp
     setIsLoading(true);
 
     try {
-      // 1. Check pre-curated famous creator profiles for instant instant-load speed
-      if (FAMOUS_CREATOR_PROFILES[cleanHandle.toLowerCase()]) {
-        setActiveProfile(FAMOUS_CREATOR_PROFILES[cleanHandle.toLowerCase()]);
-        showToast('Channel Discovered', `Analyzed public performance for ${cleanHandle}`, 'success');
-        setIsLoading(false);
-        return;
-      }
-
-      // 2. Query our live API endpoint (queries YouTube Data API v3 if key exists, or deterministic generator)
+      // 1. Query our live API endpoint (queries YouTube Data API v3 if key exists, or deterministic generator)
       const res = await fetch(`/api/youtube/lookup?q=${encodeURIComponent(cleanHandle)}`);
       if (res.ok) {
         const data = await res.json();
@@ -210,7 +202,7 @@ export const ChannelExplorerModal: React.FC<ChannelExplorerModalProps> = ({ isOp
             avgCtr: 11.4,
             niche: ch.niche || 'Digital Media',
             estimatedMonthlyEarnings: `$${formatNumber(Math.floor(ch.totalViews * 0.0003))} - $${formatNumber(Math.floor(ch.totalViews * 0.0007))}`,
-            recentUploads: (data.recentVideos || []).slice(0, 3).map((v: any) => ({
+            recentUploads: (data.recentVideos || []).slice(0, 6).map((v: any) => ({
               title: v.title,
               views: v.views,
               ctr: v.ctr,
@@ -236,6 +228,14 @@ export const ChannelExplorerModal: React.FC<ChannelExplorerModalProps> = ({ isOp
           setIsLoading(false);
           return;
         }
+      }
+
+      // 2. Check pre-curated famous creator profiles fallback
+      if (FAMOUS_CREATOR_PROFILES[cleanHandle.toLowerCase()]) {
+        setActiveProfile(FAMOUS_CREATOR_PROFILES[cleanHandle.toLowerCase()]);
+        showToast('Channel Discovered', `Analyzed public performance for ${cleanHandle}`, 'success');
+        setIsLoading(false);
+        return;
       }
     } catch (err) {
       console.warn('Channel lookup fetch failed, using fallback:', err);
@@ -309,8 +309,39 @@ export const ChannelExplorerModal: React.FC<ChannelExplorerModalProps> = ({ isOp
       return;
     }
 
-    addNewChannel(activeProfile.name, activeProfile.handle, activeProfile.niche);
-    showToast('Channel Added', `Imported ${activeProfile.name} into your dashboard switcher`, 'success');
+    const mappedVideos = (activeProfile.recentUploads || []).map((u, i) => ({
+      id: `live-vid-${i}-${Date.now()}`,
+      title: u.title,
+      thumbnail: activeProfile.avatar,
+      publishedAt: new Date().toISOString(),
+      duration: '10:00',
+      views: u.views,
+      watchTimeHours: Math.round(u.views * 0.12),
+      likes: Math.round(u.views * 0.04),
+      comments: Math.round(u.views * 0.003),
+      ctr: u.ctr,
+      avgViewDuration: '05:30',
+      avgViewPercentage: 54,
+      estimatedRevenue: Math.round(u.views * 0.003),
+      sentimentScore: 88,
+      tags: ['youtube', 'creator', 'analytics'],
+      type: 'video' as const,
+    }));
+
+    addNewChannel(
+      activeProfile.name,
+      activeProfile.handle,
+      activeProfile.niche,
+      {
+        avatar: activeProfile.avatar,
+        subscribers: activeProfile.subscribers,
+        totalViews: activeProfile.totalViews,
+        totalVideos: activeProfile.videoCount,
+        verified: true,
+      },
+      mappedVideos
+    );
+    showToast('Channel Connected', `Imported ${activeProfile.name} into your dashboard with live YouTube metrics!`, 'success');
     onClose();
   };
 

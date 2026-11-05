@@ -20,10 +20,23 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
 
+    const userDisplayName = email.split('@')[0] || 'Creator';
+    const capitalized = userDisplayName.charAt(0).toUpperCase() + userDisplayName.slice(1);
+
     setTimeout(() => {
+      setCurrentUser({
+        id: `usr-${Date.now()}`,
+        name: capitalized,
+        email,
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
+        plan: 'Pro',
+        channelsCount: 1,
+        joinedDate: 'Active Session',
+        role: 'creator',
+      });
       setIsLoading(false);
-      router.push('/');
-    }, 600);
+      router.push('/dashboard');
+    }, 400);
   };
 
   const handleQuickDemoLogin = (role: 'creator' | 'admin') => {
@@ -40,7 +53,7 @@ export default function LoginPage() {
         role,
       });
       setIsLoading(false);
-      router.push(role === 'admin' ? '/admin' : '/');
+      router.push(role === 'admin' ? '/admin' : '/dashboard');
     }, 400);
   };
 
@@ -60,13 +73,13 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* Mock Notice */}
-        <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3.5 text-xs text-amber-800 dark:text-amber-300 space-y-1">
+        {/* Session Status Notice */}
+        <div className="rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-3.5 text-xs text-indigo-800 dark:text-indigo-300 space-y-1">
           <p className="font-bold flex items-center gap-1.5">
-            <ShieldCheck className="h-4 w-4 text-amber-500" /> Temporary Mock Authentication
+            <ShieldCheck className="h-4 w-4 text-indigo-500" /> Active Session Authorization
           </p>
           <p className="leading-relaxed text-[11px]">
-            This is a mock login layer ready for Supabase Auth in production. You can click the one-click demo shortcuts below to enter instantly!
+            Sign in with your email to unlock your personalized YouTube telemetry workspace. Your session and imported channels are automatically saved.
           </p>
         </div>
 

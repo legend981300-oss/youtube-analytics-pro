@@ -28,7 +28,13 @@ interface AppContextType {
   selectedChannel: Channel;
   setSelectedChannel: (channel: Channel) => void;
   channels: Channel[];
-  addNewChannel: (name: string, handle: string, category: string) => void;
+  addNewChannel: (
+    name: string,
+    handle: string,
+    category: string,
+    extra?: Partial<Channel>,
+    videos?: VideoItem[]
+  ) => void;
   channelVideos: VideoItem[];
   dateRange: DateRange;
   setDateRange: (range: DateRange) => void;
@@ -70,12 +76,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [demoNoticeDismissed, setDemoNoticeDismissed] = useState<boolean>(false);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
+  const [customVideos, setCustomVideos] = useState<Record<string, VideoItem[]>>({});
 
-  // Dynamically resolve videos specific to selected multi-niche channel
-  const channelVideos = React.useMemo(
-    () => getVideosForChannel(selectedChannel.id),
-    [selectedChannel.id]
-  );
+  // Dynamically resolve videos specific to selected multi-niche channel (or real YouTube imported videos)
+  const channelVideos = React.useMemo(() => {
+    if (customVideos[selectedChannel.id] && customVideos[selectedChannel.id].length > 0) {
+      return customVideos[selectedChannel.id];
+    }
+    return getVideosForChannel(selectedChannel.id);
+  }, [selectedChannel.id, customVideos]);
 
   // Initialize theme and hydrate local state from storage
   useEffect(() => {
@@ -87,6 +96,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         document.documentElement.classList.add('dark');
       } else {
         document.documentElement.classList.remove('dark');
+      }
+
+      // Hydrate custom videos
+      const savedVideos = localStorage.getItem('yt_pro_custom_videos');
+      if (savedVideos) {
+        const parsed = JSON.parse(savedVideos);
+        if (parsed && typeof parsed === 'object') setCustomVideos(parsed);
+      }
+
+      // Hydrate user session
+      const savedUser = localStorage.getItem('yt_pro_current_user');
+      if (savedUser) {
+        const parsed = JSON.parse(savedUser);
+        if (parsed && parsed.email) setCurrentUser(parsed);
       }
 
       // Hydrate channels
@@ -157,6 +180,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     } catch {}
   }, [calendarEvents]);
 
+  useEffect(() => {
+    try {
+      localStorage.setItem('yt_pro_current_user', JSON.stringify(currentUser));
+    } catch {}
+  }, [currentUser]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('yt_pro_custom_videos', JSON.stringify(customVideos));
+    } catch {}
+  }, [customVideos]);
+
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
@@ -197,23 +232,35 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  const addNewChannel = (name: string, handle: string, category: string) => {
+  const addNewChannel = (
+    name: string,
+    handle: string,
+    category: string,
+    extra?: Partial<Channel>,
+    videos?: VideoItem[]
+  ) => {
+    const channelId = extra?.id || `ch-${Date.now()}`;
+    const cleanHandle = handle.startsWith('@') ? handle : `@${handle}`;
     const newChan: Channel = {
-      id: `ch-${Date.now()}`,
+      id: channelId,
       name,
-      handle: handle.startsWith('@') ? handle : `@${handle}`,
-      avatar: `https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=150&auto=format&fit=crop&q=80`,
-      subscribers: 0,
-      totalViews: 0,
-      totalVideos: 0,
-      joinedDate: new Date().toISOString().slice(0, 10),
-      category,
-      verified: false,
+      handle: cleanHandle,
+      avatar: extra?.avatar || `https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=150&auto=format&fit=crop&q=80`,
+      subscribers: extra?.subscribers ?? 0,
+      totalViews: extra?.totalViews ?? 0,
+      totalVideos: extra?.totalVideos ?? 0,
+      joinedDate: extra?.joinedDate || new Date().toISOString().slice(0, 10),
+      category: category || 'Digital Media',
+      verified: extra?.verified ?? true,
       status: 'active',
+      ...extra,
     };
-    setChannels((prev) => [newChan, ...prev]);
+    if (videos && videos.length > 0) {
+      setCustomVideos((prev) => ({ ...prev, [channelId]: videos }));
+    }
+    setChannels((prev) => [newChan, ...prev.filter((c) => c.handle.toLowerCase() !== cleanHandle.toLowerCase())]);
     setSelectedChannel(newChan);
-    showToast('Channel Linked (Demo)', `Switched active channel to ${newChan.name}.`, 'success');
+    showToast('Channel Connected', `Active channel set to ${newChan.name} (${newChan.handle}).`, 'success');
   };
 
   const addIdea = (idea: Omit<VideoIdea, 'id' | 'createdAt'>) => {

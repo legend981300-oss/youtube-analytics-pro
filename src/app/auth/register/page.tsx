@@ -85,7 +85,7 @@ export default function RegisterPage() {
         role: 'creator',
       });
       setIsLoading(false);
-      router.push('/');
+      router.push('/dashboard');
     }, 600);
   };
 
