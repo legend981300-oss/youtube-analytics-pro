@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowRight, Lock, Loader2 } from 'lucide-react';
 import { BrandLogo } from '@/components/ui/BrandLogo';
 import { useApp } from '@/context/AppContext';
+import { promptGoogleLogin } from '@/lib/google-auth';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -68,29 +69,42 @@ export default function LoginPage() {
 
   const handleLoginWithGoogle = () => {
     setIsGoogleLoading(true);
-    setTimeout(() => {
-      const googleUser = {
-        id: `usr-google-${Date.now()}`,
-        name: 'Google Creator',
-        email: 'creator@gmail.com',
-        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120&auto=format&fit=crop&q=80',
-        plan: 'Pro' as const,
-        channelsCount: 1,
-        joinedDate: 'Active Session',
-        role: 'creator' as const,
-      };
+    setError(null);
 
-      setCurrentUser(googleUser);
-      setIsAuthenticated(true);
-      try {
-        localStorage.setItem('yt_pro_is_authenticated', 'true');
-        localStorage.setItem('yt_pro_current_user', JSON.stringify(googleUser));
-      } catch {}
+    promptGoogleLogin(
+      (googleProfile) => {
+        const googleUser = {
+          id: `usr-google-${googleProfile.sub || Date.now()}`,
+          name: googleProfile.name || 'Google Creator',
+          email: googleProfile.email,
+          avatar:
+            googleProfile.picture ||
+            'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120&auto=format&fit=crop&q=80',
+          plan: 'Pro' as const,
+          channelsCount: 1,
+          joinedDate: 'Active Session',
+          role: 'creator' as const,
+        };
 
-      showToast('Signed in with Google', 'Welcome to your creator dashboard.', 'success');
-      setIsGoogleLoading(false);
-      router.push('/dashboard');
-    }, 400);
+        setCurrentUser(googleUser);
+        setIsAuthenticated(true);
+        try {
+          localStorage.setItem('yt_pro_is_authenticated', 'true');
+          localStorage.setItem('yt_pro_current_user', JSON.stringify(googleUser));
+        } catch {}
+
+        showToast('Signed in with Google', `Welcome back, ${googleProfile.name}!`, 'success');
+        setIsGoogleLoading(false);
+        router.push('/dashboard');
+      },
+      (err) => {
+        console.warn('Google Sign-in cancelled or error:', err);
+        setIsGoogleLoading(false);
+        if (err?.error !== 'popup_closed_by_user') {
+          setError('Google sign-in popup was closed or origin is not authorized.');
+        }
+      }
+    );
   };
 
   return (
