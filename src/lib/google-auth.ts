@@ -51,7 +51,7 @@ export function promptGoogleLogin(
 
     const client = window.google.accounts.oauth2.initTokenClient({
       client_id: GOOGLE_CLIENT_ID,
-      scope: 'openid email profile https://www.googleapis.com/auth/youtube.readonly',
+      scope: 'openid email profile',
       callback: async (response: any) => {
         if (response.error) {
           onError(response);
