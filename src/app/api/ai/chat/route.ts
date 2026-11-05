@@ -99,7 +99,7 @@ Rules:
     const { type: providerType, key: activeKey } = resolveAiKey(request);
 
     // =========================================================================
-    // 1. NVIDIA NIM Provider (Llama 3.3 70B)
+    // 1. NVIDIA NIM Provider (Llama 3.3 70B with 8B fallback)
     // =========================================================================
     if (providerType === 'nvidia' || (process.env.NVIDIA_NIM_API_KEY && process.env.NVIDIA_NIM_API_KEY.startsWith('nvapi-'))) {
       const keyToUse = activeKey || process.env.NVIDIA_NIM_API_KEY || process.env.NVIDIA_API_KEY || '';
@@ -115,35 +115,76 @@ Rules:
           { role: 'user', content: message },
         ];
 
-        const nvidiaRes = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${keyToUse}`,
-          },
-          body: JSON.stringify({
-            model: 'meta/llama-3.3-70b-instruct',
-            messages,
-            temperature: 0.7,
-            max_tokens: 1000,
-          }),
-        });
+        // Try primary Llama 3.3 70B, fallback to Llama 3.1 8B if model is gated
+        const modelsToTry = [
+          'meta/llama-3.3-70b-instruct',
+          'meta/llama-3.1-8b-instruct',
+          'nvidia/llama-3.1-nemotron-70b-instruct',
+        ];
 
-        if (nvidiaRes.ok) {
-          const completion = await nvidiaRes.json();
-          const replyText = completion.choices?.[0]?.message?.content;
-          if (replyText) {
-            return NextResponse.json({
-              reply: replyText.trim(),
-              provider: 'nvidia',
-              model: 'meta/llama-3.3-70b-instruct',
-            });
+        let successReply = '';
+        let successModel = '';
+        let lastErrorText = '';
+
+        for (const modelName of modelsToTry) {
+          const nvidiaRes = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+              Authorization: `Bearer ${keyToUse}`,
+            },
+            body: JSON.stringify({
+              model: modelName,
+              messages,
+              temperature: 0.7,
+              max_tokens: 1000,
+              stream: false,
+            }),
+          });
+
+          if (nvidiaRes.ok) {
+            const completion = await nvidiaRes.json();
+            const replyText = completion.choices?.[0]?.message?.content;
+            if (replyText) {
+              successReply = replyText.trim();
+              successModel = modelName;
+              break;
+            }
+          } else {
+            const errBody = await nvidiaRes.text();
+            lastErrorText = `HTTP ${nvidiaRes.status}: ${errBody}`;
+            console.warn(`[AI Chat] NVIDIA NIM ${modelName} returned:`, lastErrorText);
+            // If it's auth failure 401, trying other models won't help
+            if (nvidiaRes.status === 401 || nvidiaRes.status === 403) break;
           }
-        } else {
-          console.warn('[AI Chat] NVIDIA NIM returned HTTP', nvidiaRes.status);
         }
-      } catch (nvidiaErr) {
-        console.warn('[AI Chat] NVIDIA NIM failed, falling back:', nvidiaErr);
+
+        if (successReply) {
+          return NextResponse.json({
+            reply: successReply,
+            provider: 'nvidia',
+            model: successModel,
+          });
+        }
+
+        // If user explicitly provided an NVIDIA key but it failed, inform the user directly
+        if (activeKey.startsWith('nvapi-') && lastErrorText) {
+          return NextResponse.json({
+            reply: `⚠️ **NVIDIA NIM Connection Error**:\n\nNVIDIA returned: \`${lastErrorText.slice(0, 300)}\`\n\n**Quick Fix**:\n1. Check your key on [build.nvidia.com](https://build.nvidia.com).\n2. Ensure your key starts with \`nvapi-...\` and has active credits.\n3. Or try a free Google Gemini key from [aistudio.google.com](https://aistudio.google.com).`,
+            provider: 'nvidia-error',
+            model: 'error',
+          });
+        }
+      } catch (nvidiaErr: any) {
+        console.warn('[AI Chat] NVIDIA NIM exception:', nvidiaErr);
+        if (activeKey.startsWith('nvapi-')) {
+          return NextResponse.json({
+            reply: `⚠️ **NVIDIA NIM Network Error**: ${nvidiaErr?.message || 'Failed to reach NVIDIA endpoint'}.`,
+            provider: 'nvidia-error',
+            model: 'error',
+          });
+        }
       }
     }
 

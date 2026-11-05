@@ -125,35 +125,48 @@ Return a JSON object:
     if (providerType === 'nvidia' || (process.env.NVIDIA_NIM_API_KEY && process.env.NVIDIA_NIM_API_KEY.startsWith('nvapi-'))) {
       const keyToUse = activeKey || process.env.NVIDIA_NIM_API_KEY || process.env.NVIDIA_API_KEY || '';
       try {
-        const nvidiaRes = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${keyToUse}`,
-          },
-          body: JSON.stringify({
-            model: 'meta/llama-3.3-70b-instruct',
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userPrompt },
-            ],
-            temperature: 0.7,
-            max_tokens: 1200,
-          }),
-        });
+        const modelsToTry = [
+          'meta/llama-3.3-70b-instruct',
+          'meta/llama-3.1-8b-instruct',
+          'nvidia/llama-3.1-nemotron-70b-instruct',
+        ];
 
-        if (nvidiaRes.ok) {
-          const completion = await nvidiaRes.json();
-          const rawContent = completion.choices?.[0]?.message?.content || '{}';
-          const cleanJson = rawContent.replace(/```json\n?|```/g, '').trim();
-          const parsedData = JSON.parse(cleanJson);
-
-          return NextResponse.json({
-            provider: 'nvidia',
-            model: 'meta/llama-3.3-70b-instruct',
-            data: parsedData,
-            generatedAt: new Date().toISOString(),
+        for (const modelName of modelsToTry) {
+          const nvidiaRes = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+              Authorization: `Bearer ${keyToUse}`,
+            },
+            body: JSON.stringify({
+              model: modelName,
+              messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userPrompt },
+              ],
+              temperature: 0.7,
+              max_tokens: 1200,
+              stream: false,
+            }),
           });
+
+          if (nvidiaRes.ok) {
+            const completion = await nvidiaRes.json();
+            const rawContent = completion.choices?.[0]?.message?.content || '{}';
+            const cleanJson = rawContent.replace(/```json\n?|```/g, '').trim();
+            const parsedData = JSON.parse(cleanJson);
+
+            return NextResponse.json({
+              provider: 'nvidia',
+              model: modelName,
+              data: parsedData,
+              generatedAt: new Date().toISOString(),
+            });
+          } else {
+            console.warn(`[AI API] NVIDIA NIM ${modelName} returned HTTP`, nvidiaRes.status);
+            if (nvidiaRes.status === 401 || nvidiaRes.status === 403) break;
+          }
         }
       } catch (nvidiaErr) {
         console.warn('[AI API] NVIDIA NIM call failed, falling back to next provider');
